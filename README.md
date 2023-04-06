@@ -4,9 +4,9 @@ Cave editor using Godot and godot_voxel module.
 ## Running the project
 - Download files from this repository.
 - Download compiled godot editor with module.
-  - If on Windows, download editor from here https://github.com/Zylann/godot_voxel/actions/runs/4526855567 named 
+  - On Windows, download editor from here https://github.com/Zylann/godot_voxel/actions/runs/4526855567 named 
 `godot.windows.editor.x86_64.exe`.
-  - If on Linux, download editor from here https://github.com/Zylann/godot_voxel/actions/runs/4526855565 named `godot.linuxbsd.editor.x86_64`.
+  - On Linux, download editor from here https://github.com/Zylann/godot_voxel/actions/runs/4526855565 named `godot.linuxbsd.editor.x86_64`.
   - On other platforms, you will need to compile godot with the module yourself (see https://voxel-tools.readthedocs.io/en/latest/getting_the_module/).
 - Run the godot editor.
 - When Godot's project manager opens up, import the project.
