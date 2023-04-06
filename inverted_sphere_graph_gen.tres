@@ -1,0 +1,53 @@
+[gd_resource type="VoxelGeneratorGraph" format=3 uid="uid://bs56318d6tpl1"]
+
+[resource]
+resource_local_to_scene = true
+graph_data = {
+"connections": [[1, 0, 11, 0], [3, 0, 15, 0], [11, 0, 9, 0], [13, 0, 4, 0], [14, 0, 9, 1], [15, 0, 9, 2], [2, 0, 14, 0], [9, 0, 13, 0]],
+"nodes": {
+"1": {
+"gui_position": Vector2(360, -60),
+"type": "InputX"
+},
+"11": {
+"b": 10.0,
+"gui_position": Vector2(480, -60),
+"type": "Divide"
+},
+"13": {
+"b": -20.0,
+"gui_position": Vector2(860, 0),
+"type": "Multiply"
+},
+"14": {
+"b": 10.0,
+"gui_position": Vector2(480, 60),
+"type": "Divide"
+},
+"15": {
+"b": 10.0,
+"gui_position": Vector2(480, 180),
+"type": "Divide"
+},
+"2": {
+"gui_position": Vector2(360, 60),
+"type": "InputY"
+},
+"3": {
+"gui_position": Vector2(360, 180),
+"type": "InputZ"
+},
+"4": {
+"auto_connect": true,
+"gui_position": Vector2(1020, 0),
+"type": "OutputSDF"
+},
+"9": {
+"auto_connect": true,
+"gui_position": Vector2(680, 20),
+"radius": 1.0,
+"type": "SdfSphere"
+}
+},
+"version": 2
+}
