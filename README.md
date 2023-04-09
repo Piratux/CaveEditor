@@ -1,5 +1,5 @@
 # CaveEditor
-Cave editor using Godot and godot_voxel module.
+Cave editor using [Godot](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
 
 ## Running the project
 - Download files from this repository.
