@@ -1,5 +1,7 @@
 extends Node
 
+# sources http://web.archive.org/web/20030801220134/http://www.acm.uiuc.edu/siggraph/workshops/wjarosz_convolution_2001.pdf
+
 var base_terraform_distance = 50
 var terraform_distance = base_terraform_distance
 
@@ -149,7 +151,6 @@ func update_edit_sphere():
 	else:
 		edit_indicators.visible = false
 
-
 func try_break_block():
 	var hit = get_pointed_voxel()
 	if hit:
@@ -171,7 +172,7 @@ func try_break_block():
 			voxel_tool.do_box(hit_pos - offset, hit_pos + offset)
 		
 		elif edit_mode == EDIT_MODE.BLEND_BALL:
-			blend_ball(hit_pos, blend_radius)
+			blend_ball_fast(hit_pos, blend_radius)
 		
 		update_edit_sphere()
 
@@ -196,15 +197,13 @@ func try_place_block():
 			voxel_tool.do_box(hit_pos - offset, hit_pos + offset)
 		
 		elif edit_mode == EDIT_MODE.BLEND_BALL:
-			blend_ball(hit_pos, blend_radius)
+			blend_ball_fast(hit_pos, blend_radius)
 		
 		update_edit_sphere()
 
 func blend_ball(pos, radius):
-#	blend_ball_test(pos, radius)
-#	return
-	if enable_print:
-		print("--BLEND BALL--")
+	voxel_tool.do_blend_ball(pos, edit_scale, radius)
+	return
 	
 	var brush_size = int(edit_scale)
 	var brush_size_squared = brush_size * brush_size
@@ -220,9 +219,6 @@ func blend_ball(pos, radius):
 	map_pos.y -= brush_size
 	map_pos.z -= brush_size
 	voxel_tool.copy(map_pos, buffer, sdf_mask)
-	
-	if enable_print:
-		print("buffer_size: " + str(buffer_size))
 	
 	for x in buffer_size:
 		var xi = x - brush_size
@@ -253,17 +249,13 @@ func blend_ball(pos, radius):
 
 				var total_elements = blend_range_diameter * blend_range_diameter * blend_range_diameter
 				var average = sdf_sum / float(total_elements);
-				if enable_print:
-					print("total_elements: " + str(total_elements))
-					print("sdf_sum: " + str(sdf_sum))
-					print("average: " + str(average))
 
-				# make it map [-1, 1] instead of [0, 1]
+				# TODO: figure out to if it would be faster using smoothstep:
+				# 6x^5 - 15x^4 + 10x^3
+				# https://en.wikipedia.org/wiki/Smoothstep
 				
-				# TODO: check if it looks good without this on 2D with weighted result
-#				average = map_value(average, -1, 1, 0, 1)
-#				average = ease_in_out_cubic(average);
-#				average = map_value(average, 0, 1, -1, 1)
+				# map [-1; 1] to [0; 1] then back to [-1; 1]
+				average = 2 * ease_in_out_cubic(0.5 * average + 0.5) - 1;
 				
 				var voxel_pos = Vector3i(x0, y0, z0)
 				var curr_voxel_value = voxel_tool.get_voxel_f(voxel_pos)
@@ -331,6 +323,168 @@ func blend_ball_test(pos, radius):
 					buffer.set_voxel_f(-1, x, y, z, VoxelBuffer.CHANNEL_SDF)
 	
 	voxel_tool.paste(map_pos, buffer, sdf_mask, 0xffffffff)
+
+# TODO: figure out what to do with buffer (make wrapper or always offset when setting value?)
+# TODO: figure out when extended iteration need to be cut down
+# TODO: optimise buffered_values?
+func blend_ball_fast(brush_pos, radius):
+	var brush_size = int(edit_scale)
+	var blend_range = int(radius)
+	
+	var extended_brush_size = brush_size + blend_range
+	
+	var brush_size_2n1 = brush_size * 2 + 1
+	var blend_range_2n1 = blend_range * 2 + 1
+	var extended_brush_size_2n1 = extended_brush_size * 2 + 1
+	
+	var brush_size_squared = brush_size * brush_size
+	
+	var buffer = VoxelBuffer.new()
+	var result_buffer = VoxelBuffer.new()
+	
+	buffer.create(extended_brush_size_2n1, extended_brush_size_2n1, extended_brush_size_2n1)
+	result_buffer.create(brush_size_2n1, brush_size_2n1, brush_size_2n1)
+	
+	var sdf_mask = 1 << VoxelBuffer.CHANNEL_SDF
+	var _sdf_channel = VoxelBuffer.CHANNEL_SDF
+	
+	var map_pos = Vector3i(brush_pos)
+	map_pos.x -= brush_size
+	map_pos.y -= brush_size
+	map_pos.z -= brush_size
+	
+	# x blur
+	for zi in extended_brush_size_2n1:
+		var z = zi - extended_brush_size
+		var z0 = z + brush_pos.z
+		for yi in extended_brush_size_2n1:
+			var y = yi - extended_brush_size
+			var y0 = y + brush_pos.y
+			
+			var sdf_sum = 0.0
+			var buffered_values = []
+			
+			for xi in brush_size_2n1:
+				var x = xi - brush_size
+				var x0 = x + brush_pos.x
+				
+				if x == -brush_size:
+					for oxi in blend_range_2n1:
+						var ox = oxi - blend_range
+						var voxel_pos = Vector3i(x0 + ox, y0, z0)
+						var value = voxel_tool.get_voxel_f(voxel_pos)
+						buffered_values.push_back(value)
+						
+						sdf_sum += value
+				else:
+					var voxel_pos = Vector3i(x0 + blend_range, y0, z0)
+					var value = voxel_tool.get_voxel_f(voxel_pos)
+					buffered_values.push_back(value)
+					
+					sdf_sum += value
+					sdf_sum -= buffered_values.pop_front()
+				
+				var average = sdf_sum / float(blend_range_2n1)
+				buffer.set_voxel_f(average, xi + blend_range, yi, zi, VoxelBuffer.CHANNEL_SDF)
+	
+	# y blur
+	for xi in brush_size_2n1:
+		var x = xi - brush_size
+		var x0 = x + brush_pos.x
+		for zi in extended_brush_size_2n1:
+			var z = zi - extended_brush_size
+			var z0 = z + brush_pos.z
+			
+			var sdf_sum = 0.0
+			var buffered_values = []
+			
+			for yi in brush_size_2n1:
+				var y = yi - brush_size
+				var y0 = y + brush_pos.y
+				
+				if y == -brush_size:
+					for oyi in blend_range_2n1:
+						var oy = oyi - blend_range
+						var value = buffer.get_voxel_f(xi + blend_range, yi + blend_range + oy, zi, VoxelBuffer.CHANNEL_SDF)
+						buffered_values.push_back(value)
+						
+						sdf_sum += value
+				else:
+					var value = buffer.get_voxel_f(xi + blend_range, yi + blend_range + blend_range, zi, VoxelBuffer.CHANNEL_SDF)
+					buffered_values.push_back(value)
+					
+					sdf_sum += value
+					sdf_sum -= buffered_values.pop_front()
+				
+				var average = sdf_sum / float(blend_range_2n1)
+				buffer.set_voxel_f(average, xi + blend_range, yi + blend_range, zi, VoxelBuffer.CHANNEL_SDF)
+	
+	# z blur
+	for yi in brush_size_2n1:
+		var y = yi - brush_size
+		var y0 = y + brush_pos.y
+		for xi in brush_size_2n1:
+			var x = xi - brush_size
+			var x0 = x + brush_pos.x
+			
+			var sdf_sum = 0.0
+			var buffered_values = []
+			
+			for zi in brush_size_2n1:
+				var z = zi - brush_size
+				var z0 = z + brush_pos.z
+				
+				if z == -brush_size:
+					for ozi in blend_range_2n1:
+						var oz = ozi - blend_range
+						var value = buffer.get_voxel_f(xi + blend_range, yi + blend_range, zi + blend_range + oz, VoxelBuffer.CHANNEL_SDF)
+						buffered_values.push_back(value)
+						
+						sdf_sum += value
+				else:
+					var value = buffer.get_voxel_f(xi + blend_range, yi + blend_range, zi + blend_range + blend_range, VoxelBuffer.CHANNEL_SDF)
+					buffered_values.push_back(value)
+					
+					sdf_sum += value
+					sdf_sum -= buffered_values.pop_front()
+				
+				var average = sdf_sum / float(blend_range_2n1)
+				result_buffer.set_voxel_f(average, xi, yi, zi, VoxelBuffer.CHANNEL_SDF)
+	
+	# process result and paste it
+	for zi in brush_size_2n1:
+		var z = zi - brush_size
+		var z0 = z + brush_pos.z
+		for yi in brush_size_2n1:
+			var y = yi - brush_size
+			var y0 = y + brush_pos.y
+			for xi in brush_size_2n1:
+				var x = xi - brush_size
+				var x0 = x + brush_pos.x
+				
+				var distance = x * x + y * y + z * z
+				
+				var voxel_pos = Vector3i(x0, y0, z0)
+				var curr_sdf_value = voxel_tool.get_voxel_f(voxel_pos)
+				if (distance >= brush_size_squared):
+					result_buffer.set_voxel_f(curr_sdf_value, xi, yi, zi, VoxelBuffer.CHANNEL_SDF)
+					continue
+
+				var average = result_buffer.get_voxel_f(xi, yi, zi, VoxelBuffer.CHANNEL_SDF)
+				
+				# TODO: figure out to if it would be faster using smoothstep:
+				# 6x^5 - 15x^4 + 10x^3
+				# https://en.wikipedia.org/wiki/Smoothstep
+				
+				# map [-1; 1] to [0; 1] then back to [-1; 1]
+				average = 2 * ease_in_out_cubic(0.5 * average + 0.5) - 1;
+				
+				var distance_normalised = float(distance) / float(brush_size_squared)
+				var new_sdf_value = lerp(average, curr_sdf_value, distance_normalised)
+				
+				result_buffer.set_voxel_f(new_sdf_value, xi, yi, zi, VoxelBuffer.CHANNEL_SDF)
+	
+	voxel_tool.paste(map_pos, result_buffer, sdf_mask, 0xffffffff)
 
 func ease_in_out_cubic(x):
 	if x < 0.5:
