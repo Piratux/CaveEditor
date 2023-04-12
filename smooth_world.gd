@@ -202,9 +202,6 @@ func try_place_block():
 		update_edit_sphere()
 
 func blend_ball(pos, radius):
-	voxel_tool.do_blend_ball(pos, edit_scale, radius)
-	return
-	
 	var brush_size = int(edit_scale)
 	var brush_size_squared = brush_size * brush_size
 	
