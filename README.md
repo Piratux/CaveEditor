@@ -1,7 +1,12 @@
 # CaveEditor
 Cave editor using [Godot](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
 
-## Running the project
+## Project binary releases
+For linux:
+- https://github.com/Piratux/CaveEditor/releases/tag/Linux
+Other platforms will have to wait...
+
+## Running the project from editor
 - Download files from this repository.
 - Download compiled godot editor with module.
   - On Windows, download editor from here https://github.com/Zylann/godot_voxel/actions/runs/4526855567 named 
