@@ -3,7 +3,7 @@ Cave editor using [Godot](https://godotengine.org/) and [godot_voxel module](htt
 
 ## Project binary releases
 For linux:
-- https://github.com/Piratux/CaveEditor/releases/tag/Linux
+- https://github.com/Piratux/CaveEditor/releases/tag/Linux <br />
 Other platforms will have to wait...
 
 ## Running the project from editor
