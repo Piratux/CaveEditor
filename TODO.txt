@@ -1,0 +1,9 @@
+FUTURE TODO
+- More tools
+-- Smothly flattening towards XZ, XY, ZY plane
+-- Smooth pull/push?
+- Export to mesh then to .obj (perhaps from script) (must make sure all voxels are loaded in) (check if there is way to split the map into chunks, (multiple .obj) when exporting?)
+- Ability to create, edit, save, load, export multiple different maps.
+- Extend SDF value setting when using sphere (slightly bigger box, depending on sdf_scale) (or check if that option is already available), so that SDF values don't go 0 -> -1 very quick, this way Blend ball will work better.
+- Undo/redo edits
+- Optimise do_box implementation

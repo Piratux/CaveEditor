@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://bfk82p5xnm2jc"]
+
+[ext_resource type="Script" path="res://Scripts/RadiusSlider.gd" id="1_iq4df"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_eenpo"]
+color = Color(0.407843, 0.407843, 0.407843, 1)
+grow_begin = 0.0
+grow_end = 0.0
+thickness = 7
+
+[node name="ParameterSlider" type="HBoxContainer"]
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 2
+text = "Radius:"
+
+[node name="Value" type="Label" parent="."]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_vertical = 5
+text = "0"
+
+[node name="HSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_styles/slider = SubResource("StyleBoxLine_eenpo")
+min_value = 1.0
+max_value = 20.0
+value = 1.0
+rounded = true
+script = ExtResource("1_iq4df")
+
+[connection signal="value_changed" from="HSlider" to="HSlider" method="_on_value_changed"]

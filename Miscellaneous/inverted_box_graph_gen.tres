@@ -1,0 +1,31 @@
+[gd_resource type="VoxelGeneratorGraph" format=3 uid="uid://bvinakft3fpu7"]
+
+[resource]
+resource_local_to_scene = true
+graph_data = {
+"connections": [[16, 0, 17, 0], [17, 0, 4, 0]],
+"nodes": {
+"16": {
+"auto_connect": true,
+"gui_position": Vector2(760, 0),
+"size_x": 60.0,
+"size_y": 20.0,
+"size_z": 50.0,
+"type": "SdfBox",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+},
+"17": {
+"b": -1000.0,
+"gui_position": Vector2(940, 0),
+"type": "Multiply"
+},
+"4": {
+"auto_connect": true,
+"gui_position": Vector2(1100, 0),
+"type": "OutputSDF"
+}
+},
+"version": 2
+}
