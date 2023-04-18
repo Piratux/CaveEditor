@@ -1,5 +1,13 @@
 # CaveEditor
-Cave editor using [Godot](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
+3D Cave editor using [Godot](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
+
+## Features
+- Edit terrain using tools:
+  - Sphere
+  - Cube
+  - Blend ball.
+- Terrain changes are automatically saved in a file.
+- More to come...
 
 ## Project binary releases
 For Windows:
