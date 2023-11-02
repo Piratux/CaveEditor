@@ -7,13 +7,10 @@
   - Cube
   - Blend ball.
 - Terrain changes are automatically saved in a file.
-- More to come...
 
 ## Project binary releases
 For Windows:
 - https://github.com/Piratux/CaveEditor/releases/tag/Windows <br />
-
-Other platforms will have to wait...
 
 ## Running the project from editor
 - Download files from this repository.
