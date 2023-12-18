@@ -1,13 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://cvwnpkr4j3kwe"]
+[gd_scene load_steps=5 format=3 uid="uid://cvwnpkr4j3kwe"]
 
 [ext_resource type="Script" path="res://Scripts/WorldManager.gd" id="1_5c2ow"]
-[ext_resource type="Script" path="res://Scripts/WorldList.gd" id="2_m2cc1"]
+[ext_resource type="Script" path="res://Scripts/LineEdit.gd" id="3_37tob"]
+[ext_resource type="Script" path="res://Scripts/WorldManagerInputMarginContainer.gd" id="3_bdfrv"]
+[ext_resource type="Script" path="res://Scripts/MeshExportDialog.gd" id="4_kigoc"]
 
 [node name="WorldManager" type="PanelContainer"]
-offset_left = 280.0
-offset_top = 60.0
-offset_right = 462.0
-offset_bottom = 144.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 87.0
+offset_right = 200.0
+offset_bottom = 527.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+mouse_filter = 1
 script = ExtResource("1_5c2ow")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -19,6 +28,36 @@ layout_mode = 2
 [node name="Label" type="Label" parent="VBoxContainer/CenterContainer"]
 layout_mode = 2
 text = "World Manager"
+
+[node name="ActionMarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ActionMarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ActionMarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Load" type="Button" parent="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Load"
+
+[node name="Rename" type="Button" parent="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Rename"
+
+[node name="Export Mesh" type="Button" parent="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Export Mesh"
+
+[node name="Delete" type="Button" parent="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Delete"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(400, 300)
@@ -32,46 +71,85 @@ theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
 [node name="ItemList" type="ItemList" parent="VBoxContainer/ScrollContainer/MarginContainer"]
-visible = false
 custom_minimum_size = Vector2(380, 0)
 layout_mode = 2
 focus_mode = 0
 auto_height = true
-item_count = 1
 same_column_width = true
 fixed_column_width = 165
-item_0/text = "asdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasd"
-script = ExtResource("2_m2cc1")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer/MarginContainer"]
+visible = false
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+[node name="ActionMarginContainer2" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer"]
+[node name="Create" type="Button" parent="VBoxContainer/ActionMarginContainer2"]
 layout_mode = 2
-theme_override_constants/separation = 10
+size_flags_horizontal = 0
+text = "Create New"
 
-[node name="Create" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Close" type="Button" parent="VBoxContainer/ActionMarginContainer2"]
 layout_mode = 2
-text = "Create"
+size_flags_horizontal = 8
+text = "Close"
 
-[node name="Delete" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="InputMarginContainer" type="MarginContainer" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
-text = "Delete"
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+script = ExtResource("3_bdfrv")
 
-[node name="Import" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/InputMarginContainer"]
 layout_mode = 2
-text = "Import"
 
-[node name="Export" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="VBoxContainer/InputMarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Export"
+placeholder_text = "Enter world name"
+script = ExtResource("3_37tob")
 
-[connection signal="item_selected" from="VBoxContainer/ScrollContainer/MarginContainer/ItemList" to="VBoxContainer/ScrollContainer/MarginContainer/ItemList" method="_on_item_selected"]
-[connection signal="pressed" from="VBoxContainer/MarginContainer/HBoxContainer/Create" to="." method="_on_create_pressed"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/InputMarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Confirm" type="Button" parent="VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Confirm"
+
+[node name="Cancel" type="Button" parent="VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="MeshExportDialog" type="FileDialog" parent="."]
+initial_position = 1
+size = Vector2i(800, 500)
+ok_button_text = "Save"
+access = 2
+script = ExtResource("4_kigoc")
+
+[node name="DeleteErrorDialog" type="AcceptDialog" parent="."]
+title = "Error"
+initial_position = 1
+size = Vector2i(194, 100)
+dialog_text = "Can't delete last world."
+
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Load" to="." method="_on_load_pressed"]
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Rename" to="VBoxContainer/InputMarginContainer" method="_on_rename_pressed"]
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Export Mesh" to="." method="_on_export_mesh_pressed"]
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Delete" to="." method="_on_delete_pressed"]
+[connection signal="item_selected" from="VBoxContainer/ScrollContainer/MarginContainer/ItemList" to="." method="_on_item_list_item_selected"]
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer2/Create" to="VBoxContainer/InputMarginContainer" method="_on_create_pressed"]
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer2/Close" to="." method="_on_close_pressed"]
+[connection signal="text_changed" from="VBoxContainer/InputMarginContainer/VBoxContainer/LineEdit" to="VBoxContainer/InputMarginContainer/VBoxContainer/LineEdit" method="_on_text_changed"]
+[connection signal="pressed" from="VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer/Confirm" to="VBoxContainer/InputMarginContainer" method="_on_confirm_pressed"]
+[connection signal="pressed" from="VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer/Cancel" to="VBoxContainer/InputMarginContainer" method="_on_cancel_pressed"]
+[connection signal="file_selected" from="MeshExportDialog" to="." method="_on_mesh_export_dialog_file_selected"]
+[connection signal="file_selected" from="MeshExportDialog" to="MeshExportDialog" method="_on_file_selected"]

@@ -1,7 +1,7 @@
 extends Control
 
 
-func _input(event):
+func _unhandled_input(event):
 	if event is InputEventKey:
 		if event.pressed:
 			match event.keycode:

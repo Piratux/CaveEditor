@@ -38,6 +38,7 @@ var edit_mode = EDIT_MODE.SPHERE
 @onready var voxel_terrain = get_node("VoxelTerrain")
 @onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
 @onready var camera = get_node("Camera3D")
+@onready var saver = get_node("Saver")
 @onready var edit_indicators = get_node("EditIndicators")
 @onready var sphere_edit_indicator = get_node("EditIndicators/SphereEdit")
 @onready var cube_edit_indicator = get_node("EditIndicators/CubeEdit")
@@ -46,14 +47,12 @@ var edit_mode = EDIT_MODE.SPHERE
 @onready var tool_select = get_node("CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect")
 
 func _ready():
-#	voxel_tool.sdf_scale = 0.01
-	
 	set_edit_mode(EDIT_MODE.SPHERE)
 	set_edit_scale(edit_scale)
 	set_blend_ball_strength(blend_ball_range)
 	set_surface_blend_extra_radius(surface_extra_radius_range)
 	set_edit_intensity(edit_intensity)
-#	set_surface_blend_extra_radius(surface_extra_radius_range)
+	saver.load_data()
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -65,15 +64,13 @@ func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
 		(event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT) and
 		!mouse_captured):
-		
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		mouse_captured = true
-		just_started_capturing_mouse = true
 
-func _input(event):
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		capture_mouse(true)
+	
 	if not mouse_captured:
 		return
-	
+
 	if event is InputEventMouseButton:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT:
@@ -85,25 +82,25 @@ func _input(event):
 						left_mouse_button_held = event.pressed
 					else:
 						right_mouse_button_held = event.pressed
-					
+
 					if event.pressed and Input.is_action_pressed("CTRL"):
 						update_terraforming()
-			
+
 			MOUSE_BUTTON_WHEEL_UP:
 				if not Input.is_action_pressed("ALT"):
 					set_edit_scale(edit_scale + 1)
-			
+
 			MOUSE_BUTTON_WHEEL_DOWN:
 				if not Input.is_action_pressed("ALT"):
 					set_edit_scale(edit_scale - 1)
-	
+
 	if event is InputEventKey:
 		if event.pressed:
 			match event.keycode:
 				KEY_ESCAPE:
 					Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-					mouse_captured = false
-				KEY_SPACE:
+					capture_mouse(false)
+				KEY_X:
 					edit_indicator_is_visible = not edit_indicator_is_visible
 					edit_indicators.visible = edit_indicator_is_visible
 				KEY_1:
@@ -118,7 +115,10 @@ func _input(event):
 					set_edit_mode(EDIT_MODE.TRIM)
 				KEY_V:
 					test_edit()
-	
+				KEY_L:
+					try_edit_terrain(EDIT_MODE.SPHERE)
+					saver.load_world_by_name("temp")
+
 	update_edit_sphere()
 
 func parameter_slider_changed(_name, value):
@@ -357,50 +357,6 @@ func test_edit():
 		
 		update_edit_sphere()
 
-func export_mesh(path):
-	# Should be less than viewing distance, otherwise mesh is insanely large
-	var buffer_size = Vector3i(500, 500, 500)
-	var buffer_start_pos = Vector3i(camera.transform.origin) - Vector3i(250,250,250)
-	
-	var buffer = VoxelBuffer.new()
-	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
-	
-	var sdf_channel = 1 << VoxelBuffer.CHANNEL_SDF
-	voxel_tool.copy(buffer_start_pos, buffer, sdf_channel)
-
-	var mesh = voxel_terrain.mesher.build_mesh(buffer, [])
-
-	# add mesh
-	var mesh_instance = MeshInstance3D.new()
-	add_child(mesh_instance)
-	mesh_instance.mesh = mesh
-	mesh_instance.position = Vector3(camera.position)
-
-	var gltf := GLTFDocument.new()
-	var gltf_state := GLTFState.new()
-
-	gltf.append_from_scene(mesh_instance, gltf_state)
-
-	if endsWithGltf(path):
-		gltf.write_to_filesystem(gltf_state, path)
-	else:
-		gltf.write_to_filesystem(gltf_state, str(path, ".gltf"))
-		
-
-func endsWithGltf(path: String) -> bool:
-	var extension: String = ".gltf"
-	var strLength: int = path.length()
-	var extLength: int = extension.length()
-
-	# Check if the string is long enough to contain the extension
-	if strLength < extLength:
-		return false
-
-	# Extract the last characters of the string with the length of the extension
-	var endOfString: String = path.right(extLength)
-
-	# Compare the extracted portion with the extension
-	return endOfString == extension
-
-func _on_file_dialog_file_selected(path):
-	export_mesh(path)
+func capture_mouse(value):
+	mouse_captured = value
+	just_started_capturing_mouse = value

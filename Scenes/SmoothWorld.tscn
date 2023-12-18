@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=25 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
@@ -15,7 +15,6 @@
 [ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/TrimMaterial.tres" id="11_hkngl"]
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="11_ydr22"]
 [ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="12_563gd"]
-[ext_resource type="Script" path="res://Scripts/MeshExportDialog.gd" id="12_a5w21"]
 [ext_resource type="Script" path="res://Scripts/MenuContainer.gd" id="13_ppmbe"]
 [ext_resource type="PackedScene" uid="uid://cvwnpkr4j3kwe" path="res://Scenes/WorldManager.tscn" id="18_3fqwx"]
 
@@ -112,13 +111,6 @@ surface_material_override/0 = ExtResource("11_hkngl")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="MeshExportDialog" type="FileDialog" parent="CanvasLayer"]
-initial_position = 1
-size = Vector2i(800, 500)
-ok_button_text = "Save"
-access = 2
-script = ExtResource("12_a5w21")
-
 [node name="MenuMarginContainer" type="MarginContainer" parent="CanvasLayer"]
 anchors_preset = 1
 anchor_left = 1.0
@@ -133,7 +125,11 @@ theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MenuMarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 40
+theme_override_constants/separation = 10
+
+[node name="CurrentWorld" type="Label" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 2
 
 [node name="MenuButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -147,10 +143,6 @@ script = ExtResource("13_ppmbe")
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer"]
 layout_mode = 2
 theme_override_constants/separation = 5
-
-[node name="ExportMeshButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
-layout_mode = 2
-text = "Export mesh"
 
 [node name="ManageWorldsButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
 layout_mode = 2
@@ -177,6 +169,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_filter = 1
 script = ExtResource("10_3mcdr")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/HelpWindow"]
@@ -192,6 +185,7 @@ custom_minimum_size = Vector2(400, 500)
 layout_mode = 2
 size_flags_horizontal = 2
 size_flags_vertical = 4
+mouse_filter = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow/ScrollContainer/PanelContainer"]
 layout_mode = 2
@@ -214,7 +208,7 @@ Mouse scroll - Change edit scale
 hold CTRL + Mouse click - Edit terrain once
 hold ALT + Mouse scroll - Change player speed
 hold SHIFT - Move 2.5x times faster
-SPACE - Show/Hide edit indicator
+X - Show/Hide edit indicator
 ESC - Take control of mouse"
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow"]
@@ -269,25 +263,11 @@ popup/item_4/id = 4
 script = ExtResource("12_563gd")
 
 [node name="WorldManager" parent="CanvasLayer" instance=ExtResource("18_3fqwx")]
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -192.5
-offset_right = 200.0
-offset_bottom = 192.5
-grow_horizontal = 2
-grow_vertical = 2
+offset_top = 112.0
+offset_bottom = 552.0
 
 [connection signal="tree_exited" from="VoxelTerrain" to="VoxelTerrain" method="_on_tree_exited"]
-[connection signal="file_selected" from="CanvasLayer/MeshExportDialog" to="." method="_on_file_dialog_file_selected"]
-[connection signal="file_selected" from="CanvasLayer/MeshExportDialog" to="CanvasLayer/MeshExportDialog" method="_on_file_selected"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ExportMeshButton" to="CanvasLayer/MeshExportDialog" method="_on_export_pressed"]
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ExportMeshButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/WorldManager" method="_on_manage_worlds_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
