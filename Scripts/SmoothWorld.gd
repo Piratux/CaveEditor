@@ -4,7 +4,7 @@ var base_terraform_distance = 1000
 var terraform_distance = base_terraform_distance
 
 var edit_min_scale = 2
-var edit_max_scale = 40
+var edit_max_scale = 100
 var edit_scale = 10 # default scale
 
 var blend_ball_min_range = 1
@@ -214,15 +214,27 @@ func try_edit_terrain(voxel_tool_mode):
 	
 	var hit_pos = Vector3(hit.position)
 	var offset_pos = Vector3(hit_pos)
+	var offset_sign = 1
 	
 	if voxel_tool_mode == VoxelTool.MODE_ADD:
-		var forward = -camera.get_transform().basis.z.normalized()
-		offset_pos += forward * (edit_scale - 2)
+		offset_sign = 1
 		voxel_tool.value = 1
 	else:
-		var forward = -camera.get_transform().basis.z.normalized()
-		offset_pos -= forward * (edit_scale - 2)
+		offset_sign = -1
 		voxel_tool.value = 0
+	
+	var forward = -camera.get_transform().basis.z.normalized()
+	
+	if edit_mode == EDIT_MODE.SPHERE:
+		offset_pos += offset_sign * forward * (edit_scale - 2)
+	elif edit_mode == EDIT_MODE.CUBE:
+		# Multiply forward vector to touch cube sides.
+		# This way you get smooth offset from any angle and size.
+		var longest_axis = max(abs(forward.x), abs(forward.y), abs(forward.z))
+		forward.x /= longest_axis
+		forward.y /= longest_axis
+		forward.z /= longest_axis
+		offset_pos += offset_sign * forward * (edit_scale - 2)
 	
 	voxel_tool.mode = voxel_tool_mode
 	
@@ -237,8 +249,8 @@ func try_edit_terrain(voxel_tool_mode):
 		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
 	
 	elif edit_mode == EDIT_MODE.SURFACE:
-		edit_terrain(hit_pos)
-#		do_surface(hit_pos, voxel_tool_mode)
+#		edit_terrain(hit_pos)
+		do_surface(hit_pos, voxel_tool_mode)
 #		voxel_tool.do_sphere(offset_pos, edit_scale)
 #		voxel_tool.smooth_sphere(offset_pos, edit_scale + surface_extra_radius_range, blend_ball_range)
 		

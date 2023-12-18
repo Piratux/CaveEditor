@@ -27,3 +27,10 @@ For Windows:
   - Click `Open`
   - Click `Import & Edit`
 - When Godot's editor loads up, press F5 or click `Run project` button on the top right to run the project.
+
+## Building from source
+build godot editor:
+scons platform=windows
+
+build godot template release:
+scons platform=windows target=template_release

@@ -23,6 +23,11 @@ var editor_data = {
 	}
 }
 
+var default_camera_data = {
+	pos = Vector3(0,0,0),
+	rot = Vector3(0,0,0),
+}
+
 func _ready():
 	DirAccess.make_dir_absolute(".editor")
 
@@ -154,6 +159,8 @@ func add_new_world(world_name):
 	editor_data.worlds[new_id] = {}
 	editor_data.worlds[new_id].name = world_name
 	editor_data.worlds[new_id].file_name = new_id + ".world"
+	editor_data.worlds[new_id].camera_pos = Vector3(default_camera_data.pos)
+	editor_data.worlds[new_id].camera_rot = Vector3(default_camera_data.pos)
 
 func delete_world(world_name):
 	var world_id = get_world_id_by_name(world_name)
@@ -183,6 +190,8 @@ func load_world(world_id):
 	load_world_data(world_id)
 	set_last_world_id(world_id)
 	current_world_label.text = "World: " + world.name
+	
+	
 	print("load_world12")
 
 func rename_world(old_name, new_name):
