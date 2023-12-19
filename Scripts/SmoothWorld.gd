@@ -53,6 +53,7 @@ func _ready():
 	set_surface_blend_extra_radius(surface_extra_radius_range)
 	set_edit_intensity(edit_intensity)
 	saver.load_data()
+	voxel_tool.sdf_scale = 0.1
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -247,12 +248,10 @@ func try_edit_terrain(voxel_tool_mode):
 	
 	elif edit_mode == EDIT_MODE.BLEND_BALL:
 		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
+#		voxel_tool.do_surface(hit_pos, edit_scale, blend_ball_range)
 	
 	elif edit_mode == EDIT_MODE.SURFACE:
-#		edit_terrain(hit_pos)
-		do_surface(hit_pos, voxel_tool_mode)
-#		voxel_tool.do_sphere(offset_pos, edit_scale)
-#		voxel_tool.smooth_sphere(offset_pos, edit_scale + surface_extra_radius_range, blend_ball_range)
+		voxel_tool.do_surface(hit_pos, edit_scale, edit_intensity)
 		
 	elif edit_mode == EDIT_MODE.TRIM:
 		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
