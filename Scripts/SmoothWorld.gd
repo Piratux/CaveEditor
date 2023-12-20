@@ -1,24 +1,20 @@
 extends Node
 
+@onready var voxel_terrain = get_node("VoxelTerrain")
+@onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
+@onready var camera = get_node("Camera3D")
+@onready var saver = get_node("Saver")
+@onready var edit_indicators = get_node("EditIndicators")
+@onready var sphere_edit_indicator = get_node("EditIndicators/SphereEdit")
+@onready var cube_edit_indicator = get_node("EditIndicators/CubeEdit")
+
+@onready var tool_info = get_node("CanvasLayer/ToolInfo")
+@onready var tool_select = get_node("CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect")
+
+var EDIT_MODE = preload("res://Scripts/EditModeEnum.gd").EDIT_MODE
+
 var base_terraform_distance = 1000
 var terraform_distance = base_terraform_distance
-
-var edit_min_scale = 2
-var edit_max_scale = 100
-var edit_scale = 10 # default scale
-
-var blend_ball_min_range = 1
-var blend_ball_max_range = 15
-var blend_ball_range = 3 # default range
-
-var surface_extra_radius_min_range = 1
-var surface_extra_radius_max_range = 15
-var surface_extra_radius_range = 10 # default range
-
-var edit_intensity_min = 0.1
-var edit_intensity_max = 1.0
-var edit_intensity = 0.5 # default range
-var edit_intensity_step = 0.05
 
 var edit_indicator_is_visible = true
 
@@ -32,28 +28,12 @@ var can_edit_terrain = true;
 var mouse_captured = false
 var just_started_capturing_mouse = false
 
-enum EDIT_MODE {SPHERE, CUBE, BLEND_BALL, SURFACE, TRIM}
 var edit_mode = EDIT_MODE.SPHERE
-
-@onready var voxel_terrain = get_node("VoxelTerrain")
-@onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
-@onready var camera = get_node("Camera3D")
-@onready var saver = get_node("Saver")
-@onready var edit_indicators = get_node("EditIndicators")
-@onready var sphere_edit_indicator = get_node("EditIndicators/SphereEdit")
-@onready var cube_edit_indicator = get_node("EditIndicators/CubeEdit")
-
-@onready var tool_info = get_node("CanvasLayer/ToolInfo")
-@onready var tool_select = get_node("CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect")
 
 func _ready():
 	set_edit_mode(EDIT_MODE.SPHERE)
-	set_edit_scale(edit_scale)
-	set_blend_ball_strength(blend_ball_range)
-	set_surface_blend_extra_radius(surface_extra_radius_range)
-	set_edit_intensity(edit_intensity)
 	saver.load_data()
-	voxel_tool.sdf_scale = 0.1
+	voxel_tool.sdf_scale = 0.1 # required for surface tool to interact nicely
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -65,7 +45,7 @@ func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
 		(event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT) and
 		!mouse_captured):
-
+	
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		capture_mouse(true)
 	
@@ -83,18 +63,18 @@ func _unhandled_input(event):
 						left_mouse_button_held = event.pressed
 					else:
 						right_mouse_button_held = event.pressed
-
-					if event.pressed and Input.is_action_pressed("CTRL"):
+			
+					if Input.is_action_pressed("CTRL") and event.pressed:
 						update_terraforming()
-
+			
 			MOUSE_BUTTON_WHEEL_UP:
-				if not Input.is_action_pressed("ALT"):
-					set_edit_scale(edit_scale + 1)
-
+				if not Input.is_action_pressed("ALT") and event.pressed:
+					set_tool_scale(get_tool_scale() + 1)
+	
 			MOUSE_BUTTON_WHEEL_DOWN:
-				if not Input.is_action_pressed("ALT"):
-					set_edit_scale(edit_scale - 1)
-
+				if not Input.is_action_pressed("ALT") and event.pressed:
+					set_tool_scale(get_tool_scale() - 1)
+	
 	if event is InputEventKey:
 		if event.pressed:
 			match event.keycode:
@@ -112,42 +92,30 @@ func _unhandled_input(event):
 					set_edit_mode(EDIT_MODE.BLEND_BALL)
 				KEY_4:
 					set_edit_mode(EDIT_MODE.SURFACE)
-				KEY_5:
-					set_edit_mode(EDIT_MODE.TRIM)
-				KEY_V:
-					test_edit()
-				KEY_L:
-					try_edit_terrain(EDIT_MODE.SPHERE)
-					saver.load_world_by_name("temp")
+#				KEY_5:
+#					set_edit_mode(EDIT_MODE.TRIM)
+#				KEY_V:
+#					test_edit()
 
 	update_edit_sphere()
 
-func parameter_slider_changed(_name, value):
-	if _name == "Edit Scale":
-		set_edit_scale(value)
-	elif _name == "Strength":
-		set_blend_ball_strength(value)
-	elif _name == "Blend Radius":
-		set_surface_blend_extra_radius(value)
-	elif _name == "Intensity":
-		set_edit_intensity(value)
+func get_tool_parameter_value(parameter_name):
+	return tool_info.get_tool_parameter_value(edit_mode, parameter_name)
 
-func set_edit_scale(value):
-	edit_scale = clamp(value, edit_min_scale, edit_max_scale)
-	tool_info.edit_scale_slider.get_node("HSlider").value_changed(edit_scale)
-	update_edit_sphere()
+func set_tool_parameter_value(parameter_name, new_value):
+	tool_info.set_tool_parameter_value(edit_mode, parameter_name, new_value)
 
-func set_blend_ball_strength(value):
-	blend_ball_range = clamp(value, blend_ball_min_range, blend_ball_max_range)
-	tool_info.blend_ball_strength_slider.get_node("HSlider").value_changed(blend_ball_range)
+func get_tool_scale():
+	return get_tool_parameter_value("scale")
 
-func set_surface_blend_extra_radius(value):
-	surface_extra_radius_range = clamp(value, surface_extra_radius_min_range, surface_extra_radius_max_range)
-	tool_info.surface_blend_extra_radius_slider.get_node("HSlider").value_changed(surface_extra_radius_range)
+func set_tool_scale(new_value):
+	set_tool_parameter_value("scale", new_value)
 
-func set_edit_intensity(value):
-	edit_intensity = clamp(value, edit_intensity_min, edit_intensity_max)
-	tool_info.edit_intensity_slider.get_node("HSlider").value_changed(edit_intensity)
+func get_tool_strength():
+	return get_tool_parameter_value("strength")
+
+func set_tool_strength(new_value):
+	set_tool_parameter_value("strength", new_value)
 
 func set_edit_mode(new_edit_mode):
 	var edit_mesh = edit_indicators.get_child(new_edit_mode)
@@ -159,13 +127,7 @@ func set_edit_mode(new_edit_mode):
 		
 		tool_select.selected = new_edit_mode
 		
-		tool_info.blend_ball_strength_slider.visible = (
-			new_edit_mode == EDIT_MODE.BLEND_BALL
-			or new_edit_mode == EDIT_MODE.SURFACE
-		)
-		tool_info.surface_blend_extra_radius_slider.visible = (
-			new_edit_mode == EDIT_MODE.SURFACE
-		)
+		tool_info.set_edit_mode(new_edit_mode)
 
 func update_draw_timer(delta):
 	if draw_speed_accumulate_delta > draw_speed:
@@ -196,14 +158,16 @@ func update_edit_sphere():
 	if not edit_indicator_is_visible:
 		return
 	
-	terraform_distance = base_terraform_distance * edit_scale
+	terraform_distance = base_terraform_distance * get_tool_scale()
 	
 	var hit = get_pointed_voxel()
 	if hit:
 		var pos = Vector3(hit.position)
 		edit_indicators.visible = true
 		edit_indicators.global_position = pos
-		edit_indicators.scale = Vector3(edit_scale, edit_scale, edit_scale)
+		
+		var tool_scale = get_tool_scale()
+		edit_indicators.scale = Vector3(tool_scale, tool_scale, tool_scale)
 	else:
 		edit_indicators.visible = false
 
@@ -225,6 +189,8 @@ func try_edit_terrain(voxel_tool_mode):
 		voxel_tool.value = 0
 	
 	var forward = -camera.get_transform().basis.z.normalized()
+	var edit_scale = get_tool_scale()
+	var edit_strength = get_tool_strength()
 	
 	if edit_mode == EDIT_MODE.SPHERE:
 		offset_pos += offset_sign * forward * (edit_scale - 2)
@@ -247,18 +213,19 @@ func try_edit_terrain(voxel_tool_mode):
 		voxel_tool.do_box(offset_pos - offset, offset_pos + offset)
 	
 	elif edit_mode == EDIT_MODE.BLEND_BALL:
-		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
+		voxel_tool.smooth_sphere(hit_pos, edit_scale, edit_strength)
 #		voxel_tool.do_surface(hit_pos, edit_scale, blend_ball_range)
 	
 	elif edit_mode == EDIT_MODE.SURFACE:
-		voxel_tool.do_surface(hit_pos, edit_scale, edit_intensity)
+		voxel_tool.do_surface(hit_pos, edit_scale, edit_strength)
 		
-	elif edit_mode == EDIT_MODE.TRIM:
-		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
+#	elif edit_mode == EDIT_MODE.TRIM:
+#		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
 	
 	update_edit_sphere()
 
 func do_surface(hit_pos, voxel_tool_mode):
+	var edit_scale = get_tool_scale()
 	# TODO: make function for copying values into buffer
 	var radius2_1 = edit_scale * 2 + 1
 	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
@@ -284,7 +251,7 @@ func do_surface(hit_pos, voxel_tool_mode):
 				if voxel_tool_mode == VoxelTool.MODE_ADD:
 					value *= -1
 				
-				value *= edit_intensity
+				value *= get_tool_strength()
 				
 				var curr_value = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
 				buffer.set_voxel_f(curr_value + value, x, y, z, VoxelBuffer.CHANNEL_SDF)
@@ -319,6 +286,7 @@ func round_cube_add(buffer, x, y, z, dx, dy, dz, radius):
 	return min(curr_value, new_value)
 
 func edit_terrain(hit_pos):
+	var edit_scale = get_tool_scale()
 	var radius2_1 = edit_scale * 2 + 1
 	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
 	var buffer_start_pos = Vector3i(hit_pos) - Vector3i(edit_scale, edit_scale, edit_scale)
@@ -347,26 +315,26 @@ func edit_terrain(hit_pos):
 	
 	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
 
-func test_edit():
-	var hit = get_pointed_voxel()
-	if hit:
-		voxel_tool.mode = VoxelTool.MODE_REMOVE
-		var hit_pos = Vector3(hit.position)
-		var hit_pos2 = Vector3(hit_pos)
-		hit_pos2.y += 30
-		hit_pos2.x += 30
-		var hit_pos3 = Vector3(hit_pos2)
-		hit_pos3.x += 30
-		hit_pos2.z += 5
-		var hit_pos4 = Vector3(hit_pos3)
-		hit_pos4.x += 20
-		hit_pos4.y += 20
-		hit_pos4.z += 20
-		var points = PackedVector3Array([hit_pos, hit_pos2, hit_pos3, hit_pos4])
-		var radii = PackedFloat32Array([5, 10, 8, 10])
-		voxel_tool.do_path(points, radii)
-		
-		update_edit_sphere()
+#func test_edit():
+#	var hit = get_pointed_voxel()
+#	if hit:
+#		voxel_tool.mode = VoxelTool.MODE_REMOVE
+#		var hit_pos = Vector3(hit.position)
+#		var hit_pos2 = Vector3(hit_pos)
+#		hit_pos2.y += 30
+#		hit_pos2.x += 30
+#		var hit_pos3 = Vector3(hit_pos2)
+#		hit_pos3.x += 30
+#		hit_pos2.z += 5
+#		var hit_pos4 = Vector3(hit_pos3)
+#		hit_pos4.x += 20
+#		hit_pos4.y += 20
+#		hit_pos4.z += 20
+#		var points = PackedVector3Array([hit_pos, hit_pos2, hit_pos3, hit_pos4])
+#		var radii = PackedFloat32Array([5, 10, 8, 10])
+#		voxel_tool.do_path(points, radii)
+#
+#		update_edit_sphere()
 
 func capture_mouse(value):
 	mouse_captured = value

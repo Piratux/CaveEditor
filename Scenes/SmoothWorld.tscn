@@ -137,6 +137,7 @@ size_flags_horizontal = 4
 text = "Menu"
 
 [node name="MenuContainer" type="PanelContainer" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
+visible = false
 layout_mode = 2
 script = ExtResource("13_ppmbe")
 
@@ -248,21 +249,14 @@ layout_mode = 2
 
 [node name="ToolSelect" type="OptionButton" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
-item_count = 5
 selected = 0
-popup/item_0/text = "Sphere"
-popup/item_0/id = 0
-popup/item_1/text = "Cube"
-popup/item_1/id = 1
-popup/item_2/text = "Blend Ball"
-popup/item_2/id = 2
-popup/item_3/text = "Surface"
-popup/item_3/id = 3
-popup/item_4/text = "Trim"
-popup/item_4/id = 4
 script = ExtResource("12_563gd")
 
+[node name="ParameterContainer" type="VBoxContainer" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
 [node name="WorldManager" parent="CanvasLayer" instance=ExtResource("18_3fqwx")]
+visible = false
 offset_top = 112.0
 offset_bottom = 552.0
 
