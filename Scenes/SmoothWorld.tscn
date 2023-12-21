@@ -249,7 +249,6 @@ layout_mode = 2
 
 [node name="ToolSelect" type="OptionButton" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
-selected = 0
 script = ExtResource("12_563gd")
 
 [node name="ParameterContainer" type="VBoxContainer" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
