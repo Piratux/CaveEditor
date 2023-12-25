@@ -1,12 +1,9 @@
 extends Node
 
-@onready var voxel_terrain = get_node("VoxelTerrain")
 @onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
 @onready var camera = get_node("Camera3D")
 @onready var saver = get_node("Saver")
 @onready var edit_indicators = get_node("EditIndicators")
-@onready var sphere_edit_indicator = get_node("EditIndicators/SphereEdit")
-@onready var cube_edit_indicator = get_node("EditIndicators/CubeEdit")
 
 @onready var tool_info = get_node("CanvasLayer/ToolInfo")
 @onready var tool_select = get_node("CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect")
@@ -37,13 +34,20 @@ var last_frame_edit_data = {
 func _ready():
 	set_edit_mode(EDIT_MODE.SPHERE)
 	saver.load_data()
-	voxel_tool.sdf_scale = 0.1 # required for surface tool to interact nicely
+	
+	# Required for surface tool to interact nicely when
+	# surface is edited with other tools like sphere
+	voxel_tool.sdf_scale = 0.1
 
 func _process(delta):
 	update_draw_timer(delta)
 	
 	if not Input.is_action_pressed("CTRL"):
 		update_terraforming()
+	
+	# Edit sphere position and size can be affected in multiple sources,
+	# so might as well just update it every frame
+	update_edit_sphere()
 
 func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
@@ -65,7 +69,8 @@ func _unhandled_input(event):
 				else:
 					if event.button_index == MOUSE_BUTTON_LEFT:
 						left_mouse_button_held = event.pressed
-					else:
+					
+					if event.button_index == MOUSE_BUTTON_RIGHT:
 						right_mouse_button_held = event.pressed
 			
 					if Input.is_action_pressed("CTRL") and event.pressed:
@@ -100,7 +105,6 @@ func _unhandled_input(event):
 					set_edit_mode(EDIT_MODE.FLATTEN)
 	
 	update_last_frame_data()
-	update_edit_sphere()
 
 func update_last_frame_data():
 	if not left_mouse_button_held and not right_mouse_button_held:
@@ -146,13 +150,14 @@ func update_terraforming():
 	if not can_edit_terrain:
 		return
 	
+	if left_mouse_button_held or right_mouse_button_held:
+		can_edit_terrain = false
+		draw_speed_accumulate_delta = 0.0
+	
 	if left_mouse_button_held:
-		can_edit_terrain = false
-		draw_speed_accumulate_delta = 0.0
 		try_edit_terrain(VoxelTool.MODE_ADD)
-	elif right_mouse_button_held:
-		can_edit_terrain = false
-		draw_speed_accumulate_delta = 0.0
+	
+	if right_mouse_button_held:
 		try_edit_terrain(VoxelTool.MODE_REMOVE)
 
 func get_pointed_voxel():
@@ -220,23 +225,22 @@ func try_edit_terrain(voxel_tool_mode):
 		voxel_tool.do_box(offset_pos - offset, offset_pos + offset)
 	
 	elif edit_mode == EDIT_MODE.BLEND_BALL:
+		# TODO: consider adding falloff parameter which increases smoothness towards edges
 		voxel_tool.smooth_sphere(hit_pos, edit_scale, edit_strength)
 	
 	elif edit_mode == EDIT_MODE.SURFACE:
 		voxel_tool.do_surface(hit_pos, edit_scale, edit_strength)
 		
 	elif edit_mode == EDIT_MODE.FLATTEN:
-#		print(last_frame_edit_data.flatten_plane)
-#		var plane = last_frame_edit_data.flatten_plane
-#		if last_frame_edit_data.flatten_plane == null:
-#			last_frame_edit_data.flatten_plane = Plane(offset_sign * forward, hit_pos)
-#
-#		var center_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
-#		voxel_tool.do_hemisphere(center_pos, edit_scale, last_frame_edit_data.flatten_plane.normal, edit_strength)
-		do_flatten(hit_pos, -forward, offset_sign, edit_strength, voxel_tool_mode)
-#		voxel_tool.smooth_sphere(hit_pos, edit_scale, blend_ball_range)
-	
-	update_edit_sphere()
+		# TODO: consider adding falloff parameter which increases smoothness towards edges
+		
+		var plane = last_frame_edit_data.flatten_plane
+		if last_frame_edit_data.flatten_plane == null:
+			last_frame_edit_data.flatten_plane = Plane(forward, hit_pos)
+
+		var center_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
+		voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
+#		do_flatten(hit_pos, -forward, offset_sign, edit_strength, voxel_tool_mode)
 
 #func do_surface(hit_pos, voxel_tool_mode):
 #	var edit_scale = get_tool_scale()
@@ -273,82 +277,52 @@ func try_edit_terrain(voxel_tool_mode):
 #	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
 
 
-func do_flatten(hit_pos, forward, offset_sign, edit_strength, voxel_tool_mode):
-#	var plane = Plane(forward, Vector3(0,0,0))
-	
-	if last_frame_edit_data.flatten_plane == null:
-		last_frame_edit_data.flatten_plane = Plane(offset_sign * forward, hit_pos)
-
-	hit_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
-	var plane = last_frame_edit_data.flatten_plane
-	
-	var edit_scale = get_tool_scale()
-	# TODO: make function for copying values into buffer
-	var radius2_1 = edit_scale * 2 + 1
-	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
-	var buffer_start_pos = Vector3i(hit_pos) - Vector3i(edit_scale, edit_scale, edit_scale)
-
-	var buffer = VoxelBuffer.new()
-	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
-
-	var sdf_channel = 1 << VoxelBuffer.CHANNEL_SDF
-	voxel_tool.copy(buffer_start_pos, buffer, sdf_channel)
-
-	for x in radius2_1:
-		var dx = x - edit_scale
-		for y in radius2_1:
-			var dy = y - edit_scale
-			for z in radius2_1:
-				var dz = z - edit_scale
-				
-				var point = Vector3(hit_pos + Vector3(dx, dy, dz))
-				var curr_distance = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
-				var other_distance = plane.distance_to(point) * voxel_tool.sdf_scale
-				
-				var wanted_distance = 0
+#func do_flatten(hit_pos, forward, offset_sign, edit_strength, voxel_tool_mode):
+#	if last_frame_edit_data.flatten_plane == null:
+#		last_frame_edit_data.flatten_plane = Plane(forward, hit_pos)
+#
+#	hit_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
+#	var plane = offset_sign * last_frame_edit_data.flatten_plane
+#
+#	var edit_scale = get_tool_scale()
+#	# TODO: make function for copying values into buffer
+#	var radius2_1 = edit_scale * 2 + 1
+#	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
+#	var buffer_start_pos = Vector3i(hit_pos) - Vector3i(edit_scale, edit_scale, edit_scale)
+#
+#	var buffer = VoxelBuffer.new()
+#	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
+#
+#	var sdf_channel = 1 << VoxelBuffer.CHANNEL_SDF
+#	voxel_tool.copy(buffer_start_pos, buffer, sdf_channel)
+#
+#	for x in radius2_1:
+#		var dx = x - edit_scale
+#		for y in radius2_1:
+#			var dy = y - edit_scale
+#			for z in radius2_1:
+#				var dz = z - edit_scale
+#
+#				var point = Vector3(hit_pos + Vector3(dx, dy, dz))
+#				var curr_distance = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
+#				var other_distance = plane.distance_to(point) * voxel_tool.sdf_scale
+#
+#				var dist = sqrt(dx * dx + dy * dy + dz * dz)
+#
+#				var final_value = 0.0
+#
 #				if voxel_tool_mode == VoxelTool.MODE_ADD:
-#					wanted_distance = min(curr_distance, other_distance)
+#					final_value = min(other_distance, curr_distance)
 #				else:
-#					wanted_distance = max(curr_distance, other_distance)
-				
-				# for exact distance
-#				var intermediate_distance = lerpf(curr_distance, wanted_distance, edit_strength)
-#				var value = intermediate_distance - curr_distance
-				
-				var difference = wanted_distance - curr_distance
-				var value = clampf(difference, -1.0, 1.0)
-#				const float Difference = WantedDistance - Voxel.Value;
-#				// We cannot go too fast if we didn't compute the exact distance field
-#				Voxel.Strength *= FMath::Clamp(Difference, -1.f, 1.f);
-				
-				var dist = sqrt(dx * dx + dy * dy + dz * dz)
-#				if dist > edit_scale:
-#					continue
-
-#				var value = plane.distance_to(point) / edit_scale
-				
-				# apply falloff
-#				value = lerpf(value, curr_distance, dist / edit_scale)
-
-#				value *= edit_strength
-
-				var curr_value = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
-#				buffer.set_voxel_f(curr_value + value, x, y, z, VoxelBuffer.CHANNEL_SDF)
-
-				var final_value = 0.0
-				
-				if voxel_tool_mode == VoxelTool.MODE_ADD:
-					final_value = min(other_distance, curr_distance)
-				else:
-					final_value = max(-other_distance, curr_distance)
-				
-				var weight = max(0.0, (edit_scale - dist) / edit_scale)
-				weight = clampf(weight * 2.0, 0.0, 1.0)
-				
-				final_value = lerpf(curr_distance, final_value, weight)
-				buffer.set_voxel_f(final_value, x, y, z, VoxelBuffer.CHANNEL_SDF)
-
-	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
+#					final_value = max(-other_distance, curr_distance)
+#
+#				var weight = max(0.0, (edit_scale - dist) / edit_scale)
+#				weight = clampf(weight * 2.0, 0.0, 1.0)
+#
+#				final_value = lerpf(curr_distance, final_value, weight)
+#				buffer.set_voxel_f(final_value, x, y, z, VoxelBuffer.CHANNEL_SDF)
+#
+#	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
 
 # assumes x, y, z, is center of sphere
 func sphere_add(x, y, z, radius):
@@ -360,10 +334,6 @@ func sphere_add(x, y, z, radius):
 func cylinder_add(x, y, z, radius):
 	var dist = sqrt(x * x + z * z)
 	return (dist - radius) / radius
-
-
-#func surface_add(buffer, x, y, z, dx, dy, dz, radius):
-	
 
 func edit_terrain(hit_pos):
 	var shape_size = get_tool_scale()
