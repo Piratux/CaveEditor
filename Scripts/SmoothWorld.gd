@@ -48,6 +48,8 @@ func _process(delta):
 	# Edit sphere position and size can be affected in multiple sources,
 	# so might as well just update it every frame
 	update_edit_sphere()
+	
+#	print(voxel_tool.get_voxel_f(camera.transform.origin))
 
 func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
@@ -234,7 +236,6 @@ func try_edit_terrain(voxel_tool_mode):
 	elif edit_mode == EDIT_MODE.FLATTEN:
 		# TODO: consider adding falloff parameter which increases smoothness towards edges
 		
-		var plane = last_frame_edit_data.flatten_plane
 		if last_frame_edit_data.flatten_plane == null:
 			last_frame_edit_data.flatten_plane = Plane(forward, hit_pos)
 
@@ -331,7 +332,7 @@ func sphere_add(x, y, z, radius):
 
 # creates cylinder it's aligned with y axis
 # assumes x, y, z, is center of cyilnder
-func cylinder_add(x, y, z, radius):
+func cylinder_add(x, _y, z, radius):
 	var dist = sqrt(x * x + z * z)
 	return (dist - radius) / radius
 

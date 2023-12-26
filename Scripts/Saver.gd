@@ -172,8 +172,7 @@ func delete_world(world_name):
 				break
 	
 	editor_data.worlds.erase(world_id)
-	DirAccess.remove_absolute(".editor/" + world_file_name + ".json")
-	DirAccess.remove_absolute(".editor/" + world_file_name + ".world")
+	DirAccess.remove_absolute(".editor/" + world_file_name)
 
 func load_world_by_name(world_name):
 	var world_id = get_world_id_by_name(world_name)
@@ -181,7 +180,8 @@ func load_world_by_name(world_name):
 
 func load_world(world_id):
 	print("load_world")
-	if get_last_world_id() != null:
+	var last_world_id = get_last_world_id()
+	if last_world_id != null and last_world_id != world_id:
 		save_world_data(get_last_world_id())
 	
 	var world = get_world(world_id)
