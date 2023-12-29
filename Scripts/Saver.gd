@@ -214,10 +214,12 @@ func endsWithGltf(path: String) -> bool:
 	# Compare the extracted portion with the extension
 	return endOfString == extension
 
+# TODO: This should be remade such that it exports entire world,
+# as opposed to region only around the camera (parts that are currently loaded)
 func export_world_mesh(path):
-	# Should be less than viewing distance, otherwise mesh is insanely large
+	# NOTE: Should be less than viewing distance, otherwise mesh is insanely large
 	var buffer_size = Vector3i(500, 500, 500)
-	var buffer_start_pos = Vector3i(camera.transform.origin) - Vector3i(250,250,250)
+	var buffer_start_pos = Vector3i(camera.transform.origin) - Vector3i(250, 250, 250)
 	
 	var buffer = VoxelBuffer.new()
 	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)

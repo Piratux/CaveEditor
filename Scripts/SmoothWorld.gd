@@ -239,8 +239,11 @@ func try_edit_terrain(voxel_tool_mode):
 		if last_frame_edit_data.flatten_plane == null:
 			last_frame_edit_data.flatten_plane = Plane(forward, hit_pos)
 
-		var center_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
-		voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
+		
+#		var center_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
+		var center_pos = last_frame_edit_data.flatten_plane.intersects_ray(camera.transform.origin, forward)
+		if center_pos != null:
+			voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
 #		do_flatten(hit_pos, -forward, offset_sign, edit_strength, voxel_tool_mode)
 
 #func do_surface(hit_pos, voxel_tool_mode):
