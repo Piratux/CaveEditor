@@ -179,7 +179,6 @@ func load_world_by_name(world_name):
 	load_world(world_id)
 
 func load_world(world_id):
-	print("load_world")
 	var last_world_id = get_last_world_id()
 	if last_world_id != null and last_world_id != world_id:
 		save_world_data(get_last_world_id())
@@ -190,9 +189,6 @@ func load_world(world_id):
 	load_world_data(world_id)
 	set_last_world_id(world_id)
 	current_world_label.text = "World: " + world.name
-	
-	
-	print("load_world12")
 
 func rename_world(old_name, new_name):
 	var world_id = get_world_id_by_name(old_name)

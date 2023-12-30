@@ -49,9 +49,13 @@ func set_currently_selected_world_name(new_name):
 	if not is_selected_world_idx_valid():
 		return
 	
+	var old_name = item_list.get_item_text(get_selected_world_idx())
+	
+	if old_name == new_name:
+		return
+	
 	new_name = make_world_name_unique(new_name)
 	
-	var old_name = item_list.get_item_text(get_selected_world_idx())
 	item_list.set_item_text(get_selected_world_idx(), new_name)
 	saver.rename_world(old_name, new_name)
 
