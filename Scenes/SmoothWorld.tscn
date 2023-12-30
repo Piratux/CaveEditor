@@ -103,7 +103,7 @@ visible = false
 mesh = SubResource("SphereMesh_25lff")
 surface_material_override/0 = ExtResource("10_6lc7j")
 
-[node name="Trim" type="MeshInstance3D" parent="EditIndicators"]
+[node name="Flatten" type="MeshInstance3D" parent="EditIndicators"]
 visible = false
 mesh = SubResource("SphereMesh_25lff")
 skeleton = NodePath("../Surface")
