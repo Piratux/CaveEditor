@@ -155,7 +155,7 @@ text = "Help"
 
 [node name="HelpWindow" type="Control" parent="CanvasLayer"]
 visible = false
-custom_minimum_size = Vector2(400, 500)
+custom_minimum_size = Vector2(500, 500)
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -182,7 +182,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HelpWindow/ScrollContainer"]
-custom_minimum_size = Vector2(400, 500)
+custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 size_flags_horizontal = 2
 size_flags_vertical = 4

@@ -103,7 +103,7 @@ func _update_movement(delta):
 # Updates mouse look 
 func _update_mouselook():
 	# Only rotates mouse if the mouse is captured
-	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+	if Input.get_mouse_mode() == Input.MOUSE_MODE_CONFINED_HIDDEN:
 		_mouse_position *= sensitivity
 		var yaw = _mouse_position.x
 		var pitch = _mouse_position.y
