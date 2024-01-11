@@ -205,9 +205,9 @@ E/Q - Move up/down
 Left mouse button - Pull terrain
 Right mouse button - Push terrain
 Mouse scroll - Change edit scale
-1/2/3 - Choose edit mode
+1/2/3/4/5 - Select edit mode
 hold CTRL + Mouse click - Edit terrain once
-hold ALT + Mouse scroll - Change player speed
+hold ALT + Mouse scroll - Change camera speed
 hold SHIFT - Move 2.5x times faster
 X - Show/Hide edit indicator
 ESC - Take control of mouse"

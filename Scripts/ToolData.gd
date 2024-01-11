@@ -76,7 +76,7 @@ const TOOL_DATA = {
 			"strength": {
 				"name": "Smoothness",
 				"default_value": 2,
-				"min": 1,
+				"min": 0,
 				"max": 100,
 				"step": 1,
 			},
