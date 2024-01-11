@@ -11,6 +11,8 @@ extends Node
 @onready var voxel_tool = voxel_terrain.get_voxel_tool()
 @onready var current_world_label = get_node("../CanvasLayer/MenuMarginContainer/VBoxContainer/CurrentWorld")
 
+var world_loaded_once = false
+
 var editor_data = {
 	last_world_id = null,
 	worlds = {
@@ -180,7 +182,7 @@ func load_world_by_name(world_name):
 
 func load_world(world_id):
 	var last_world_id = get_last_world_id()
-	if last_world_id != null and last_world_id != world_id:
+	if last_world_id != null and world_loaded_once:
 		save_world_data(get_last_world_id())
 	
 	var world = get_world(world_id)
@@ -189,6 +191,7 @@ func load_world(world_id):
 	load_world_data(world_id)
 	set_last_world_id(world_id)
 	current_world_label.text = "World: " + world.name
+	world_loaded_once = true
 
 func rename_world(old_name, new_name):
 	var world_id = get_world_id_by_name(old_name)
