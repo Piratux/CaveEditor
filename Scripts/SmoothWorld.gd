@@ -163,7 +163,7 @@ func update_terraforming():
 		try_edit_terrain(VoxelTool.MODE_REMOVE)
 
 func get_pointed_voxel():
-	var origin = camera.get_global_transform().origin
+	var origin = camera.get_position()
 	var forward = -camera.get_transform().basis.z.normalized()
 	var hit = voxel_tool.raycast(origin, forward, terraform_distance)
 	return hit
@@ -242,7 +242,7 @@ func try_edit_terrain(voxel_tool_mode):
 
 		
 #		var center_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
-		var center_pos = last_frame_edit_data.flatten_plane.intersects_ray(camera.transform.origin, forward)
+		var center_pos = last_frame_edit_data.flatten_plane.intersects_ray(camera.get_position(), forward)
 		if center_pos != null:
 			voxel_tool.do_hemisphere(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
 #			voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)

@@ -137,18 +137,21 @@ func load_editor_data():
 func save_world_data(world_id):
 	print("save_world_data: " + world_id)
 	var world = get_world(world_id)
-	world.camera_pos = camera.transform.origin
-	world.camera_rot = camera.basis.get_euler()
+	world.camera_pos = camera.get_position()
+	world.camera_rot = camera.get_rotation()
 
 func load_world_data(world_id):
 	print("load_world_data: " + world_id)
 	var world = get_world(world_id)
 	
 	if world.has("camera_pos") and world.camera_pos != null:
-		camera.transform.origin = world.camera_pos
+		camera.set_position(world.camera_pos)
 		
 	if world.has("camera_rot") and world.camera_rot != null:
-		camera.basis = camera.basis.from_euler(world.camera_rot)
+		camera.set_rotation(world.camera_rot)
+		
+		# this is hacky, but anyway
+		camera._total_pitch = -rad_to_deg(world.camera_rot.x)
 
 func load_worlds_to_world_manager():
 	var worlds_to_add = editor_data.worlds.duplicate()
@@ -162,7 +165,7 @@ func add_new_world(world_name):
 	editor_data.worlds[new_id].name = world_name
 	editor_data.worlds[new_id].file_name = new_id + ".world"
 	editor_data.worlds[new_id].camera_pos = Vector3(default_camera_data.pos)
-	editor_data.worlds[new_id].camera_rot = Vector3(default_camera_data.pos)
+	editor_data.worlds[new_id].camera_rot = Vector3(default_camera_data.rot)
 
 func delete_world(world_name):
 	var world_id = get_world_id_by_name(world_name)
@@ -218,7 +221,7 @@ func endsWithGltf(path: String) -> bool:
 func export_world_mesh(path):
 	# NOTE: Should be less than viewing distance, otherwise mesh is insanely large
 	var buffer_size = Vector3i(500, 500, 500)
-	var buffer_start_pos = Vector3i(camera.transform.origin) - Vector3i(250, 250, 250)
+	var buffer_start_pos = Vector3i(camera.get_position()) - Vector3i(250, 250, 250)
 	
 	var buffer = VoxelBuffer.new()
 	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
