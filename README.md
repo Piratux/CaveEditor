@@ -35,7 +35,11 @@ Windows:
 
 ## Building from source
 build godot editor:
+```
 scons platform=windows
+```
 
 build godot template release:
+```
 scons platform=windows target=template_release
+```
