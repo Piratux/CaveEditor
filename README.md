@@ -13,10 +13,11 @@
 - Terrain mesh export (only exports loaded area around the camera).
 
 ## Project binary releases
-For Windows:
-- https://github.com/Piratux/CaveEditor/releases/tag/Windows <br />
+Windows:
+- https://github.com/Piratux/CaveEditor/releases/latest <br />
 
-## Running the project from editor
+<!-- TODO: update this when official module is used, instead of modified version -->
+<!-- ## Running the project from editor
 - Download files from this repository.
 - Download compiled godot editor with module.
   - On Windows, download editor from here https://github.com/Zylann/godot_voxel/actions/runs/4724932919 named 
@@ -30,7 +31,7 @@ For Windows:
   - Locate `CaveEditor/project.godot`
   - Click `Open`
   - Click `Import & Edit`
-- When Godot's editor loads up, press F5 or click `Run project` button on the top right to run the project.
+- When Godot's editor loads up, press F5 or click `Run project` button on the top right to run the project. -->
 
 ## Building from source
 build godot editor:
