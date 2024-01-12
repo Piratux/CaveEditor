@@ -32,7 +32,7 @@ var _e = false
 var _shift = false
 var _alt = false
 
-func _input(event):
+func _unhandled_input(event):
 	# Receives mouse motion
 	if event is InputEventMouseMotion:
 		_mouse_position = event.relative

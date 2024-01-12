@@ -1,12 +1,16 @@
 # CaveEditor
-3D Cave editor using [Godot](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
+3D Cave editor using [Godot v4.1](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel). However, for now, modified version of godot_voxel module is used, which can be found [here](https://github.com/Piratux/godot_voxel).
 
 ## Features
 - Edit terrain using tools:
-  - Sphere
-  - Cube
+  - Sphere.
+  - Cube.
   - Blend ball.
+  - Surface.
+  - Flatten.
 - Terrain changes are automatically saved in a file.
+- World manager that allows to have multiple worlds.
+- Terrain mesh export (only exports loaded area around the camera).
 
 ## Project binary releases
 For Windows:
@@ -27,3 +31,10 @@ For Windows:
   - Click `Open`
   - Click `Import & Edit`
 - When Godot's editor loads up, press F5 or click `Run project` button on the top right to run the project.
+
+## Building from source
+build godot editor:
+scons platform=windows
+
+build godot template release:
+scons platform=windows target=template_release

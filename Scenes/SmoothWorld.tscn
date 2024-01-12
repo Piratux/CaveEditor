@@ -1,6 +1,7 @@
-[gd_scene load_steps=20 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=25 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
+[ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
 [ext_resource type="VoxelGeneratorGraph" uid="uid://bvinakft3fpu7" path="res://Miscellaneous/inverted_box_graph_gen.tres" id="3_xqaji"]
 [ext_resource type="Shader" path="res://Shaders/SmoothTerrain/smooth_world.gdshader" id="4_rrgmf"]
@@ -10,8 +11,12 @@
 [ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
 [ext_resource type="Script" path="res://Scripts/HelpWindow.gd" id="10_3mcdr"]
+[ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="10_6lc7j"]
+[ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/TrimMaterial.tres" id="11_hkngl"]
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="11_ydr22"]
 [ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="12_563gd"]
+[ext_resource type="Script" path="res://Scripts/MenuContainer.gd" id="13_ppmbe"]
+[ext_resource type="PackedScene" uid="uid://cvwnpkr4j3kwe" path="res://Scenes/WorldManager.tscn" id="18_3fqwx"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4jqid"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -48,6 +53,9 @@ height = 2.0
 
 [node name="SmoothWorld" type="Node"]
 script = ExtResource("1_mh7m1")
+
+[node name="Saver" type="Node" parent="."]
+script = ExtResource("2_60v2b")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_7hnbo")
@@ -90,22 +98,64 @@ mesh = SubResource("SphereMesh_25lff")
 skeleton = NodePath("../..")
 surface_material_override/0 = ExtResource("9_dhnrp")
 
+[node name="Surface" type="MeshInstance3D" parent="EditIndicators"]
+visible = false
+mesh = SubResource("SphereMesh_25lff")
+surface_material_override/0 = ExtResource("10_6lc7j")
+
+[node name="Flatten" type="MeshInstance3D" parent="EditIndicators"]
+visible = false
+mesh = SubResource("SphereMesh_25lff")
+skeleton = NodePath("../Surface")
+surface_material_override/0 = ExtResource("11_hkngl")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Button" type="Button" parent="CanvasLayer"]
+[node name="MenuMarginContainer" type="MarginContainer" parent="CanvasLayer"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -39.0
-offset_top = 8.0
-offset_right = -7.0
-offset_bottom = 40.0
+offset_left = -146.0
+offset_bottom = 178.0
 grow_horizontal = 0
-text = "?"
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MenuMarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CurrentWorld" type="Label" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="MenuButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Menu"
+
+[node name="MenuContainer" type="PanelContainer" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("13_ppmbe")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ManageWorldsButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
+layout_mode = 2
+text = "Worlds"
+
+[node name="HelpButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
+layout_mode = 2
+text = "Help"
 
 [node name="HelpWindow" type="Control" parent="CanvasLayer"]
 visible = false
-custom_minimum_size = Vector2(400, 500)
+custom_minimum_size = Vector2(500, 500)
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -120,6 +170,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+mouse_filter = 1
 script = ExtResource("10_3mcdr")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/HelpWindow"]
@@ -131,10 +182,11 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HelpWindow/ScrollContainer"]
-custom_minimum_size = Vector2(400, 500)
+custom_minimum_size = Vector2(500, 500)
 layout_mode = 2
 size_flags_horizontal = 2
 size_flags_vertical = 4
+mouse_filter = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow/ScrollContainer/PanelContainer"]
 layout_mode = 2
@@ -153,11 +205,11 @@ E/Q - Move up/down
 Left mouse button - Pull terrain
 Right mouse button - Push terrain
 Mouse scroll - Change edit scale
-1/2/3 - Choose edit mode
+1/2/3/4/5 - Select edit mode
 hold CTRL + Mouse click - Edit terrain once
-hold ALT + Mouse scroll - Change player speed
+hold ALT + Mouse scroll - Change camera speed
 hold SHIFT - Move 2.5x times faster
-SPACE - Show/Hide edit indicator
+X - Show/Hide edit indicator
 ESC - Take control of mouse"
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow"]
@@ -174,7 +226,7 @@ grow_vertical = 0
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 5
 
-[node name="Button" type="Button" parent="CanvasLayer/HelpWindow/MarginContainer"]
+[node name="Close" type="Button" parent="CanvasLayer/HelpWindow/MarginContainer"]
 layout_mode = 2
 text = "Close"
 
@@ -197,17 +249,21 @@ layout_mode = 2
 
 [node name="ToolSelect" type="OptionButton" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
-item_count = 3
-selected = 0
-popup/item_0/text = "Sphere"
-popup/item_0/id = 0
-popup/item_1/text = "Cube"
-popup/item_1/id = 1
-popup/item_2/text = "Blend Ball"
-popup/item_2/id = 2
 script = ExtResource("12_563gd")
 
+[node name="ParameterContainer" type="VBoxContainer" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="WorldManager" parent="CanvasLayer" instance=ExtResource("18_3fqwx")]
+visible = false
+offset_top = 112.0
+offset_bottom = 552.0
+
 [connection signal="tree_exited" from="VoxelTerrain" to="VoxelTerrain" method="_on_tree_exited"]
-[connection signal="pressed" from="CanvasLayer/Button" to="CanvasLayer/HelpWindow" method="_on_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/HelpWindow/MarginContainer/Button" to="CanvasLayer/HelpWindow" method="_on_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/WorldManager" method="_on_manage_worlds_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="CanvasLayer/HelpWindow" method="_on_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/HelpWindow/MarginContainer/Close" to="CanvasLayer/HelpWindow" method="_on_button_pressed"]
 [connection signal="item_selected" from="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
