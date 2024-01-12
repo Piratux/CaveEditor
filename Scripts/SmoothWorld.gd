@@ -390,7 +390,9 @@ func capture_mouse(value):
 	# 'process_mode' disables pressing on UI elements, but still keeps mouse hover effect.
 	# 'set_ui_element_mouse_filter' disables mouse hover effect.
 	if value:
-		Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED_HIDDEN)
+		# We need it to be "MOUSE_MODE_CAPTURED", otherwise relative mouse movement 
+		# won't work properly
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		ui_root.process_mode = Node.PROCESS_MODE_DISABLED
 		set_ui_element_mouse_filter(ui_root, false)
 	else:
