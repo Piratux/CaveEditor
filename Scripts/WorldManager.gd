@@ -83,6 +83,15 @@ func _on_item_list_item_selected(index):
 func update_buttons():
 	for b in button_container.get_children():
 		b.disabled = get_selected_world_idx() == null
+		
+		# Currently, there isn't a reliable way to delete world file while it's currently loaded.
+		# Therefore we hope file isn't going to be touched anymore when another world is loaded.
+		# TODO: come up with more reliable way to check currently loaded world
+		print(b.name)
+		print(saver.current_world_label.text)
+		print(get_currently_selected_world_name())
+		if b.name == "Delete" and saver.get_world_id_by_name(get_currently_selected_world_name()) == saver.get_last_world_id():
+			b.disabled = true
 
 # TODO: add are you sure confirmation
 func _on_delete_pressed():
