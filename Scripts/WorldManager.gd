@@ -77,7 +77,7 @@ func make_world_name_unique(world_name):
 	
 	return new_name
 
-func _on_item_list_item_selected(index):
+func _on_item_list_item_selected(_index):
 	update_buttons()
 
 func update_buttons():
