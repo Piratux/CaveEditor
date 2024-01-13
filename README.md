@@ -5,7 +5,7 @@
 ![screenshot2](PreviewImages/screenshot2.png)
 
 ## Features
-- Edit terrain using tools:
+- Edit terrain tools:
   - Sphere.
   - Cube.
   - Blend ball.
