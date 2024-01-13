@@ -173,24 +173,25 @@ func delete_world(world_name):
 	if world_id == get_last_world_id():
 		for id in editor_data.worlds.keys():
 			if id != world_id:
-				load_world(id)
+				load_world(id, false)
 				break
 	
 	editor_data.worlds.erase(world_id)
 	DirAccess.remove_absolute(".editor/" + world_file_name)
+	print("removing file: " + world_file_name)
 
 func load_world_by_name(world_name):
 	var world_id = get_world_id_by_name(world_name)
 	load_world(world_id)
 
-func load_world(world_id):
+func load_world(world_id, save_old_world=true):
 	var last_world_id = get_last_world_id()
-	if last_world_id != null and world_loaded_once:
+	if last_world_id != null and world_loaded_once and save_old_world:
 		save_world_data(get_last_world_id())
 	
 	var world = get_world(world_id)
 	var file_name = world_id + ".world"
-	voxel_terrain.set_world_stream(file_name)
+	voxel_terrain.set_world_stream(file_name, save_old_world)
 	load_world_data(world_id)
 	set_last_world_id(world_id)
 	set_world_label_text(world.name)

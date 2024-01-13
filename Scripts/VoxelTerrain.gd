@@ -16,13 +16,15 @@ func _on_tree_exited():
 	stream.database_path = file_path
 
 # TODO: fix database transaction error (happens when this function is spammed, though happens rarely)
-func set_world_stream(file_name):
-	if stream != null:
+func set_world_stream(file_name, save_edited_blocks):
+	if stream != null and save_edited_blocks:
 		var result_tracker = save_modified_blocks()
 		while true:
 			if result_tracker.is_complete():
 				break
 			
+			# TODO: come up with a way to synchronously wait for block saving to be
+			# completed as that simplifies things and prevents accidental issues
 			await get_tree().create_timer(0.1).timeout
 	
 	stream = VoxelStreamSQLite.new()
