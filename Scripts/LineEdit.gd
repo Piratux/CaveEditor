@@ -1,8 +1,10 @@
 extends LineEdit
 
-
 # Filter string, by leaving only following characters:
 # 0-9, a-z, A-Z, -, _
+# TODO:
+# - set max length for world name
+# - allow more characters for world names
 func sanitize_string(input_string: String) -> String:
 	var sanitized_string = ""
 

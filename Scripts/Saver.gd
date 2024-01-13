@@ -193,13 +193,14 @@ func load_world(world_id):
 	voxel_terrain.set_world_stream(file_name)
 	load_world_data(world_id)
 	set_last_world_id(world_id)
-	current_world_label.text = "World: " + world.name
+	set_world_label_text(world.name)
 	world_loaded_once = true
 
 func rename_world(old_name, new_name):
 	var world_id = get_world_id_by_name(old_name)
 	var world = get_world(world_id)
 	world.name = new_name
+	set_world_label_text(world.name)
 
 func endsWithGltf(path: String) -> bool:
 	var extension: String = ".gltf"
@@ -246,3 +247,6 @@ func export_world_mesh(path):
 		gltf.write_to_filesystem(gltf_state, path)
 	else:
 		gltf.write_to_filesystem(gltf_state, str(path, ".gltf"))
+
+func set_world_label_text(world_name):
+	current_world_label.text = "World: " + world_name
