@@ -231,7 +231,7 @@ func try_edit_terrain(voxel_tool_mode):
 	
 	elif edit_mode == EDIT_MODE.SURFACE:
 #		do_surface(hit_pos, voxel_tool_mode)
-		voxel_tool.do_surface(hit_pos, edit_scale, edit_strength)
+		voxel_tool.grow_sphere(hit_pos, edit_scale, edit_strength)
 		
 	elif edit_mode == EDIT_MODE.FLATTEN:
 		# TODO: consider adding falloff parameter which increases smoothness towards edges

@@ -59,7 +59,7 @@ const TOOL_DATA = {
 				"default_value": 0.2,
 				"min": 0.1,
 				"max": 1.0,
-				"step": 0.05,
+				"step": 0.1,
 			},
 		},
 	},
