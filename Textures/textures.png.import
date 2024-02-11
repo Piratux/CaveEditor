@@ -1,0 +1,26 @@
+[remap]
+
+importer="2d_array_texture"
+type="CompressedTexture2DArray"
+uid="uid://c8qtfstrts82s"
+path="res://.godot/imported/textures.png-3b027f2d9ffeff4d15554999e76b11ce.ctexarray"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://Textures/textures.png"
+dest_files=["res://.godot/imported/textures.png-3b027f2d9ffeff4d15554999e76b11ce.ctexarray"]
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/channel_pack=0
+mipmaps/generate=true
+mipmaps/limit=-1
+slices/horizontal=1
+slices/vertical=4

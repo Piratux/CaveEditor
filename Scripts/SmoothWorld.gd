@@ -129,6 +129,12 @@ func get_tool_strength():
 func set_tool_strength(new_value):
 	set_tool_parameter_value("strength", new_value)
 
+func get_texture_index():
+	return get_tool_parameter_value("texture_index")
+
+func set_texture_index(new_value):
+	set_tool_parameter_value("texture_index", new_value)
+
 func set_edit_mode(new_edit_mode):
 	var edit_mesh = edit_indicators.get_child(new_edit_mode)
 	if edit_mesh:
@@ -197,13 +203,14 @@ func try_edit_terrain(voxel_tool_mode):
 	if voxel_tool_mode == VoxelTool.MODE_ADD:
 		offset_sign = 1
 		voxel_tool.value = 1
-	else:
+	elif voxel_tool_mode == VoxelTool.MODE_REMOVE:
 		offset_sign = -1
 		voxel_tool.value = 0
 	
 	var forward = -camera.get_transform().basis.z.normalized()
 	var edit_scale = get_tool_scale()
 	var edit_strength = get_tool_strength()
+	var texture_index = get_texture_index()
 	
 	if edit_mode == EDIT_MODE.SPHERE:
 		offset_pos += offset_sign * forward * (edit_scale - 2)
@@ -219,11 +226,38 @@ func try_edit_terrain(voxel_tool_mode):
 	voxel_tool.mode = voxel_tool_mode
 	
 	if edit_mode == EDIT_MODE.SPHERE:
-		voxel_tool.do_sphere(offset_pos, edit_scale)
+#		voxel_tool.do_sphere(offset_pos, edit_scale)
+		
+		voxel_tool.channel = VoxelBuffer.CHANNEL_SDF
+		voxel_tool.mode = VoxelTool.MODE_TEXTURE_PAINT
+		voxel_tool.texture_index = texture_index
+		voxel_tool.do_sphere(hit_pos, edit_scale+2)
+		
+		# Read current materials near the pointed surface
+#		voxel_tool.channel = VoxelBuffer.CHANNEL_INDICES
+#		var encoded_indices = voxel_tool.get_voxel(hit_pos)
+#		voxel_tool.channel = VoxelBuffer.CHANNEL_WEIGHTS
+#		var encoded_weights = voxel_tool.get_voxel(hit_pos)
+#
+#		var indices := VoxelTool.u16_indices_to_vec4i(encoded_indices)
+#		var weights := VoxelTool.u16_weights_to_color(encoded_weights)
+#
+#		print(str("Pointed:\n",
+#			"[0] Texture ", indices.x, ": ", int(100.0 * weights.r), "%\n",
+#			"[1] Texture ", indices.y, ": ", int(100.0 * weights.g), "%\n",
+#			"[2] Texture ", indices.z, ": ", int(100.0 * weights.b), "%\n",
+#			"[3] Texture ", indices.w, ": ", int(100.0 * weights.a), "%"
+#			))
 	
 	elif edit_mode == EDIT_MODE.CUBE:
 		var offset = Vector3(edit_scale, edit_scale, edit_scale)
 		voxel_tool.do_box(offset_pos - offset, offset_pos + offset)
+		
+#		var offset2 = Vector3(edit_scale+2, edit_scale+2, edit_scale+2)
+#		voxel_tool.channel = VoxelBuffer.CHANNEL_SDF
+#		voxel_tool.mode = VoxelTool.MODE_TEXTURE_PAINT
+#		voxel_tool.texture_index = 4
+#		voxel_tool.do_box(offset_pos - offset2, offset_pos + offset2)
 	
 	elif edit_mode == EDIT_MODE.BLEND_BALL:
 		# TODO: consider adding falloff parameter which increases smoothness towards edges
@@ -244,6 +278,12 @@ func try_edit_terrain(voxel_tool_mode):
 		var center_pos = last_frame_edit_data.flatten_plane.intersects_ray(camera.get_position(), forward)
 		if center_pos != null:
 			voxel_tool.do_hemisphere(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
+			
+			voxel_tool.channel = VoxelBuffer.CHANNEL_SDF
+			voxel_tool.mode = VoxelTool.MODE_TEXTURE_PAINT
+			voxel_tool.texture_index = 4
+			voxel_tool.do_hemisphere(center_pos, edit_scale+2, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
+			
 #			voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
 #		do_flatten(hit_pos, -forward, offset_sign, edit_strength, voxel_tool_mode)
 

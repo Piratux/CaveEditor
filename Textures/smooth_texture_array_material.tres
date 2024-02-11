@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://r7luun578hya"]
+
+[ext_resource type="Shader" path="res://Textures/smooth_texture_array_shader.gdshader" id="1_qbc2r"]
+[ext_resource type="CompressedTexture2DArray" uid="uid://c8qtfstrts82s" path="res://Textures/textures.png" id="2_vmni2"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_qbc2r")
+shader_parameter/u_transition_mask = null
+shader_parameter/u_albedo_array = ExtResource("2_vmni2")

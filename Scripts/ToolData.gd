@@ -11,6 +11,13 @@ const TOOL_DATA = {
 				"max": 100,
 				"step": 1,
 			},
+			"texture_index": {
+				"name": "Texture",
+				"default_value": 1,
+				"min": 0,
+				"max": 15,
+				"step": 1,
+			},
 		},
 	},
 	EDIT_MODE.CUBE: {

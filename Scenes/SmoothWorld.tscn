@@ -1,12 +1,10 @@
-[gd_scene load_steps=25 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
 [ext_resource type="VoxelGeneratorGraph" uid="uid://bvinakft3fpu7" path="res://Miscellaneous/inverted_box_graph_gen.tres" id="3_xqaji"]
-[ext_resource type="Shader" path="res://Shaders/SmoothTerrain/smooth_world.gdshader" id="4_rrgmf"]
-[ext_resource type="Texture2D" uid="uid://28diu6mhiupf" path="res://Textures/dirt_albedo.png" id="5_pets3"]
-[ext_resource type="Texture2D" uid="uid://bk4ett6ebf0c5" path="res://Textures/grass_albedo.png" id="6_p5b6x"]
+[ext_resource type="Material" uid="uid://r7luun578hya" path="res://Textures/smooth_texture_array_material.tres" id="5_dw7a7"]
 [ext_resource type="Script" path="res://Scripts/VoxelTerrain.gd" id="7_7uaxt"]
 [ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
@@ -32,18 +30,7 @@ tonemap_mode = 2
 glow_enabled = true
 
 [sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_rrkwj"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_f30sg"]
-render_priority = 0
-shader = ExtResource("4_rrgmf")
-shader_parameter/u_transition_mask = null
-shader_parameter/u_voxel_virtual_texture_tile_size = null
-shader_parameter/u_voxel_virtual_texture_fade = null
-shader_parameter/u_voxel_cell_size = null
-shader_parameter/u_voxel_block_size = null
-shader_parameter/u_lod_fade = null
-shader_parameter/u_texture_top = ExtResource("6_p5b6x")
-shader_parameter/u_texture_sides = ExtResource("5_pets3")
+texturing_mode = 1
 
 [sub_resource type="SphereMesh" id="SphereMesh_25lff"]
 radius = 1.0
@@ -73,7 +60,7 @@ script = ExtResource("2_q5m0p")
 generator = ExtResource("3_xqaji")
 mesher = SubResource("VoxelMesherTransvoxel_rrkwj")
 generate_collisions = false
-material_override = SubResource("ShaderMaterial_f30sg")
+material_override = ExtResource("5_dw7a7")
 script = ExtResource("7_7uaxt")
 
 [node name="EditIndicators" type="Node3D" parent="."]
