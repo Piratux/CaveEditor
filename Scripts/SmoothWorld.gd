@@ -1,5 +1,6 @@
 extends Node
 
+@onready var voxel_terrain = get_node("VoxelTerrain")
 @onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
 @onready var camera = get_node("Camera3D")
 @onready var saver = get_node("Saver")
@@ -32,6 +33,21 @@ var last_frame_edit_data = {
 	"flatten_plane": null,
 }
 
+
+var debug_draw_stats_enabled = false
+
+var _process_stats = {}
+var _displayed_process_stats = {}
+var _time_before_display_process_stats = 1.0
+
+const _process_stat_names = [
+#	"time_detect_required_blocks",
+#	"time_io_requests",
+#	"time_mesh_requests",
+#	"time_update_task"
+]
+
+
 func _ready():
 	set_edit_mode(EDIT_MODE.SPHERE)
 	saver.load_data()
@@ -49,6 +65,9 @@ func _process(delta):
 	# Edit sphere position and size can be affected in multiple sources,
 	# so might as well just update it every frame
 	update_edit_sphere()
+	
+	if debug_draw_stats_enabled:
+		draw_debug_voxel_stats(delta)
 	
 #	print(voxel_tool.get_voxel_f(camera.transform.origin))
 
@@ -104,8 +123,51 @@ func _unhandled_input(event):
 					set_edit_mode(EDIT_MODE.SURFACE)
 				KEY_5:
 					set_edit_mode(EDIT_MODE.FLATTEN)
+				KEY_P:
+					debug_draw_stats_enabled = !debug_draw_stats_enabled
 	
 	update_last_frame_data()
+
+
+func draw_debug_voxel_stats(delta):
+	var stats = voxel_terrain.get_statistics()
+	
+	DDD.set_text("FPS", Engine.get_frames_per_second())
+	DDD.set_text("Static memory", _format_memory(OS.get_static_memory_usage()))
+#	DDD.set_text("Blocked lods", stats.blocked_lods)
+	DDD.set_text("Position", camera.position)
+
+	var global_stats = VoxelEngine.get_stats()
+	for p in global_stats:
+		var pool_stats = global_stats[p]
+		for k in pool_stats:
+			DDD.set_text(str(p, "_", k), pool_stats[k])
+
+	for k in _process_stat_names:
+		var v = stats[k]
+		if k in _process_stats:
+			_process_stats[k] = max(_process_stats[k], v)
+		else:
+			_process_stats[k] = v
+
+	_time_before_display_process_stats -= delta
+	if _time_before_display_process_stats < 0:
+		_time_before_display_process_stats = 1.0
+		_displayed_process_stats = _process_stats
+		_process_stats = {}
+
+	for k in _displayed_process_stats:
+		DDD.set_text(k, _displayed_process_stats[k])
+
+#	_terrain.debug_set_draw_enabled(true)
+#	_terrain.debug_set_draw_flag(VoxelLodTerrain.DEBUG_DRAW_MESH_UPDATES, true)
+
+
+static func _format_memory(m):
+	var mb = m / 1000000
+	var mbr = m % 1000000
+	return str(mb, ".", mbr, " Mb")
+
 
 func update_last_frame_data():
 	if not left_mouse_button_held and not right_mouse_button_held:
