@@ -27,6 +27,8 @@ func set_parameter_sliders(edit_mode):
 func create_parameter_sliders():
 	for edit_mode in TOOL_DATA.keys():
 		var tool_parameters = TOOL_DATA[edit_mode].parameters
+		parameter_sliders[edit_mode] = {}
+		
 		for parameter_key in tool_parameters.keys():
 			add_parameter_slider(edit_mode, parameter_key, tool_parameters[parameter_key])
 
@@ -34,9 +36,6 @@ func add_parameter_slider(edit_mode, parameter_key, parameter_data):
 	var slider = ParameterSlider.instantiate()
 	parameter_container.add_child(slider)
 	slider.init(parameter_data)
-	
-	if not parameter_sliders.has(edit_mode):
-		parameter_sliders[edit_mode] = {}
 	
 	parameter_sliders[edit_mode][parameter_key] = slider
 

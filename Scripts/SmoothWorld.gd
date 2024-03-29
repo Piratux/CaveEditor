@@ -1,10 +1,13 @@
 extends Node
 
+const SDFStamper = preload("./SdfStamper.gd")
+
 @onready var voxel_terrain = get_node("VoxelTerrain")
 @onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
 @onready var camera = get_node("Camera3D")
 @onready var saver = get_node("Saver")
 @onready var edit_indicators = get_node("EditIndicators")
+@onready var sdf_stamper : SDFStamper = get_node("SdfStamper")
 
 @onready var tool_info = get_node("CanvasLayer/ToolInfo")
 @onready var tool_select = get_node("CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect")
@@ -32,6 +35,14 @@ var edit_mode = EDIT_MODE.SPHERE
 var last_frame_edit_data = {
 	"flatten_plane": null,
 }
+
+var edit_modes_with_edit_indicator = [
+	EDIT_MODE.SPHERE,
+	EDIT_MODE.CUBE,
+	EDIT_MODE.BLEND_BALL,
+	EDIT_MODE.SURFACE,
+	EDIT_MODE.FLATTEN,
+]
 
 
 var debug_draw_stats_enabled = false
@@ -123,6 +134,8 @@ func _unhandled_input(event):
 					set_edit_mode(EDIT_MODE.SURFACE)
 				KEY_5:
 					set_edit_mode(EDIT_MODE.FLATTEN)
+				KEY_6:
+					set_edit_mode(EDIT_MODE.MESH)
 				KEY_P:
 					debug_draw_stats_enabled = !debug_draw_stats_enabled
 	
@@ -192,16 +205,24 @@ func set_tool_strength(new_value):
 	set_tool_parameter_value("strength", new_value)
 
 func set_edit_mode(new_edit_mode):
-	var edit_mesh = edit_indicators.get_child(new_edit_mode)
-	if edit_mesh:
-		edit_mode = new_edit_mode
-		for c in edit_indicators.get_children():
-			c.visible = false
-		edit_mesh.visible = true
-		
-		tool_select.selected = new_edit_mode
-		
-		tool_info.set_edit_mode(new_edit_mode)
+	var total_tools = EDIT_MODE.keys().size()
+	if not (new_edit_mode >= 0 && new_edit_mode < total_tools):
+		print("Invalid edit mode selected")
+		return
+	
+	for c in edit_indicators.get_children():
+		c.visible = false
+	
+	edit_mode = new_edit_mode
+	tool_select.selected = new_edit_mode
+	tool_info.set_edit_mode(new_edit_mode)
+	
+	sdf_stamper.set_active(new_edit_mode == EDIT_MODE.MESH)
+	
+	if edit_modes_with_edit_indicator.has(new_edit_mode):
+		var edit_mesh = edit_indicators.get_child(new_edit_mode)
+		if edit_mesh:
+			edit_mesh.visible = true
 
 func update_draw_timer(delta):
 	if draw_speed_accumulate_delta > draw_speed:
@@ -308,6 +329,11 @@ func try_edit_terrain(voxel_tool_mode):
 			voxel_tool.do_hemisphere(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
 #			voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
 #		do_flatten(hit_pos, -forward, offset_sign, edit_strength, voxel_tool_mode)
+	elif edit_mode == EDIT_MODE.MESH:
+		print("sdf stamping")
+		sdf_stamper.place()
+		print("sdf stamping finished")
+
 
 func apply_falloff(t, falloff):
 	if falloff > 0:

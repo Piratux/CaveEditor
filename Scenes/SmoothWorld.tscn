@@ -1,13 +1,10 @@
-[gd_scene load_steps=25 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=21 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
-[ext_resource type="VoxelGeneratorGraph" uid="uid://bvinakft3fpu7" path="res://Miscellaneous/inverted_box_graph_gen.tres" id="3_xqaji"]
-[ext_resource type="Shader" path="res://Shaders/SmoothTerrain/smooth_world.gdshader" id="4_rrgmf"]
-[ext_resource type="Texture2D" uid="uid://28diu6mhiupf" path="res://Textures/dirt_albedo.png" id="5_pets3"]
-[ext_resource type="Texture2D" uid="uid://bk4ett6ebf0c5" path="res://Textures/grass_albedo.png" id="6_p5b6x"]
-[ext_resource type="Script" path="res://Scripts/VoxelTerrain.gd" id="7_7uaxt"]
+[ext_resource type="Script" path="res://Scripts/SdfStamper.gd" id="3_xidxu"]
+[ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/voxel_lod_terrain.tscn" id="5_vn6vi"]
 [ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
 [ext_resource type="Script" path="res://Scripts/HelpWindow.gd" id="10_3mcdr"]
@@ -31,19 +28,35 @@ sky = SubResource("Sky_whtm3")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_rrkwj"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_f30sg"]
-render_priority = 0
-shader = ExtResource("4_rrgmf")
-shader_parameter/u_transition_mask = null
-shader_parameter/u_voxel_virtual_texture_tile_size = null
-shader_parameter/u_voxel_virtual_texture_fade = null
-shader_parameter/u_voxel_cell_size = null
-shader_parameter/u_voxel_block_size = null
-shader_parameter/u_lod_fade = null
-shader_parameter/u_texture_top = ExtResource("6_p5b6x")
-shader_parameter/u_texture_sides = ExtResource("5_pets3")
+[sub_resource type="VoxelGeneratorGraph" id="VoxelGeneratorGraph_2geed"]
+resource_local_to_scene = true
+graph_data = {
+"connections": [[16, 0, 17, 0], [17, 0, 4, 0]],
+"nodes": {
+"16": {
+"auto_connect": true,
+"gui_position": Vector2(760, 0),
+"size_x": 60.0,
+"size_y": 20.0,
+"size_z": 50.0,
+"type": "SdfBox",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+},
+"17": {
+"b": -1000.0,
+"gui_position": Vector2(940, 0),
+"type": "Multiply"
+},
+"4": {
+"auto_connect": true,
+"gui_position": Vector2(1100, 0),
+"type": "OutputSDF"
+}
+},
+"version": 2
+}
 
 [sub_resource type="SphereMesh" id="SphereMesh_25lff"]
 radius = 1.0
@@ -57,6 +70,9 @@ script = ExtResource("1_mh7m1")
 [node name="Saver" type="Node" parent="."]
 script = ExtResource("2_60v2b")
 
+[node name="SdfStamper" type="Node" parent="."]
+script = ExtResource("3_xidxu")
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_7hnbo")
 
@@ -69,12 +85,8 @@ script = ExtResource("2_q5m0p")
 
 [node name="VoxelViewer" type="VoxelViewer" parent="Camera3D"]
 
-[node name="VoxelTerrain" type="VoxelTerrain" parent="."]
-generator = ExtResource("3_xqaji")
-mesher = SubResource("VoxelMesherTransvoxel_rrkwj")
-generate_collisions = false
-material_override = SubResource("ShaderMaterial_f30sg")
-script = ExtResource("7_7uaxt")
+[node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
+generator = SubResource("VoxelGeneratorGraph_2geed")
 
 [node name="EditIndicators" type="Node3D" parent="."]
 visible = false
@@ -261,7 +273,6 @@ visible = false
 offset_top = 112.0
 offset_bottom = 552.0
 
-[connection signal="tree_exited" from="VoxelTerrain" to="VoxelTerrain" method="_on_tree_exited"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/WorldManager" method="_on_manage_worlds_button_pressed"]

@@ -82,4 +82,16 @@ const TOOL_DATA = {
 			},
 		},
 	},
+	EDIT_MODE.MESH: {
+		"name": "Mesh",
+		"parameters": {
+			"scale": {
+				"name": "Scale",
+				"default_value": 10,
+				"min": 2,
+				"max": 100,
+				"step": 1,
+			},
+		}
+	},
 }

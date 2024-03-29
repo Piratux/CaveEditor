@@ -1,4 +1,4 @@
-extends VoxelTerrain
+extends VoxelLodTerrain
 
 const SDFStamper = preload("./SdfStamper.gd")
 
@@ -6,11 +6,11 @@ const SDFStamper = preload("./SdfStamper.gd")
 @onready var sdf_stamper : SDFStamper = get_node("../SdfStamper")
 
 # Distance upon which voxels will be rendered
-var view_distance = 256
+var _view_distance = 256
 
 func _ready():
-	max_view_distance = view_distance
-	voxel_viewer.view_distance = view_distance
+	view_distance = _view_distance
+	voxel_viewer.view_distance = _view_distance
 	sdf_stamper.set_terrain(self)
 
 func _on_tree_exited():

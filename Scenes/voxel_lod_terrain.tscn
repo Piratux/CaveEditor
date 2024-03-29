@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://4qjlhciehwso"]
+
+[ext_resource type="VoxelGeneratorGraph" uid="uid://bvinakft3fpu7" path="res://Miscellaneous/inverted_box_graph_gen.tres" id="1_kjm34"]
+[ext_resource type="Script" path="res://Scripts/VoxelLodTerrain.gd" id="1_s6nxc"]
+[ext_resource type="Material" uid="uid://c57q67i7ywy8e" path="res://Materials/voxel_terrain.tres" id="2_kb06s"]
+
+[sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_7ftyi"]
+
+[node name="VoxelLodTerrain" type="VoxelLodTerrain"]
+generator = ExtResource("1_kjm34")
+mesher = SubResource("VoxelMesherTransvoxel_7ftyi")
+lod_count = 1
+lod_distance = 128.0
+secondary_lod_distance = 128.0
+material = ExtResource("2_kb06s")
+script = ExtResource("1_s6nxc")
+
+[connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
