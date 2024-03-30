@@ -140,15 +140,20 @@ func place():
 	#_voxel_tool.mode = _voxel_tool.MODE_ADD
 	print("stamping")
 	
-	var arr = _mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices(1)
-	for i in range(arr.size()):
-		arr[i].save_png("img_debug_" + str(i) + ".png")
-	#print(arr[0].get_method_list())
-	#print(arr[0].get_data())
-	#print(arr)
+	# Debug voxel buffer sdf data:
+	#var arr = _mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices(1)
+	#for i in range(arr.size()):
+		#arr[i].save_png("img_debug_" + str(i) + ".png")
 	
-	#print(place_transform)
-	_voxel_tool.stamp_sdf(_mesh_sdf, place_transform, 0.1, _mesh_scale * 0.01)
+	print(place_transform)
+	
+	print("mesh origin (pos):")
+	print(place_transform.origin)
+	
+	print("mesh basis:")
+	print(place_transform.basis)
+	
+	_voxel_tool.stamp_sdf(_mesh_sdf, place_transform, 0.1, _mesh_scale * 0.1)
 	#_voxel_tool.stamp_sdf(_mesh_sdf, place_transform, 1, _mesh_scale * 0.001)
 	
 	

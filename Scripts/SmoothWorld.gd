@@ -65,7 +65,7 @@ func _ready():
 	
 	# Required for surface tool to interact nicely when
 	# surface is edited with other tools like sphere
-	voxel_tool.sdf_scale = 0.1
+	#voxel_tool.sdf_scale = 0.01
 
 func _process(delta):
 	update_draw_timer(delta)
