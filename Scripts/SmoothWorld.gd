@@ -262,18 +262,15 @@ func try_edit_terrain(voxel_tool_mode):
 	var edit_scale = get_tool_scale()
 	var edit_strength = get_tool_strength()
 	
-	if edit_mode == EDIT_MODE.SPHERE:
-		offset_pos += offset_sign * forward * (edit_scale - 2)
-	elif edit_mode == EDIT_MODE.CUBE:
-		forward = get_elongated_vector(forward)
-		offset_pos += offset_sign * forward * (edit_scale - 2)
-	
 	voxel_tool.mode = voxel_tool_mode
 	
 	if edit_mode == EDIT_MODE.SPHERE:
+		offset_pos += offset_sign * forward * (edit_scale - 2)
 		voxel_tool.do_sphere(offset_pos, edit_scale)
 	
 	elif edit_mode == EDIT_MODE.CUBE:
+		forward = get_elongated_vector(forward)
+		offset_pos += offset_sign * forward * (edit_scale - 2)
 		var offset = Vector3(edit_scale, edit_scale, edit_scale)
 		voxel_tool.do_box(offset_pos - offset, offset_pos + offset)
 	
