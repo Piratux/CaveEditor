@@ -1,8 +1,9 @@
-[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=23 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
+[ext_resource type="Script" path="res://Scenes/DebugStatDrawer.gd" id="3_k3wxx"]
 [ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/voxel_lod_terrain.tscn" id="5_vn6vi"]
 [ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
@@ -71,6 +72,9 @@ script = ExtResource("1_mh7m1")
 
 [node name="Saver" type="Node" parent="."]
 script = ExtResource("2_60v2b")
+
+[node name="DebugStatDrawer" type="Node" parent="."]
+script = ExtResource("3_k3wxx")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_7hnbo")
