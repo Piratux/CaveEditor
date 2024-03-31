@@ -1,9 +1,6 @@
 extends VoxelLodTerrain
 
-const SDFStamper = preload("./SdfStamper.gd")
-
 @onready var voxel_viewer = get_node("../Camera3D/VoxelViewer")
-@onready var sdf_stamper : SDFStamper = get_node("../SdfStamper")
 
 # Distance upon which voxels will be rendered
 var _view_distance = 256
@@ -11,13 +8,9 @@ var _view_distance = 256
 func _ready():
 	view_distance = _view_distance
 	voxel_viewer.view_distance = _view_distance
-	sdf_stamper.set_terrain(self)
 
 func _on_tree_exited():
 	save_modified_blocks()
-	stream = VoxelStreamSQLite.new()
-	var file_path = ".editor/" + "file_nametest"
-	stream.database_path = file_path
 
 # TODO: fix database transaction error (happens when this function is spammed, though happens rarely)
 func set_world_stream(file_name, save_edited_blocks):

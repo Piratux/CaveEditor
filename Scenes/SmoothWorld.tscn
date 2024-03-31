@@ -1,13 +1,13 @@
-[gd_scene load_steps=21 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
-[ext_resource type="Script" path="res://Scripts/SdfStamper.gd" id="3_xidxu"]
 [ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/voxel_lod_terrain.tscn" id="5_vn6vi"]
 [ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
 [ext_resource type="Script" path="res://Scripts/HelpWindow.gd" id="10_3mcdr"]
+[ext_resource type="ArrayMesh" uid="uid://c3juvbygtax5m" path="res://Objects/suzanne.obj" id="10_5ki11"]
 [ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="10_6lc7j"]
 [ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/TrimMaterial.tres" id="11_hkngl"]
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="11_ydr22"]
@@ -64,14 +64,13 @@ height = 2.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_e4d1c"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wdp06"]
+
 [node name="SmoothWorld" type="Node"]
 script = ExtResource("1_mh7m1")
 
 [node name="Saver" type="Node" parent="."]
 script = ExtResource("2_60v2b")
-
-[node name="SdfStamper" type="Node" parent="."]
-script = ExtResource("3_xidxu")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_7hnbo")
@@ -120,6 +119,10 @@ visible = false
 mesh = SubResource("SphereMesh_25lff")
 skeleton = NodePath("../Surface")
 surface_material_override/0 = ExtResource("11_hkngl")
+
+[node name="Mesh" type="MeshInstance3D" parent="EditIndicators"]
+material_override = SubResource("StandardMaterial3D_wdp06")
+mesh = ExtResource("10_5ki11")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
