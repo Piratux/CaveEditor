@@ -231,7 +231,8 @@ hold CTRL + Mouse click - Edit terrain once
 hold ALT + Mouse scroll - Change camera speed
 hold SHIFT - Move 2.5x times faster
 X - Show/Hide edit indicator
-ESC - Take control of mouse"
+ESC - Take control of mouse
+P - Toggle debug stat drawing"
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow"]
 layout_mode = 1
