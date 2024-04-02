@@ -42,10 +42,12 @@ func _ready():
 	set_edit_mode(EDIT_MODE.SPHERE)
 	saver.load_data()
 	debug_stat_drawer.voxel_terrain = voxel_terrain
+	debug_stat_drawer.voxel_tool = voxel_tool
+	debug_stat_drawer.camera = camera
 	
 	# Required for surface tool to interact nicely when
 	# surface is edited with other tools like sphere
-	#voxel_tool.sdf_scale = 0.01
+	voxel_tool.sdf_scale = 10
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -113,6 +115,20 @@ func _unhandled_input(event):
 					set_edit_mode(EDIT_MODE.FLATTEN)
 				KEY_6:
 					set_edit_mode(EDIT_MODE.MESH)
+				KEY_UP:
+					if Input.is_action_pressed("CTRL"):
+						camera.position.y += 1
+					else:
+						camera.position.x += 1
+				KEY_DOWN:
+					if Input.is_action_pressed("CTRL"):
+						camera.position.y -= 1
+					else:
+						camera.position.x -= 1
+				KEY_RIGHT:
+					camera.position.z += 1
+				KEY_LEFT:
+					camera.position.z -= 1
 	
 	update_last_frame_data()
 
@@ -211,6 +227,9 @@ func update_edit_indicator():
 	
 	update_mesh_edit_indicator()
 
+func mesh_sdf_finished_baking():
+	print("Building mesh SDF done")
+
 func update_mesh_edit_indicator():
 	if (not mesh_sdf.is_baked()) and (not mesh_sdf.is_baking()):
 		# TODO This is not supposed to be a requirement.
@@ -219,7 +238,12 @@ func update_mesh_edit_indicator():
 		
 		var mesh = load("res://Objects/suzanne.obj")
 		mesh_sdf.mesh = mesh
-		mesh_sdf.baked.connect(func(): print("Building mesh SDF done"))
+		mesh_sdf.cell_count = 1024
+		mesh_sdf.partition_subdiv = 255
+		mesh_sdf.bake_mode = VoxelMeshSDF.BAKE_MODE_APPROX_FLOODFILL
+		#mesh_sdf.cell_count = 16
+		#mesh_sdf.partition_subdiv = 8
+		mesh_sdf.baked.connect(mesh_sdf_finished_baking)
 		mesh_sdf.bake_async(get_tree())
 		print("Building mesh SDF...")
 	
@@ -237,9 +261,10 @@ func update_mesh_edit_indicator():
 		forward = get_elongated_vector(forward)
 		var aabb = mesh_sdf.mesh.get_aabb()
 		var aabb_half_size = aabb.size / 2.0
-		var offset = sqrt(aabb_half_size.x * aabb_half_size.x + aabb_half_size.y * aabb_half_size.y)
-		offset *= forward * edit_indicators.scale
-		edit_indicators.transform = Transform3D(edit_indicators.transform.basis, edit_indicators.transform.origin - offset)
+		#var offset = sqrt(aabb_half_size.x * aabb_half_size.x + aabb_half_size.y * aabb_half_size.y)
+		#offset *= -forward * edit_indicators.scale
+		var offset = Vector3(0, aabb_half_size.y * get_tool_scale() + 5, 0)
+		edit_indicators.transform = Transform3D(edit_indicators.transform.basis, edit_indicators.transform.origin + offset)
 
 func try_edit_terrain(voxel_tool_mode):
 	var hit = get_pointed_voxel()
@@ -292,6 +317,8 @@ func try_edit_terrain(voxel_tool_mode):
 	
 	elif edit_mode == EDIT_MODE.MESH:
 		if mesh_sdf.is_baked():
+			print("Mesh sdf voxel buffer size:")
+			print(mesh_sdf.get_voxel_buffer().get_size())
 			var place_transform = edit_indicators.transform
 			voxel_tool.stamp_sdf(mesh_sdf, place_transform, 0.1, 1.0)
 

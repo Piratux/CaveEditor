@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
@@ -29,36 +29,6 @@ sky = SubResource("Sky_whtm3")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="VoxelGeneratorGraph" id="VoxelGeneratorGraph_2geed"]
-resource_local_to_scene = true
-graph_data = {
-"connections": [[16, 0, 17, 0], [17, 0, 4, 0]],
-"nodes": {
-"16": {
-"auto_connect": true,
-"gui_position": Vector2(760, 0),
-"size_x": 60.0,
-"size_y": 20.0,
-"size_z": 50.0,
-"type": "SdfBox",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-},
-"17": {
-"b": -1000.0,
-"gui_position": Vector2(940, 0),
-"type": "Multiply"
-},
-"4": {
-"auto_connect": true,
-"gui_position": Vector2(1100, 0),
-"type": "OutputSDF"
-}
-},
-"version": 2
-}
-
 [sub_resource type="SphereMesh" id="SphereMesh_25lff"]
 radius = 1.0
 height = 2.0
@@ -87,9 +57,6 @@ transform = Transform3D(0.995381, 0, 0.0960021, 0, 1, 0, -0.0960021, 0, 0.995381
 script = ExtResource("2_q5m0p")
 
 [node name="VoxelViewer" type="VoxelViewer" parent="Camera3D"]
-
-[node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
-generator = SubResource("VoxelGeneratorGraph_2geed")
 
 [node name="EditIndicators" type="Node3D" parent="."]
 visible = false
@@ -280,6 +247,8 @@ layout_mode = 2
 visible = false
 offset_top = 112.0
 offset_bottom = 552.0
+
+[node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
 
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]

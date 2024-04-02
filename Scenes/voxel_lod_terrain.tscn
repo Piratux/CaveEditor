@@ -11,7 +11,6 @@ generator = ExtResource("1_kjm34")
 mesher = SubResource("VoxelMesherTransvoxel_7ftyi")
 lod_count = 1
 lod_distance = 128.0
-secondary_lod_distance = 128.0
 material = ExtResource("2_kb06s")
 generate_collisions = false
 script = ExtResource("1_s6nxc")

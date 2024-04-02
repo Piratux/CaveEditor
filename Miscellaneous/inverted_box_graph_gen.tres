@@ -3,11 +3,16 @@
 [resource]
 resource_local_to_scene = true
 graph_data = {
-"connections": [[16, 0, 17, 0], [17, 0, 4, 0]],
+"connections": [[22, 0, 23, 0], [23, 0, 20, 0]],
 "nodes": {
-"16": {
+"20": {
 "auto_connect": true,
-"gui_position": Vector2(760, 0),
+"gui_position": Vector2(680, 200),
+"type": "OutputSDF"
+},
+"22": {
+"auto_connect": true,
+"gui_position": Vector2(260, 200),
 "size_x": 60.0,
 "size_y": 20.0,
 "size_z": 50.0,
@@ -16,15 +21,10 @@ graph_data = {
 "y": 0.0,
 "z": 0.0
 },
-"17": {
-"b": -1000.0,
-"gui_position": Vector2(940, 0),
+"23": {
+"b": -10.0,
+"gui_position": Vector2(500, 200),
 "type": "Multiply"
-},
-"4": {
-"auto_connect": true,
-"gui_position": Vector2(1100, 0),
-"type": "OutputSDF"
 }
 },
 "version": 2

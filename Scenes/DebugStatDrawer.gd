@@ -10,6 +10,8 @@ const process_stat_names = [
 ]
 
 var voxel_terrain = null
+var voxel_tool = null
+var camera = null
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -54,6 +56,8 @@ func draw_debug_voxel_stats(delta):
 	for k in displayed_process_stats:
 		DDD.set_text(k, displayed_process_stats[k])
 	
+	DDD.set_text("POS", Vector3i(camera.position))
+	DDD.set_text("SDF", voxel_tool.get_voxel_f(camera.position))
 #	_terrain.debug_set_draw_enabled(true)
 #	_terrain.debug_set_draw_flag(VoxelLodTerrain.DEBUG_DRAW_MESH_UPDATES, true)
 
