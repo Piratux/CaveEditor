@@ -37,12 +37,18 @@ Windows:
 - When Godot's editor loads up, press F5 or click `Run project` button on the top right to run the project. -->
 
 ## Building from source
-build godot editor:
+Guide how to build from source:
+- Get following repositories (in the future I should use Godot stable versions instead):
+  - https://github.com/godotengine/godot/tree/4.2
+  - https://github.com/Zylann/godot_voxel/commit/e892c38f4d39d65b8b51c1872798b43366938a8a
+- Follow compilation guide here:
+  - https://voxel-tools.readthedocs.io/en/latest/getting_the_module/#building-yourself
+- Then build both Godot versions. For simplicity, setup exact folder copy, then run each command in each folder copy:
+  - Build Godot editor:
 ```
 scons platform=windows
 ```
-
-build godot template release:
+  - Build Godot template release (required to create final standalone executable):
 ```
 scons platform=windows target=template_release
 ```
