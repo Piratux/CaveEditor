@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=23 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
@@ -36,6 +36,36 @@ height = 2.0
 [sub_resource type="BoxMesh" id="BoxMesh_e4d1c"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wdp06"]
+
+[sub_resource type="VoxelGeneratorGraph" id="VoxelGeneratorGraph_k3eig"]
+resource_local_to_scene = true
+graph_data = {
+"connections": [[22, 0, 23, 0], [23, 0, 20, 0]],
+"nodes": {
+"20": {
+"auto_connect": true,
+"gui_position": Vector2(680, 200),
+"type": "OutputSDF"
+},
+"22": {
+"auto_connect": true,
+"gui_position": Vector2(260, 200),
+"size_x": 60.0,
+"size_y": 20.0,
+"size_z": 50.0,
+"type": "SdfBox",
+"x": 0.0,
+"y": 0.0,
+"z": 0.0
+},
+"23": {
+"b": -10.0,
+"gui_position": Vector2(500, 200),
+"type": "Multiply"
+}
+},
+"version": 2
+}
 
 [node name="SmoothWorld" type="Node"]
 script = ExtResource("1_mh7m1")
@@ -249,6 +279,7 @@ offset_top = 112.0
 offset_bottom = 552.0
 
 [node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
+generator = SubResource("VoxelGeneratorGraph_k3eig")
 
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
