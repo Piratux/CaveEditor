@@ -40,7 +40,7 @@ Windows:
 Guide how to build from source:
 - Get following repositories (in the future I should use Godot stable versions instead):
   - https://github.com/godotengine/godot/tree/4.2
-  - https://github.com/Zylann/godot_voxel/commit/e892c38f4d39d65b8b51c1872798b43366938a8a
+  - https://github.com/Zylann/godot_voxel/commit/4e1376df87c73cc52a8119651b2b6e33e93dda51
 - Follow compilation guide here:
   - https://voxel-tools.readthedocs.io/en/latest/getting_the_module/#building-yourself
 - Then build both Godot versions. For simplicity, setup exact folder copy, then run each command in each folder copy:
