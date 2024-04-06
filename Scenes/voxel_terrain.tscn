@@ -1,13 +1,13 @@
 [gd_scene load_steps=5 format=3 uid="uid://ch70xiyh1vnre"]
 
-[ext_resource type="VoxelGeneratorGraph" uid="uid://bvinakft3fpu7" path="res://Miscellaneous/inverted_box_graph_gen.tres" id="1_qqhvr"]
+[ext_resource type="VoxelGeneratorGraph" uid="uid://6837lmj7uisn" path="res://Miscellaneous/flat_plane_gen.tres" id="1_rcomf"]
 [ext_resource type="Material" uid="uid://c57q67i7ywy8e" path="res://Materials/voxel_terrain.tres" id="2_t54f8"]
 [ext_resource type="Script" path="res://Scripts/VoxelTerrain.gd" id="5_hwlhp"]
 
 [sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_rrkwj"]
 
 [node name="VoxelTerrain" type="VoxelTerrain"]
-generator = ExtResource("1_qqhvr")
+generator = ExtResource("1_rcomf")
 mesher = SubResource("VoxelMesherTransvoxel_rrkwj")
 generate_collisions = false
 material_override = ExtResource("2_t54f8")

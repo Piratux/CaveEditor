@@ -1,9 +1,9 @@
-[gd_scene load_steps=23 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
-[ext_resource type="Script" path="res://Scenes/DebugStatDrawer.gd" id="3_k3wxx"]
+[ext_resource type="Script" path="res://Scripts/DebugStatDrawer.gd" id="3_k3wxx"]
 [ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/voxel_lod_terrain.tscn" id="5_vn6vi"]
 [ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
@@ -37,36 +37,6 @@ height = 2.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wdp06"]
 
-[sub_resource type="VoxelGeneratorGraph" id="VoxelGeneratorGraph_k3eig"]
-resource_local_to_scene = true
-graph_data = {
-"connections": [[22, 0, 23, 0], [23, 0, 20, 0]],
-"nodes": {
-"20": {
-"auto_connect": true,
-"gui_position": Vector2(680, 200),
-"type": "OutputSDF"
-},
-"22": {
-"auto_connect": true,
-"gui_position": Vector2(260, 200),
-"size_x": 60.0,
-"size_y": 20.0,
-"size_z": 50.0,
-"type": "SdfBox",
-"x": 0.0,
-"y": 0.0,
-"z": 0.0
-},
-"23": {
-"b": -10.0,
-"gui_position": Vector2(500, 200),
-"type": "Multiply"
-}
-},
-"version": 2
-}
-
 [node name="SmoothWorld" type="Node"]
 script = ExtResource("1_mh7m1")
 
@@ -83,13 +53,12 @@ environment = SubResource("Environment_7hnbo")
 transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.283032, -0.0123648, 0.959031, -0.412185, 0.901301, 0.133266, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.995381, 0, 0.0960021, 0, 1, 0, -0.0960021, 0, 0.995381, 0, 0, 0)
+transform = Transform3D(0.995381, 0, 0.0960021, 0, 1, 0, -0.0960021, 0, 0.995381, 0, 28.7562, 0)
 script = ExtResource("2_q5m0p")
 
 [node name="VoxelViewer" type="VoxelViewer" parent="Camera3D"]
 
 [node name="EditIndicators" type="Node3D" parent="."]
-visible = false
 
 [node name="SphereEdit" type="MeshInstance3D" parent="EditIndicators"]
 visible = false
@@ -122,6 +91,7 @@ skeleton = NodePath("../Surface")
 surface_material_override/0 = ExtResource("11_hkngl")
 
 [node name="Mesh" type="MeshInstance3D" parent="EditIndicators"]
+visible = false
 material_override = SubResource("StandardMaterial3D_wdp06")
 mesh = ExtResource("10_5ki11")
 
@@ -252,7 +222,7 @@ text = "Close"
 [node name="ToolInfo" type="PanelContainer" parent="CanvasLayer"]
 offset_left = 19.0
 offset_top = 7.0
-offset_right = 223.0
+offset_right = 288.0
 offset_bottom = 63.0
 script = ExtResource("11_ydr22")
 
@@ -279,7 +249,11 @@ offset_top = 112.0
 offset_bottom = 552.0
 
 [node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
-generator = SubResource("VoxelGeneratorGraph_k3eig")
+view_distance = 256
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 31.4028, -128.753)
+mesh = ExtResource("10_5ki11")
 
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]

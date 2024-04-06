@@ -47,7 +47,7 @@ func _ready():
 	
 	# Required for surface tool to interact nicely when
 	# surface is edited with other tools like sphere
-	voxel_tool.sdf_scale = 10
+	#voxel_tool.sdf_scale = 10
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -129,6 +129,10 @@ func _unhandled_input(event):
 					camera.position.z += 1
 				KEY_LEFT:
 					camera.position.z -= 1
+				KEY_O:
+					var vp = get_viewport()
+					#vp.debug_draw = Viewport.DEBUG_DRAW_WIREFRAME - vp.debug_draw
+					vp.debug_draw = (vp.debug_draw + 1 ) % 5
 	
 	update_last_frame_data()
 
@@ -153,6 +157,18 @@ func get_tool_strength():
 
 func set_tool_strength(new_value):
 	set_tool_parameter_value("strength", new_value)
+
+func get_tool_isolevel():
+	return get_tool_parameter_value("isolevel")
+
+func set_tool_isolevel(new_value):
+	set_tool_parameter_value("isolevel", new_value)
+
+func get_tool_sdf_scale():
+	return get_tool_parameter_value("sdf_scale")
+
+func set_tool_sdf_scale(new_value):
+	set_tool_parameter_value("sdf_scale", new_value)
 
 func get_edit_mesh(_edit_mode):
 	return edit_indicators.get_child(_edit_mode)
@@ -230,22 +246,22 @@ func update_edit_indicator():
 func mesh_sdf_finished_baking():
 	print("Building mesh SDF done")
 
+func bake_sdf_mesh():
+	# TODO This is not supposed to be a requirement.
+	# Check source code of `VoxelMeshSDF` to see why `get_tree()` is necessary...
+	assert(is_inside_tree())
+	
+	var mesh = load("res://Objects/suzanne.obj")
+	mesh_sdf.mesh = mesh
+	mesh_sdf.cell_count = 128
+	mesh_sdf.bake_mode = VoxelMeshSDF.BAKE_MODE_APPROX_FLOODFILL
+	mesh_sdf.baked.connect(mesh_sdf_finished_baking)
+	mesh_sdf.bake_async(get_tree())
+	print("Building mesh SDF...")
+
 func update_mesh_edit_indicator():
 	if (not mesh_sdf.is_baked()) and (not mesh_sdf.is_baking()):
-		# TODO This is not supposed to be a requirement.
-		# Check source code of `VoxelMeshSDF` to see why `get_tree()` is necessary...
-		assert(is_inside_tree())
-		
-		var mesh = load("res://Objects/suzanne.obj")
-		mesh_sdf.mesh = mesh
-		mesh_sdf.cell_count = 1024
-		mesh_sdf.partition_subdiv = 255
-		mesh_sdf.bake_mode = VoxelMeshSDF.BAKE_MODE_APPROX_FLOODFILL
-		#mesh_sdf.cell_count = 16
-		#mesh_sdf.partition_subdiv = 8
-		mesh_sdf.baked.connect(mesh_sdf_finished_baking)
-		mesh_sdf.bake_async(get_tree())
-		print("Building mesh SDF...")
+		bake_sdf_mesh()
 	
 	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 	var mat : StandardMaterial3D = edit_mesh.material_override
@@ -286,6 +302,8 @@ func try_edit_terrain(voxel_tool_mode):
 	var forward = get_camera_forward_vector()
 	var edit_scale = get_tool_scale()
 	var edit_strength = get_tool_strength()
+	var edit_isolevel = get_tool_isolevel()
+	var edit_sdf_scale = get_tool_sdf_scale()
 	
 	voxel_tool.mode = voxel_tool_mode
 	
@@ -320,7 +338,7 @@ func try_edit_terrain(voxel_tool_mode):
 			print("Mesh sdf voxel buffer size:")
 			print(mesh_sdf.get_voxel_buffer().get_size())
 			var place_transform = edit_indicators.transform
-			voxel_tool.stamp_sdf(mesh_sdf, place_transform, 0.1, 1.0)
+			voxel_tool.stamp_sdf(mesh_sdf, place_transform, edit_isolevel, edit_sdf_scale)
 
 func capture_mouse(value):
 	mouse_captured = value

@@ -58,10 +58,11 @@ func draw_debug_voxel_stats(delta):
 	
 	DDD.set_text("POS", Vector3i(camera.position))
 	DDD.set_text("SDF", voxel_tool.get_voxel_f(camera.position))
+	DDD.set_text("LOD count", voxel_terrain.lod_count) # TODO: make it work for VoxelTerrain too
 #	_terrain.debug_set_draw_enabled(true)
 #	_terrain.debug_set_draw_flag(VoxelLodTerrain.DEBUG_DRAW_MESH_UPDATES, true)
 
-static func _format_memory(m):
+func _format_memory(m):
 	var mb = m / 1000000
 	var mbr = m % 1000000
 	return str(mb, ".", mbr, " Mb")

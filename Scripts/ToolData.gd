@@ -92,6 +92,20 @@ const TOOL_DATA = {
 				"max": 100,
 				"step": 1,
 			},
+			"isolevel": {
+				"name": "Isolevel",
+				"default_value": 0.1,
+				"min": 0.01,
+				"max": 1,
+				"step": 0.01,
+			},
+			"sdf_scale": {
+				"name": "SDF Scale",
+				"default_value": 1,
+				"min": 0.1,
+				"max": 10,
+				"step": 0.1,
+			},
 		}
 	},
 }

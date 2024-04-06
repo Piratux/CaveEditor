@@ -8,6 +8,7 @@ var _view_distance = 256
 func _ready():
 	view_distance = _view_distance
 	voxel_viewer.view_distance = _view_distance
+	streaming_system = VoxelLodTerrain.STREAMING_SYSTEM_CLIPBOX
 
 func _on_tree_exited():
 	save_modified_blocks()
