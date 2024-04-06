@@ -53,7 +53,6 @@ environment = SubResource("Environment_7hnbo")
 transform = Transform3D(-0.866024, -0.433016, 0.250001, 0.283032, -0.0123648, 0.959031, -0.412185, 0.901301, 0.133266, 0, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.995381, 0, 0.0960021, 0, 1, 0, -0.0960021, 0, 0.995381, 0, 28.7562, 0)
 script = ExtResource("2_q5m0p")
 
 [node name="VoxelViewer" type="VoxelViewer" parent="Camera3D"]

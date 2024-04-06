@@ -24,7 +24,7 @@ graph_data = {
 "5": {
 "auto_connect": true,
 "gui_position": Vector2(560, 150),
-"height": 1.0,
+"height": 0.0,
 "type": "SdfPlane"
 }
 },
