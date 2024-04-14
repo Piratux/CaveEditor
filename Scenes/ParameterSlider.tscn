@@ -12,13 +12,14 @@ thickness = 7
 script = ExtResource("1_8d3vg")
 
 [node name="Name" type="Label" parent="."]
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 text = "Radius:"
 
 [node name="Value" type="Label" parent="."]
-custom_minimum_size = Vector2(20, 0)
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-size_flags_horizontal = 10
+size_flags_horizontal = 8
 size_flags_vertical = 5
 text = "0"
 

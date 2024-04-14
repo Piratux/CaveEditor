@@ -9,10 +9,12 @@
 [node name="VoxelLodTerrain" type="VoxelLodTerrain"]
 generator = ExtResource("1_ohagh")
 mesher = SubResource("VoxelMesherTransvoxel_7ftyi")
+view_distance = 384
 lod_count = 1
 lod_distance = 128.0
 material = ExtResource("2_kb06s")
 generate_collisions = false
+streaming_system = 1
 script = ExtResource("1_s6nxc")
 
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]

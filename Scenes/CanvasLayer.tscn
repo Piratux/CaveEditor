@@ -1,0 +1,287 @@
+[gd_scene load_steps=8 format=3 uid="uid://bj0mnr5kp5p6y"]
+
+[ext_resource type="Script" path="res://Scripts/HelpWindow.gd" id="2_bon57"]
+[ext_resource type="PackedScene" uid="uid://dhu2e3cixohwh" path="res://Scenes/ToolInfo.tscn" id="3_1gs0x"]
+[ext_resource type="Script" path="res://Scripts/WorldManager.gd" id="3_jl7lv"]
+[ext_resource type="Script" path="res://Scripts/WorldManagerInputMarginContainer.gd" id="4_wp5i2"]
+[ext_resource type="Script" path="res://Scripts/LineEdit.gd" id="5_wnfbr"]
+[ext_resource type="Script" path="res://Scripts/MeshExportDialog.gd" id="6_oywnt"]
+[ext_resource type="Script" path="res://Scripts/MenuContainer.gd" id="7_d2elb"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+
+[node name="ToolInfo" parent="." instance=ExtResource("3_1gs0x")]
+
+[node name="MenuMarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -146.0
+offset_bottom = 178.0
+grow_horizontal = 0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuMarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CurrentWorld" type="Label" parent="MenuMarginContainer/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="MenuButton" type="Button" parent="MenuMarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Menu"
+
+[node name="MenuContainer" type="PanelContainer" parent="MenuMarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 8
+script = ExtResource("7_d2elb")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuMarginContainer/VBoxContainer/MenuContainer"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="ManageWorldsButton" type="Button" parent="MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
+layout_mode = 2
+text = "Worlds"
+
+[node name="HelpButton" type="Button" parent="MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
+layout_mode = 2
+text = "Help"
+
+[node name="HelpWindow" type="Control" parent="."]
+visible = false
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -250.0
+offset_right = 200.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+script = ExtResource("2_bon57")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HelpWindow"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="HelpWindow/ScrollContainer"]
+custom_minimum_size = Vector2(500, 500)
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 4
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="HelpWindow/ScrollContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Label" type="Label" parent="HelpWindow/ScrollContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/line_spacing = 1
+text = "Controls
+
+H - Toggle controls window
+WASD - Move around
+E/Q - Move up/down
+Left mouse button - Pull terrain
+Right mouse button - Push terrain
+Mouse scroll - Change edit scale
+1/2/3/4/5 - Select edit mode
+hold CTRL + Mouse click - Edit terrain once
+hold ALT + Mouse scroll - Change camera speed
+hold SHIFT - Move 2.5x times faster
+X - Show/Hide edit indicator
+ESC - Take control of mouse
+P - Toggle debug stat drawing"
+
+[node name="MarginContainer" type="MarginContainer" parent="HelpWindow"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
+
+[node name="Close" type="Button" parent="HelpWindow/MarginContainer"]
+layout_mode = 2
+text = "Close"
+
+[node name="WorldManager" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 112.0
+offset_right = 200.0
+offset_bottom = 552.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+mouse_filter = 1
+script = ExtResource("3_jl7lv")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WorldManager"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="WorldManager/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WorldManager/VBoxContainer/CenterContainer"]
+layout_mode = 2
+text = "World Manager"
+
+[node name="ActionMarginContainer" type="MarginContainer" parent="WorldManager/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WorldManager/VBoxContainer/ActionMarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Load" type="Button" parent="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Load"
+
+[node name="Rename" type="Button" parent="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Rename"
+
+[node name="Export Mesh" type="Button" parent="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Export Mesh"
+
+[node name="Delete" type="Button" parent="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Delete"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="WorldManager/VBoxContainer"]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="WorldManager/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="ItemList" type="ItemList" parent="WorldManager/VBoxContainer/ScrollContainer/MarginContainer"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+focus_mode = 0
+auto_height = true
+same_column_width = true
+fixed_column_width = 165
+
+[node name="ActionMarginContainer2" type="MarginContainer" parent="WorldManager/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Create" type="Button" parent="WorldManager/VBoxContainer/ActionMarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Create New"
+
+[node name="Close" type="Button" parent="WorldManager/VBoxContainer/ActionMarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Close"
+
+[node name="InputMarginContainer" type="MarginContainer" parent="WorldManager/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+script = ExtResource("4_wp5i2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WorldManager/VBoxContainer/InputMarginContainer"]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Enter world name"
+script = ExtResource("5_wnfbr")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Confirm" type="Button" parent="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Confirm"
+
+[node name="Cancel" type="Button" parent="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="MeshExportDialog" type="FileDialog" parent="WorldManager"]
+initial_position = 1
+size = Vector2i(800, 500)
+ok_button_text = "Save"
+access = 2
+script = ExtResource("6_oywnt")
+
+[node name="DeleteErrorDialog" type="AcceptDialog" parent="WorldManager"]
+title = "Error"
+initial_position = 1
+size = Vector2i(194, 100)
+dialog_text = "Can't delete last world."
+
+[connection signal="pressed" from="MenuMarginContainer/VBoxContainer/MenuButton" to="MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
+[connection signal="pressed" from="MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
+[connection signal="pressed" from="MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="WorldManager" method="_on_manage_worlds_button_pressed"]
+[connection signal="pressed" from="MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
+[connection signal="pressed" from="MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="HelpWindow" method="_on_button_pressed"]
+[connection signal="pressed" from="HelpWindow/MarginContainer/Close" to="HelpWindow" method="_on_button_pressed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Load" to="WorldManager" method="_on_load_pressed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Rename" to="WorldManager/VBoxContainer/InputMarginContainer" method="_on_rename_pressed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Export Mesh" to="WorldManager" method="_on_export_mesh_pressed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Delete" to="WorldManager" method="_on_delete_pressed"]
+[connection signal="item_selected" from="WorldManager/VBoxContainer/ScrollContainer/MarginContainer/ItemList" to="WorldManager" method="_on_item_list_item_selected"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/ActionMarginContainer2/Create" to="WorldManager/VBoxContainer/InputMarginContainer" method="_on_create_pressed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/ActionMarginContainer2/Close" to="WorldManager" method="_on_close_pressed"]
+[connection signal="text_changed" from="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer/LineEdit" to="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer/LineEdit" method="_on_text_changed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer/Confirm" to="WorldManager/VBoxContainer/InputMarginContainer" method="_on_confirm_pressed"]
+[connection signal="pressed" from="WorldManager/VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer/Cancel" to="WorldManager/VBoxContainer/InputMarginContainer" method="_on_cancel_pressed"]
+[connection signal="file_selected" from="WorldManager/MeshExportDialog" to="WorldManager" method="_on_mesh_export_dialog_file_selected"]
+[connection signal="file_selected" from="WorldManager/MeshExportDialog" to="WorldManager/MeshExportDialog" method="_on_file_selected"]

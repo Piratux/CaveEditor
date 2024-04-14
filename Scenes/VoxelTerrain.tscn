@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://ch70xiyh1vnre"]
+
+[ext_resource type="VoxelGeneratorGraph" uid="uid://6837lmj7uisn" path="res://Miscellaneous/flat_plane_gen.tres" id="1_yfy2h"]
+[ext_resource type="Material" uid="uid://c57q67i7ywy8e" path="res://Materials/voxel_terrain.tres" id="2_4af6t"]
+[ext_resource type="Script" path="res://Scripts/VoxelTerrain.gd" id="3_1r06y"]
+
+[sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_rrkwj"]
+
+[node name="VoxelTerrain" type="VoxelTerrain"]
+generator = ExtResource("1_yfy2h")
+mesher = SubResource("VoxelMesherTransvoxel_rrkwj")
+generate_collisions = false
+material_override = ExtResource("2_4af6t")
+script = ExtResource("3_1r06y")
+
+[connection signal="tree_exited" from="." to="." method="_on_tree_exited"]

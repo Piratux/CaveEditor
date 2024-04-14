@@ -1,20 +1,16 @@
-[gd_scene load_steps=22 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=15 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
 [ext_resource type="Script" path="res://Scripts/Camera.gd" id="2_q5m0p"]
+[ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_x3i48"]
 [ext_resource type="Script" path="res://Scripts/DebugStatDrawer.gd" id="3_k3wxx"]
-[ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/voxel_lod_terrain.tscn" id="5_vn6vi"]
-[ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="8_kwf34"]
-[ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="9_dhnrp"]
-[ext_resource type="Script" path="res://Scripts/HelpWindow.gd" id="10_3mcdr"]
+[ext_resource type="Resource" uid="uid://bnetnq47i6ywj" path="res://States/Resources/ToolState.tres" id="3_mwdjr"]
+[ext_resource type="Resource" uid="uid://bkra78lbxpvns" path="res://States/Resources/ToolMeshBakeState.tres" id="4_ngmy3"]
+[ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/VoxelLodTerrain.tscn" id="5_vn6vi"]
+[ext_resource type="PackedScene" uid="uid://14ye888u77ht" path="res://Scenes/EditIndicators.tscn" id="6_yb3xi"]
+[ext_resource type="PackedScene" uid="uid://bj0mnr5kp5p6y" path="res://Scenes/CanvasLayer.tscn" id="9_0rkcr"]
 [ext_resource type="ArrayMesh" uid="uid://c3juvbygtax5m" path="res://Objects/suzanne.obj" id="10_5ki11"]
-[ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="10_6lc7j"]
-[ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/TrimMaterial.tres" id="11_hkngl"]
-[ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="11_ydr22"]
-[ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="12_563gd"]
-[ext_resource type="Script" path="res://Scripts/MenuContainer.gd" id="13_ppmbe"]
-[ext_resource type="PackedScene" uid="uid://cvwnpkr4j3kwe" path="res://Scenes/WorldManager.tscn" id="18_3fqwx"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4jqid"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -29,16 +25,11 @@ sky = SubResource("Sky_whtm3")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="SphereMesh" id="SphereMesh_25lff"]
-radius = 1.0
-height = 2.0
-
-[sub_resource type="BoxMesh" id="BoxMesh_e4d1c"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wdp06"]
-
 [node name="SmoothWorld" type="Node"]
 script = ExtResource("1_mh7m1")
+edit_mode_state = ExtResource("2_x3i48")
+tool_state = ExtResource("3_mwdjr")
+tool_mesh_bake_state = ExtResource("4_ngmy3")
 
 [node name="Saver" type="Node" parent="."]
 script = ExtResource("2_60v2b")
@@ -57,207 +48,12 @@ script = ExtResource("2_q5m0p")
 
 [node name="VoxelViewer" type="VoxelViewer" parent="Camera3D"]
 
-[node name="EditIndicators" type="Node3D" parent="."]
+[node name="EditIndicators" parent="." instance=ExtResource("6_yb3xi")]
 
-[node name="SphereEdit" type="MeshInstance3D" parent="EditIndicators"]
-visible = false
-mesh = SubResource("SphereMesh_25lff")
-skeleton = NodePath("../..")
-surface_material_override/0 = ExtResource("8_kwf34")
-
-[node name="CubeEdit" type="MeshInstance3D" parent="EditIndicators"]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
-visible = false
-mesh = SubResource("BoxMesh_e4d1c")
-skeleton = NodePath("../..")
-surface_material_override/0 = ExtResource("8_kwf34")
-
-[node name="BlendBall" type="MeshInstance3D" parent="EditIndicators"]
-visible = false
-mesh = SubResource("SphereMesh_25lff")
-skeleton = NodePath("../..")
-surface_material_override/0 = ExtResource("9_dhnrp")
-
-[node name="Surface" type="MeshInstance3D" parent="EditIndicators"]
-visible = false
-mesh = SubResource("SphereMesh_25lff")
-surface_material_override/0 = ExtResource("10_6lc7j")
-
-[node name="Flatten" type="MeshInstance3D" parent="EditIndicators"]
-visible = false
-mesh = SubResource("SphereMesh_25lff")
-skeleton = NodePath("../Surface")
-surface_material_override/0 = ExtResource("11_hkngl")
-
-[node name="Mesh" type="MeshInstance3D" parent="EditIndicators"]
-visible = false
-material_override = SubResource("StandardMaterial3D_wdp06")
-mesh = ExtResource("10_5ki11")
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="MenuMarginContainer" type="MarginContainer" parent="CanvasLayer"]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -146.0
-offset_bottom = 178.0
-grow_horizontal = 0
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MenuMarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="CurrentWorld" type="Label" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="MenuButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 8
-text = "Menu"
-
-[node name="MenuContainer" type="PanelContainer" parent="CanvasLayer/MenuMarginContainer/VBoxContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 8
-script = ExtResource("13_ppmbe")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer"]
-layout_mode = 2
-theme_override_constants/separation = 5
-
-[node name="ManageWorldsButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
-layout_mode = 2
-text = "Worlds"
-
-[node name="HelpButton" type="Button" parent="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer"]
-layout_mode = 2
-text = "Help"
-
-[node name="HelpWindow" type="Control" parent="CanvasLayer"]
-visible = false
-custom_minimum_size = Vector2(500, 500)
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -250.0
-offset_right = 200.0
-offset_bottom = 250.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-mouse_filter = 1
-script = ExtResource("10_3mcdr")
-
-[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/HelpWindow"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/HelpWindow/ScrollContainer"]
-custom_minimum_size = Vector2(500, 500)
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 4
-mouse_filter = 1
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow/ScrollContainer/PanelContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
-
-[node name="Label" type="Label" parent="CanvasLayer/HelpWindow/ScrollContainer/PanelContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/line_spacing = 1
-text = "Controls
-
-H - Toggle controls window
-WASD - Move around
-E/Q - Move up/down
-Left mouse button - Pull terrain
-Right mouse button - Push terrain
-Mouse scroll - Change edit scale
-1/2/3/4/5 - Select edit mode
-hold CTRL + Mouse click - Edit terrain once
-hold ALT + Mouse scroll - Change camera speed
-hold SHIFT - Move 2.5x times faster
-X - Show/Hide edit indicator
-ESC - Take control of mouse
-P - Toggle debug stat drawing"
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/HelpWindow"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -50.0
-offset_top = -31.0
-grow_horizontal = 0
-grow_vertical = 0
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 5
-
-[node name="Close" type="Button" parent="CanvasLayer/HelpWindow/MarginContainer"]
-layout_mode = 2
-text = "Close"
-
-[node name="ToolInfo" type="PanelContainer" parent="CanvasLayer"]
-offset_left = 19.0
-offset_top = 7.0
-offset_right = 288.0
-offset_bottom = 63.0
-script = ExtResource("11_ydr22")
-
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/ToolInfo"]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
-
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/ToolInfo/MarginContainer"]
-layout_mode = 2
-
-[node name="ToolSelect" type="OptionButton" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
-layout_mode = 2
-script = ExtResource("12_563gd")
-
-[node name="ParameterContainer" type="VBoxContainer" parent="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="WorldManager" parent="CanvasLayer" instance=ExtResource("18_3fqwx")]
-visible = false
-offset_top = 112.0
-offset_bottom = 552.0
+[node name="CanvasLayer" parent="." instance=ExtResource("9_0rkcr")]
 
 [node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
-view_distance = 256
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 31.4028, -128.753)
+[node name="TEMP_MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 30, -100)
 mesh = ExtResource("10_5ki11")
-
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="CanvasLayer/WorldManager" method="_on_manage_worlds_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/MenuMarginContainer/VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="CanvasLayer/HelpWindow" method="_on_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/HelpWindow/MarginContainer/Close" to="CanvasLayer/HelpWindow" method="_on_button_pressed"]
-[connection signal="item_selected" from="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]

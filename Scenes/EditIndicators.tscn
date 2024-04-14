@@ -1,0 +1,54 @@
+[gd_scene load_steps=10 format=3 uid="uid://14ye888u77ht"]
+
+[ext_resource type="Script" path="res://Scripts/EditIndicators.gd" id="1_0a18q"]
+[ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_5vy5a"]
+[ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="2_6a26l"]
+[ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="3_38vdf"]
+[ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="4_nwlro"]
+[ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/TrimMaterial.tres" id="5_jmq1k"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_25lff"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_e4d1c"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wdp06"]
+
+[node name="EditIndicators" type="Node3D"]
+script = ExtResource("1_0a18q")
+edit_mode_state = ExtResource("2_5vy5a")
+
+[node name="SphereEdit" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_25lff")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_6a26l")
+
+[node name="CubeEdit" type="MeshInstance3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+visible = false
+mesh = SubResource("BoxMesh_e4d1c")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("2_6a26l")
+
+[node name="BlendBall" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_25lff")
+skeleton = NodePath("../..")
+surface_material_override/0 = ExtResource("3_38vdf")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_25lff")
+surface_material_override/0 = ExtResource("4_nwlro")
+
+[node name="Flatten" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_25lff")
+skeleton = NodePath("../Surface")
+surface_material_override/0 = ExtResource("5_jmq1k")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+visible = false
+material_override = SubResource("StandardMaterial3D_wdp06")

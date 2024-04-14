@@ -88,7 +88,7 @@ const TOOL_DATA = {
 			"scale": {
 				"name": "Scale",
 				"default_value": 10,
-				"min": 2,
+				"min": 1,
 				"max": 100,
 				"step": 1,
 			},

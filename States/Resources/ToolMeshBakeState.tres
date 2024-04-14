@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="ToolMeshBakeState" load_steps=2 format=3 uid="uid://bkra78lbxpvns"]
+
+[ext_resource type="Script" path="res://States/ToolMeshBakeState.gd" id="1_c1e4e"]
+
+[resource]
+script = ExtResource("1_c1e4e")

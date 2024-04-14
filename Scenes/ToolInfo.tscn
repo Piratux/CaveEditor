@@ -1,0 +1,99 @@
+[gd_scene load_steps=10 format=3 uid="uid://dhu2e3cixohwh"]
+
+[ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="1_3md3q"]
+[ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="2_2juoe"]
+[ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_tj8sx"]
+[ext_resource type="Resource" uid="uid://bnetnq47i6ywj" path="res://States/Resources/ToolState.tres" id="3_tn378"]
+[ext_resource type="Script" path="res://Scripts/ToolMeshBakeInfo.gd" id="5_5xxrh"]
+[ext_resource type="Resource" uid="uid://bkra78lbxpvns" path="res://States/Resources/ToolMeshBakeState.tres" id="6_od1m7"]
+[ext_resource type="Script" path="res://Scripts/BakeModeSelect.gd" id="7_t5yfx"]
+[ext_resource type="Script" path="res://Scripts/BakeObjectNameSelect.gd" id="8_p2dq4"]
+[ext_resource type="Script" path="res://Scripts/BakeButton.gd" id="9_bo71t"]
+
+[node name="ToolContainer" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 11.0
+offset_right = 285.0
+offset_bottom = 67.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 92.0
+
+[node name="ToolInfo" type="PanelContainer" parent="VBoxContainer"]
+layout_mode = 2
+script = ExtResource("1_3md3q")
+edit_mode_state = ExtResource("2_tj8sx")
+tool_state = ExtResource("3_tn378")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/ToolInfo"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ToolInfo/MarginContainer"]
+layout_mode = 2
+
+[node name="ToolSelect" type="OptionButton" parent="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("2_2juoe")
+edit_mode_state = ExtResource("2_tj8sx")
+
+[node name="ParameterContainer" type="VBoxContainer" parent="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ToolMeshBakeInfo" type="PanelContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("5_5xxrh")
+tool_mesh_bake_state = ExtResource("6_od1m7")
+edit_mode_state = ExtResource("2_tj8sx")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/ToolMeshBakeInfo"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer"]
+layout_mode = 2
+
+[node name="BakeModeSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+item_count = 4
+selected = 0
+popup/item_0/text = "BAKE_MODE_ACCURATE_NAIVE"
+popup/item_0/id = 0
+popup/item_1/text = "BAKE_MODE_ACCURATE_PARTITIONED"
+popup/item_1/id = 1
+popup/item_2/text = "BAKE_MODE_APPROX_INTERP"
+popup/item_2/id = 2
+popup/item_3/text = "BAKE_MODE_APPROX_FLOODFILL"
+popup/item_3/id = 3
+script = ExtResource("7_t5yfx")
+tool_mesh_bake_state = ExtResource("6_od1m7")
+
+[node name="BakeObjectNameSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("8_p2dq4")
+tool_mesh_bake_state = ExtResource("6_od1m7")
+
+[node name="ParameterContainer" type="VBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BakeButton" type="Button" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Bake"
+script = ExtResource("9_bo71t")
+tool_mesh_bake_state = ExtResource("6_od1m7")
+
+[connection signal="item_selected" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
+[connection signal="pressed" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" method="_on_pressed"]
