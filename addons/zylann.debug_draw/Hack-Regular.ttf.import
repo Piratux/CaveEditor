@@ -3,21 +3,22 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://ir58tc8kwot7"
-path="res://.godot/imported/Hack-Regular.ttf-85c0e00233988dd4f27e5d86a4074d34.fontdata"
+path="res://.godot/imported/Hack-Regular.ttf-3bf27a69423cd36d9b1f292df024978e.fontdata"
 
 [deps]
 
-source_file="res://addons/zylann.debug_draw/Hack-Regular.ttf"
-dest_files=["res://.godot/imported/Hack-Regular.ttf-85c0e00233988dd4f27e5d86a4074d34.fontdata"]
+source_file="res://Addons/zylann.debug_draw/Hack-Regular.ttf"
+dest_files=["res://.godot/imported/Hack-Regular.ttf-3bf27a69423cd36d9b1f292df024978e.fontdata"]
 
 [params]
 
 Rendering=null
-antialiased=true
+antialiasing=1
 generate_mipmaps=false
 multichannel_signed_distance_field=false
 msdf_pixel_range=8
 msdf_size=48
+allow_system_fallback=true
 force_autohinter=false
 hinting=1
 subpixel_positioning=1

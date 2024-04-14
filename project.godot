@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DDD="*res://Addons/godot_debug_draw/addons/zylann.debug_draw/debug_draw.gd"
+DDD="*res://Addons/zylann.debug_draw/debug_draw.gd"
 
 [debug]
 
