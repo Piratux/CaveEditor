@@ -65,6 +65,11 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer"]
 layout_mode = 2
 
+[node name="BakeObjectNameSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("8_p2dq4")
+tool_mesh_bake_state = ExtResource("6_od1m7")
+
 [node name="BakeModeSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
 item_count = 4
@@ -78,11 +83,6 @@ popup/item_2/id = 2
 popup/item_3/text = "BAKE_MODE_APPROX_FLOODFILL"
 popup/item_3/id = 3
 script = ExtResource("7_t5yfx")
-tool_mesh_bake_state = ExtResource("6_od1m7")
-
-[node name="BakeObjectNameSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
-layout_mode = 2
-script = ExtResource("8_p2dq4")
 tool_mesh_bake_state = ExtResource("6_od1m7")
 
 [node name="ParameterContainer" type="VBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
@@ -110,7 +110,7 @@ text = "Mesh colors:
 - Red: mesh wasn't baked once yet"
 
 [connection signal="item_selected" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
-[connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" method="_on_item_selected"]
 [connection signal="toggled" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" method="_on_toggled"]
 [connection signal="pressed" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" method="_on_pressed"]

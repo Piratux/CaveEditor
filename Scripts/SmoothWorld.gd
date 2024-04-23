@@ -12,6 +12,9 @@ extends Node
 @onready var debug_stat_drawer = get_node("DebugStatDrawer")
 @onready var ui_root = get_node("CanvasLayer")
 
+var file_util = preload("res://Scripts/Utils/FileUtil.gd").new()
+var math_util = preload("res://Scripts/Utils/MathUtil.gd").new()
+
 var EDIT_MODE = preload("res://Scripts/EditModeEnum.gd").EDIT_MODE
 
 var base_terraform_distance = 1000
@@ -33,6 +36,17 @@ var last_frame_edit_data = {
 	"flatten_plane": null,
 }
 
+func _enter_tree():
+	# Cybermedium font:
+	# https://patorjk.com/software/taag/#p=display&f=Cybermedium&t=Cave%20Editor
+	print(r"""
+/----------------------------------------------------\
+|  ____ ____ _  _ ____    ____ ___  _ ___ ____ ____  |
+|  |    |__| |  | |___    |___ |  \ |  |  |  | |__/  |
+|  |___ |  |  \/  |___    |___ |__/ |  |  |__| |  \  |
+\----------------------------------------------------/
+	""")
+
 func _ready():
 	saver.load_data()
 	debug_stat_drawer.voxel_terrain = voxel_terrain
@@ -45,6 +59,8 @@ func _ready():
 	# Required for surface tool to interact nicely when
 	# surface is edited with other tools like sphere
 	voxel_tool.sdf_scale = 10
+	
+	add_test_meshes()
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -129,6 +145,36 @@ func _unhandled_input(event):
 					vp.debug_draw = Viewport.DEBUG_DRAW_WIREFRAME - vp.debug_draw
 	
 	update_last_frame_data()
+
+func get_edit_mesh_transform(mesh, transform, scale):
+	if mesh == null:
+		return null
+	
+	transform = math_util.get_unit_scaled_transform_from_mesh(mesh, transform)
+	
+	# Looks better when object is a bit above the ground
+	var offset = Vector3(0, scale + 5, 0)
+	return transform.translated(offset)
+
+func add_test_meshes():
+	var pos = Vector3(0, 20, -100)
+	var pos_spacing = Vector3(50, 0, 0)
+	for file_name in file_util.get_obj_file_paths():
+		var mesh = load(file_name)
+		if !mesh:
+			continue
+		
+		var mesh_instance := MeshInstance3D.new()
+		mesh_instance.mesh = mesh
+		mesh_instance.position = pos
+		var transform_scale = 20
+		mesh_instance.transform = get_edit_mesh_transform(mesh, mesh_instance.transform, transform_scale)
+		
+		var scaled_vector = Vector3(transform_scale, transform_scale, transform_scale)
+		mesh_instance.transform = mesh_instance.transform.scaled_local(scaled_vector)
+		
+		get_parent().add_child.call_deferred(mesh_instance)
+		pos += pos_spacing
 
 func update_last_frame_data():
 	if not left_mouse_button_held and not right_mouse_button_held:
@@ -245,20 +291,7 @@ func update_mesh_edit_indicator():
 	update_mesh_edit_indicator_transform(sdf_mesh)
 
 func update_mesh_edit_indicator_transform(sdf_mesh):
-	if sdf_mesh.mesh == null:
-		return
-	
-	var aabb = sdf_mesh.mesh.get_aabb()
-	var aabb_half_size = aabb.size / 2.0
-	var max_aabb_half_size_axis = max(aabb_half_size.x, aabb_half_size.y, aabb_half_size.z)
-	
-	var inverse_max_axis = 1.0 / max_aabb_half_size_axis
-	var scaled_vector = Vector3(inverse_max_axis, inverse_max_axis, inverse_max_axis)
-	edit_indicators.transform = edit_indicators.transform.scaled_local(scaled_vector)
-	
-	# TODO: I have a feeling offset can be made better than this
-	var offset = Vector3(0, aabb_half_size.y * (get_tool_scale() / max_aabb_half_size_axis) + 5, 0)
-	edit_indicators.transform = Transform3D(edit_indicators.transform.basis, edit_indicators.transform.origin + offset)
+	edit_indicators.transform = get_edit_mesh_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
 
 func try_edit_terrain(voxel_tool_mode):
 	var hit = get_pointed_voxel()
