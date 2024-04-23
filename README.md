@@ -52,3 +52,7 @@ scons platform=windows
 ```
 scons platform=windows target=template_release
 ```
+  - Build Godot template debug. Standalone executable, but with debug console:
+```
+scons platform=windows target=template_debug
+```
