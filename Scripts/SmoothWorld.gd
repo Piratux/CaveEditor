@@ -229,12 +229,18 @@ func update_mesh_edit_indicator():
 	edit_mesh.mesh = sdf_mesh.mesh
 	var mat : StandardMaterial3D = edit_mesh.material_override
 	
-	if sdf_mesh.is_baked():
-		mat.albedo_color = Color(1, 1, 1, 0.5)
-	elif sdf_mesh.is_baking():
-		mat.albedo_color = Color(1, 0.6, 0, 0.5)
+	if sdf_mesh.is_baking():
+		mat.albedo_color = Color(Color.ORANGE, 0.5)
+	elif (sdf_mesh.bake_mode != tool_mesh_bake_state.bake_mode
+		|| sdf_mesh.boundary_sign_fix_enabled != tool_mesh_bake_state.boundary_sign_fix_enabled
+		|| sdf_mesh.cell_count != tool_mesh_bake_state.get_slider_value("cell_count")
+		|| sdf_mesh.partition_subdiv != tool_mesh_bake_state.get_slider_value("partition_subdiv")
+		):
+		mat.albedo_color = Color(Color.PURPLE, 0.6)
+	elif sdf_mesh.is_baked():
+		mat.albedo_color = Color(Color.WHITE, 0.5)
 	else:
-		mat.albedo_color = Color(1, 0, 0, 0.5)
+		mat.albedo_color = Color(Color.RED, 0.5)
 	
 	update_mesh_edit_indicator_transform(sdf_mesh)
 

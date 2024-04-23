@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dhu2e3cixohwh"]
+[gd_scene load_steps=11 format=3 uid="uid://dhu2e3cixohwh"]
 
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="1_3md3q"]
 [ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="2_2juoe"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://Scripts/BakeModeSelect.gd" id="7_t5yfx"]
 [ext_resource type="Script" path="res://Scripts/BakeObjectNameSelect.gd" id="8_p2dq4"]
 [ext_resource type="Script" path="res://Scripts/BakeButton.gd" id="9_bo71t"]
+[ext_resource type="Script" path="res://Scripts/SignFixEnabledCheckBox.gd" id="9_pxnhm"]
 
 [node name="ToolContainer" type="Control"]
 layout_mode = 3
@@ -87,13 +88,29 @@ tool_mesh_bake_state = ExtResource("6_od1m7")
 [node name="ParameterContainer" type="VBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
+[node name="SignFixEnabledCheckBox" type="CheckBox" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Sign fix enabled"
+script = ExtResource("9_pxnhm")
+tool_mesh_bake_state = ExtResource("6_od1m7")
+
 [node name="BakeButton" type="Button" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Bake"
 script = ExtResource("9_bo71t")
 tool_mesh_bake_state = ExtResource("6_od1m7")
 
+[node name="Label" type="Label" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Mesh colors:
+- White: ready to use
+- Orange: baking
+- Purple: parameters have changed
+- Red: mesh wasn't baked once yet"
+
 [connection signal="item_selected" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
+[connection signal="toggled" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" method="_on_toggled"]
 [connection signal="pressed" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" method="_on_pressed"]
