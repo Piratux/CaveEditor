@@ -85,10 +85,10 @@ func bake_sdf_mesh(index):
 	assert(_scene_root)
 	
 	var sdf_mesh = get_sdf_mesh(index)
-	sdf_mesh.cell_count = get_slider_value("cell_count")
-	sdf_mesh.partition_subdiv = get_slider_value("partition_subdiv")
-	sdf_mesh.boundary_sign_fix_enabled = boundary_sign_fix_enabled
 	sdf_mesh.bake_mode = bake_mode
+	sdf_mesh.boundary_sign_fix_enabled = boundary_sign_fix_enabled
+	sdf_mesh.cell_count = cell_count
+	sdf_mesh.partition_subdiv = partition_subdiv
 	sdf_mesh.bake_async.call_deferred(_scene_root)
 	print("Building mesh SDF " + str(index) + "...")
 

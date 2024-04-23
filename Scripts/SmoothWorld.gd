@@ -233,8 +233,8 @@ func update_mesh_edit_indicator():
 		mat.albedo_color = Color(Color.ORANGE, 0.5)
 	elif (sdf_mesh.bake_mode != tool_mesh_bake_state.bake_mode
 		|| sdf_mesh.boundary_sign_fix_enabled != tool_mesh_bake_state.boundary_sign_fix_enabled
-		|| sdf_mesh.cell_count != tool_mesh_bake_state.get_slider_value("cell_count")
-		|| sdf_mesh.partition_subdiv != tool_mesh_bake_state.get_slider_value("partition_subdiv")
+		|| sdf_mesh.cell_count != tool_mesh_bake_state.cell_count
+		|| sdf_mesh.partition_subdiv != tool_mesh_bake_state.partition_subdiv
 		):
 		mat.albedo_color = Color(Color.PURPLE, 0.6)
 	elif sdf_mesh.is_baked():
