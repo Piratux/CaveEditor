@@ -1,6 +1,7 @@
 class_name ToolMeshBakeState
 extends Resource
 
+signal sdf_mesh_index_updated(new_value)
 signal bake_mode_updated(new_value)
 signal boundary_sign_fix_enabled_updated(new_value)
 signal bake_finished(sdf_mesh)
@@ -51,6 +52,8 @@ func set_selected_sdf_mesh_idx(value):
 	boundary_sign_fix_enabled = sdf_mesh.boundary_sign_fix_enabled
 	cell_count = sdf_mesh.cell_count
 	partition_subdiv = sdf_mesh.partition_subdiv
+	
+	sdf_mesh_index_updated.emit(value)
 
 func set_boundary_sign_fix_enabled(value):
 	boundary_sign_fix_enabled = value
@@ -98,3 +101,9 @@ func bake_all_sdf_meshes():
 
 func baking_finished(index):
 	print("Building mesh SDF " + str(index) + " done")
+
+func select_next_sdf_mesh():
+	set_selected_sdf_mesh_idx((_selected_sdf_mesh_idx + 1) % _sdf_meshes.size())
+
+func select_previous_sdf_mesh():
+	set_selected_sdf_mesh_idx((_selected_sdf_mesh_idx - 1 + _sdf_meshes.size()) % _sdf_meshes.size())

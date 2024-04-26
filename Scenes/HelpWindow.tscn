@@ -55,10 +55,11 @@ E/Q - Move up/down
 Left mouse button - Pull terrain
 Right mouse button - Push terrain
 Mouse scroll - Change edit scale
-1/2/3/4/5 - Select edit mode
-hold CTRL + Mouse click - Edit terrain once
-hold ALT + Mouse scroll - Change camera speed
-hold SHIFT - Move 2.5x times faster
+1/2/3/4/5/6 - Select edit mode
+Hold CTRL + Mouse click - Edit terrain once
+Hold ALT + Mouse scroll - Change camera speed
+Hold CTRL + Mouse scroll - Switch mesh in mesh mode
+Hold SHIFT - Move 2.5x times faster
 X - Show/Hide edit indicator
 ESC - Take control of mouse
 P - Toggle debug stat drawing"
