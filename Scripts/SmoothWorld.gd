@@ -157,7 +157,8 @@ func get_edit_mesh_transform(mesh, transform, scale):
 	if mesh == null:
 		return null
 	
-	transform = math_util.get_unit_scaled_transform_from_mesh(mesh, transform)
+	# TODO: it might be simpler to just center the mesh, by translating mesh instance directly as opposed to its parent
+	transform = math_util.get_unit_scaled_and_centered_transform_from_mesh(mesh, transform, scale)
 	
 	# Looks better when object is a bit above the ground
 	var offset = Vector3(0, scale + 5, 0)
