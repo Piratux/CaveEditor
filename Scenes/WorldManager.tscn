@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://Scripts/MeshExportDialog.gd" id="4_kigoc"]
 
 [node name="WorldManager" type="PanelContainer"]
+visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
