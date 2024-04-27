@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Scripts/WorldManagerInputMarginContainer.gd" id="3_bdfrv"]
 [ext_resource type="Script" path="res://Scripts/MeshExportDialog.gd" id="4_kigoc"]
 
-[node name="WorldManager" type="PanelContainer"]
+[node name="WorldManager" type="PanelContainer" groups=["WorldManagerWindow"]]
 visible = false
 anchors_preset = 5
 anchor_left = 0.5
@@ -144,7 +144,7 @@ dialog_text = "Can't delete last world."
 [connection signal="pressed" from="VBoxContainer/ActionMarginContainer/VBoxContainer/HBoxContainer/Delete" to="." method="_on_delete_pressed"]
 [connection signal="item_selected" from="VBoxContainer/ScrollContainer/MarginContainer/ItemList" to="." method="_on_item_list_item_selected"]
 [connection signal="pressed" from="VBoxContainer/ActionMarginContainer2/Create" to="VBoxContainer/InputMarginContainer" method="_on_create_pressed"]
-[connection signal="pressed" from="VBoxContainer/ActionMarginContainer2/Close" to="." method="_on_close_pressed"]
+[connection signal="pressed" from="VBoxContainer/ActionMarginContainer2/Close" to="." method="toggle_visibility"]
 [connection signal="text_changed" from="VBoxContainer/InputMarginContainer/VBoxContainer/LineEdit" to="VBoxContainer/InputMarginContainer/VBoxContainer/LineEdit" method="_on_text_changed"]
 [connection signal="pressed" from="VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer/Confirm" to="VBoxContainer/InputMarginContainer" method="_on_confirm_pressed"]
 [connection signal="pressed" from="VBoxContainer/InputMarginContainer/VBoxContainer/HBoxContainer/Cancel" to="VBoxContainer/InputMarginContainer" method="_on_cancel_pressed"]

@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cmd3rrk45m8r3"]
+[gd_scene load_steps=4 format=3 uid="uid://cmd3rrk45m8r3"]
 
 [ext_resource type="Script" path="res://Scripts/MenuContainer.gd" id="1_owrqa"]
+[ext_resource type="Script" path="res://Scripts/HelpButton.gd" id="2_dx007"]
+[ext_resource type="Script" path="res://Scripts/ManageWorldsButton.gd" id="2_u3xdb"]
 
 [node name="MenuMarginContainer" type="MarginContainer"]
 anchors_preset = 1
@@ -40,11 +42,15 @@ theme_override_constants/separation = 5
 [node name="ManageWorldsButton" type="Button" parent="VBoxContainer/MenuContainer/VBoxContainer"]
 layout_mode = 2
 text = "Worlds"
+script = ExtResource("2_u3xdb")
 
 [node name="HelpButton" type="Button" parent="VBoxContainer/MenuContainer/VBoxContainer"]
 layout_mode = 2
 text = "Help"
+script = ExtResource("2_dx007")
 
 [connection signal="pressed" from="VBoxContainer/MenuButton" to="VBoxContainer/MenuContainer" method="_on_menu_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" to="VBoxContainer/MenuContainer/VBoxContainer/ManageWorldsButton" method="_on_pressed"]
 [connection signal="pressed" from="VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="VBoxContainer/MenuContainer" method="_on_menu_item_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MenuContainer/VBoxContainer/HelpButton" to="VBoxContainer/MenuContainer/VBoxContainer/HelpButton" method="_on_pressed"]

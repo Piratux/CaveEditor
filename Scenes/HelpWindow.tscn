@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/HelpWindow.gd" id="1_dtcm2"]
 
-[node name="HelpWindow" type="Control"]
+[node name="HelpWindow" type="Control" groups=["HelpWindow"]]
 visible = false
 custom_minimum_size = Vector2(500, 500)
 layout_mode = 3
@@ -83,4 +83,4 @@ theme_override_constants/margin_bottom = 5
 layout_mode = 2
 text = "Close"
 
-[connection signal="pressed" from="MarginContainer/Close" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="MarginContainer/Close" to="." method="toggle_visibility"]
