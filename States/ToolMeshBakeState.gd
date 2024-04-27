@@ -7,6 +7,7 @@ signal boundary_sign_fix_enabled_updated(new_value)
 signal bake_finished(sdf_mesh)
 
 var bake_mode := VoxelMeshSDF.BAKE_MODE_ACCURATE_PARTITIONED : set = set_bake_mode
+#var bake_mode := VoxelMeshSDF.BAKE_MODE_APPROX_INTERP : set = set_bake_mode
 var boundary_sign_fix_enabled := true : set = set_boundary_sign_fix_enabled
 var cell_count := 64 : set = set_cell_count, get = get_cell_count
 var partition_subdiv := 32 : set = set_partition_subdiv, get = get_partition_subdiv
@@ -101,6 +102,23 @@ func bake_all_sdf_meshes():
 
 func baking_finished(index):
 	print("Building mesh SDF " + str(index) + " done")
+	
+	# Debug
+	var mesh_sdf = get_sdf_mesh(index)
+	var images = mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices(1.0)
+	for i in len(images):
+		var im = images[i]
+		
+		var path = ".debug_data"
+		DirAccess.make_dir_absolute(path)
+		
+		var subpath = str(path, "/sdf_slice_", index)
+		DirAccess.make_dir_absolute(subpath)
+		
+		var fpath = str(subpath, "/", i, ".png")
+		var err = im.save_png(fpath)
+		if err != OK:
+			push_error(str("Could not save image ", fpath, ", error ", err))
 
 func select_next_sdf_mesh():
 	set_selected_sdf_mesh_idx((_selected_sdf_mesh_idx + 1) % _sdf_meshes.size())
