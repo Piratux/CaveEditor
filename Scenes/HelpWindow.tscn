@@ -62,7 +62,8 @@ Hold CTRL + Mouse scroll - Switch mesh in mesh mode
 Hold SHIFT - Move 2.5x times faster
 X - Show/Hide edit indicator
 ESC - Take control of mouse
-P - Toggle debug stat drawing"
+P - Toggle debug stat drawing
+ALT + Z - Toggle overlay visibility"
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1

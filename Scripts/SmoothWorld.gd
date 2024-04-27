@@ -115,9 +115,6 @@ func _unhandled_input(event):
 			match event.keycode:
 				KEY_ESCAPE:
 					capture_mouse(false)
-				KEY_X:
-					edit_indicator_is_visible = not edit_indicator_is_visible
-					edit_indicators.visible = edit_indicator_is_visible
 				KEY_1:
 					edit_mode_state.edit_mode = EDIT_MODE.SPHERE
 				KEY_2:
@@ -147,6 +144,12 @@ func _unhandled_input(event):
 				KEY_O:
 					var vp = get_viewport()
 					vp.debug_draw = Viewport.DEBUG_DRAW_WIREFRAME - vp.debug_draw
+				KEY_X:
+					edit_indicator_is_visible = not edit_indicator_is_visible
+					edit_indicators.visible = edit_indicator_is_visible
+				KEY_Z:
+					if Input.is_action_pressed("ALT"):
+						ui_root.visible = not ui_root.visible
 	
 	update_last_frame_data()
 
