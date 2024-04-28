@@ -32,6 +32,8 @@ var can_edit_terrain = true;
 var mouse_captured = false
 var just_started_capturing_mouse = false
 
+var _sdf_scale = 10
+
 var last_frame_edit_data = {
 	"flatten_plane": null,
 }
@@ -58,7 +60,7 @@ func _ready():
 	
 	# Required for surface tool to interact nicely when
 	# surface is edited with other tools like sphere
-	voxel_tool.sdf_scale = 10
+	voxel_tool.sdf_scale = _sdf_scale
 	
 	add_test_meshes()
 
@@ -167,9 +169,9 @@ func get_edit_indicators_transform(mesh, transform, scale):
 	transform = transform.rotated_local(Vector3.BACK, deg_to_rad(rot_z))
 	
 	transform = math_util.get_unit_scaled_transform_from_mesh(mesh, transform)
-		
+	
 	# Looks better when object is a bit above the ground
-	var offset = Vector3(0, scale + 5, 0)
+	var offset = Vector3(0, scale + 10, 0)
 	return transform.translated(offset)
 
 func get_edit_mesh_transform(mesh):
@@ -245,12 +247,6 @@ func get_tool_isolevel():
 
 func set_tool_isolevel(new_value):
 	set_tool_parameter_value("isolevel", new_value)
-
-func get_tool_sdf_scale():
-	return get_tool_parameter_value("sdf_scale")
-
-func set_tool_sdf_scale(new_value):
-	set_tool_parameter_value("sdf_scale", new_value)
 
 func get_tool_rot_x():
 	return get_tool_parameter_value("rot_x")
@@ -374,6 +370,14 @@ func update_edit_mode_mesh_transform(sdf_mesh):
 	edit_indicators.transform = get_edit_indicators_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
 	get_edit_mesh(EDIT_MODE.MESH).transform = get_edit_mesh_transform(sdf_mesh.mesh)
 
+func get_edit_mesh_sdf_scale(mesh):
+	var aabb = mesh.get_aabb()
+	var aabb_half_size = aabb.size / 2.0
+	var max_aabb_half_size_axis = max(aabb_half_size.x, aabb_half_size.y, aabb_half_size.z)
+	
+	# (25 * sdf_scale) magic number gives close enough results that make stamped cube mesh and do_box SDF look similarly
+	return (25 * _sdf_scale) / max_aabb_half_size_axis
+
 func try_edit_terrain(voxel_tool_mode):
 	var hit = get_pointed_voxel()
 	
@@ -394,8 +398,7 @@ func try_edit_terrain(voxel_tool_mode):
 	var forward = get_camera_forward_vector()
 	var edit_scale = get_tool_scale()
 	var edit_strength = get_tool_strength()
-	var edit_isolevel = get_tool_isolevel()
-	var edit_sdf_scale = get_tool_sdf_scale()
+	var edit_isolevel = get_tool_isolevel() * _sdf_scale
 	
 	voxel_tool.mode = voxel_tool_mode
 	
@@ -432,7 +435,8 @@ func try_edit_terrain(voxel_tool_mode):
 			print(sdf_mesh.get_voxel_buffer().get_size())
 			var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 			var place_transform = edit_mesh.global_transform
-			voxel_tool.stamp_sdf(sdf_mesh, place_transform, edit_isolevel, edit_sdf_scale)
+			var sdf_scale = get_edit_mesh_sdf_scale(edit_mesh.mesh)
+			voxel_tool.stamp_sdf(sdf_mesh, place_transform, edit_isolevel, sdf_scale)
 			print(place_transform)
 
 func capture_mouse(value):
