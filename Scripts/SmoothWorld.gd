@@ -167,7 +167,7 @@ func get_edit_indicators_transform(mesh, transform, scale):
 	transform = transform.rotated_local(Vector3.BACK, deg_to_rad(rot_z))
 	
 	transform = math_util.get_unit_scaled_transform_from_mesh(mesh, transform)
-	
+		
 	# Looks better when object is a bit above the ground
 	var offset = Vector3(0, scale + 5, 0)
 	return transform.translated(offset)
@@ -368,9 +368,9 @@ func update_mesh_edit_indicator():
 	else:
 		mat.albedo_color = Color(Color.RED, 0.5)
 	
-	update_mesh_edit_indicator_transform(sdf_mesh)
+	update_edit_mode_mesh_transform(sdf_mesh)
 
-func update_mesh_edit_indicator_transform(sdf_mesh):
+func update_edit_mode_mesh_transform(sdf_mesh):
 	edit_indicators.transform = get_edit_indicators_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
 	get_edit_mesh(EDIT_MODE.MESH).transform = get_edit_mesh_transform(sdf_mesh.mesh)
 
