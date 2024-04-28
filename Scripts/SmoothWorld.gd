@@ -153,16 +153,46 @@ func _unhandled_input(event):
 	
 	update_last_frame_data()
 
-func get_edit_mesh_transform(mesh, transform, scale):
+func get_edit_indicators_transform(mesh, transform, scale):
 	if mesh == null:
 		return null
 	
-	# TODO: it might be simpler to just center the mesh, by translating mesh instance directly as opposed to its parent
-	transform = math_util.get_unit_scaled_and_centered_transform_from_mesh(mesh, transform, scale)
+	var rot_x = get_tool_rot_x() if get_tool_rot_x() else 0
+	var rot_y = get_tool_rot_y() if get_tool_rot_y() else 0
+	var rot_z = get_tool_rot_z() if get_tool_rot_z() else 0
+	
+	# YXZ rotation order is Godot's default.
+	transform = transform.rotated_local(Vector3.UP, deg_to_rad(rot_y))
+	transform = transform.rotated_local(Vector3.RIGHT, deg_to_rad(rot_x))
+	transform = transform.rotated_local(Vector3.BACK, deg_to_rad(rot_z))
+	
+	transform = math_util.get_unit_scaled_transform_from_mesh(mesh, transform)
 	
 	# Looks better when object is a bit above the ground
 	var offset = Vector3(0, scale + 5, 0)
 	return transform.translated(offset)
+
+func get_edit_mesh_transform(mesh):
+	var transform = Transform3D()
+	
+	var pivot_offset_x = get_tool_pivot_offset_x() if get_tool_pivot_offset_x() else 0
+	var pivot_offset_y = get_tool_pivot_offset_y() if get_tool_pivot_offset_y() else 0
+	var pivot_offset_z = get_tool_pivot_offset_z() if get_tool_pivot_offset_z() else 0
+	
+	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
+	var mesh_aabb = mesh.get_aabb()
+	transform = transform.translated(-mesh_aabb.get_center())
+	
+	var mesh_aabb_half_size = mesh_aabb.size / 2
+	var pivot_offset = Vector3(
+		mesh_aabb_half_size.x * (pivot_offset_x / 100),
+		mesh_aabb_half_size.y * (pivot_offset_y / 100),
+		mesh_aabb_half_size.z * (pivot_offset_z / 100)
+	)
+	
+	transform = transform.translated(pivot_offset)
+	
+	return transform
 
 func add_test_meshes():
 	var pos = Vector3(0, 20, -100)
@@ -172,16 +202,20 @@ func add_test_meshes():
 		if !mesh:
 			continue
 		
+		var node_instance := Node3D.new()
+		node_instance.transform = get_edit_indicators_transform(mesh, node_instance.transform, 1)
+		node_instance.position = pos
+		
+		var transform_scale = 20
+		var scaled_vector = Vector3(transform_scale, transform_scale, transform_scale)
+		node_instance.transform = node_instance.transform.scaled_local(scaled_vector)
+		
 		var mesh_instance := MeshInstance3D.new()
 		mesh_instance.mesh = mesh
-		mesh_instance.position = pos
-		var transform_scale = 20
-		mesh_instance.transform = get_edit_mesh_transform(mesh, mesh_instance.transform, transform_scale)
+		mesh_instance.transform = get_edit_mesh_transform(mesh)
 		
-		var scaled_vector = Vector3(transform_scale, transform_scale, transform_scale)
-		mesh_instance.transform = mesh_instance.transform.scaled_local(scaled_vector)
-		
-		get_parent().add_child.call_deferred(mesh_instance)
+		node_instance.add_child(mesh_instance)
+		get_parent().add_child.call_deferred(node_instance)
 		pos += pos_spacing
 
 func update_last_frame_data():
@@ -217,6 +251,42 @@ func get_tool_sdf_scale():
 
 func set_tool_sdf_scale(new_value):
 	set_tool_parameter_value("sdf_scale", new_value)
+
+func get_tool_rot_x():
+	return get_tool_parameter_value("rot_x")
+
+func set_tool_rot_x(new_value):
+	set_tool_parameter_value("rot_x", new_value)
+
+func get_tool_rot_y():
+	return get_tool_parameter_value("rot_y")
+
+func set_tool_rot_y(new_value):
+	set_tool_parameter_value("rot_y", new_value)
+
+func get_tool_rot_z():
+	return get_tool_parameter_value("rot_z")
+
+func set_tool_rot_z(new_value):
+	set_tool_parameter_value("rot_z", new_value)
+
+func get_tool_pivot_offset_x():
+	return get_tool_parameter_value("pivot_offset_x")
+
+func set_tool_pivot_offset_x(new_value):
+	set_tool_parameter_value("pivot_offset_x", new_value)
+
+func get_tool_pivot_offset_y():
+	return get_tool_parameter_value("pivot_offset_y")
+
+func set_tool_pivot_offset_y(new_value):
+	set_tool_parameter_value("pivot_offset_y", new_value)
+
+func get_tool_pivot_offset_z():
+	return get_tool_parameter_value("pivot_offset_z")
+
+func set_tool_pivot_offset_z(new_value):
+	set_tool_parameter_value("pivot_offset_z", new_value)
 
 func get_edit_mesh(_edit_mode):
 	return edit_indicators.get_child(_edit_mode)
@@ -269,6 +339,8 @@ func update_edit_indicator():
 		
 		var tool_scale = get_tool_scale()
 		edit_indicators.scale = Vector3(tool_scale, tool_scale, tool_scale)
+		
+		edit_indicators.rotation = Vector3(0,0,0)
 	else:
 		edit_indicators.visible = false
 	
@@ -299,7 +371,8 @@ func update_mesh_edit_indicator():
 	update_mesh_edit_indicator_transform(sdf_mesh)
 
 func update_mesh_edit_indicator_transform(sdf_mesh):
-	edit_indicators.transform = get_edit_mesh_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
+	edit_indicators.transform = get_edit_indicators_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
+	get_edit_mesh(EDIT_MODE.MESH).transform = get_edit_mesh_transform(sdf_mesh.mesh)
 
 func try_edit_terrain(voxel_tool_mode):
 	var hit = get_pointed_voxel()
@@ -357,7 +430,8 @@ func try_edit_terrain(voxel_tool_mode):
 		if sdf_mesh.is_baked():
 			print("Mesh sdf voxel buffer size:")
 			print(sdf_mesh.get_voxel_buffer().get_size())
-			var place_transform = edit_indicators.transform
+			var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
+			var place_transform = edit_mesh.global_transform
 			voxel_tool.stamp_sdf(sdf_mesh, place_transform, edit_isolevel, edit_sdf_scale)
 			print(place_transform)
 
