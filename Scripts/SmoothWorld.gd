@@ -145,7 +145,8 @@ func _unhandled_input(event):
 					camera.position.z -= 1
 				KEY_O:
 					var vp = get_viewport()
-					vp.debug_draw = Viewport.DEBUG_DRAW_WIREFRAME - vp.debug_draw
+					#vp.debug_draw = Viewport.DEBUG_DRAW_WIREFRAME - vp.debug_draw
+					vp.debug_draw = (vp.debug_draw + 1) % 7
 				KEY_X:
 					edit_indicator_is_visible = not edit_indicator_is_visible
 					edit_indicators.visible = edit_indicator_is_visible
@@ -398,7 +399,9 @@ func try_edit_terrain(voxel_tool_mode):
 	var forward = get_camera_forward_vector()
 	var edit_scale = get_tool_scale()
 	var edit_strength = get_tool_strength()
-	var edit_isolevel = get_tool_isolevel() * _sdf_scale
+	var edit_isolevel = get_tool_isolevel()
+	if edit_isolevel:
+		edit_isolevel *= _sdf_scale
 	
 	voxel_tool.mode = voxel_tool_mode
 	
