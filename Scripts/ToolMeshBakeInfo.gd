@@ -13,16 +13,16 @@ const MESH_BAKE_PARAMETERS = {
 	"cell_count": {
 		"name": "Cell count",
 		"default_value": 64,
-		"min": 32,
+		"min": 16,
 		"max": 256,
-		"step": 32,
+		"step": 16,
 	},
 	"partition_subdiv": {
 		"name": "Partition subdiv",
 		"default_value": 32,
-		"min": 32,
-		"max": 256,
-		"step": 32,
+		"min": 16,
+		"max": 64,
+		"step": 8,
 	},
 }
 
