@@ -7,7 +7,6 @@ signal boundary_sign_fix_enabled_updated(new_value)
 signal bake_finished(sdf_mesh)
 
 var bake_mode := VoxelMeshSDF.BAKE_MODE_ACCURATE_PARTITIONED : set = set_bake_mode
-#var bake_mode := VoxelMeshSDF.BAKE_MODE_APPROX_INTERP : set = set_bake_mode
 var boundary_sign_fix_enabled := true : set = set_boundary_sign_fix_enabled
 var cell_count := 64 : set = set_cell_count, get = get_cell_count
 var partition_subdiv := 32 : set = set_partition_subdiv, get = get_partition_subdiv
@@ -112,6 +111,7 @@ func baking_finished(index):
 		var path = ".debug_data"
 		DirAccess.make_dir_absolute(path)
 		
+		# TODO: delete folder first, to clear it from previous baking
 		var subpath = str(path, "/sdf_slice_", index)
 		DirAccess.make_dir_absolute(subpath)
 		
