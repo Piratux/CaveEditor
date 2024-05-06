@@ -24,12 +24,12 @@ func perform_tests():
 			#for p in partition_subdivs:
 				#test_accurate_partitioned_baking_speed(c, p)
 	
-	#if true:
-		##var cell_counts = [32, 64, 96, 128]
-		##var cell_counts = [16, 32, 48, 64, 128, 255]
-		#var cell_counts = [16]
-		#for c in cell_counts:
-			#test_all_baking_speed(c)
+	if true:
+		#var cell_counts = [32, 64, 96, 128]
+		#var cell_counts = [16, 32, 48, 64, 128, 255]
+		var cell_counts = [16, 32, 48]
+		for c in cell_counts:
+			test_all_baking_speed(c)
 
 	pass
 
@@ -122,10 +122,10 @@ func test_all_baking_speed(cell_count):
 		var mesh = load(file_name)
 		
 		var baking_modes = [
-			#VoxelMeshSDF.BAKE_MODE_ACCURATE_NAIVE,
+			VoxelMeshSDF.BAKE_MODE_ACCURATE_NAIVE,
 			#VoxelMeshSDF.BAKE_MODE_ACCURATE_PARTITIONED,
 			#VoxelMeshSDF.BAKE_MODE_APPROX_INTERP,
-			VoxelMeshSDF.BAKE_MODE_APPROX_FLOODFILL,
+			#VoxelMeshSDF.BAKE_MODE_APPROX_FLOODFILL,
 		]
 		for baking_mode in baking_modes:
 			var result = get_sdf_mesh_timed(baking_mode, mesh, cell_count, 32)
