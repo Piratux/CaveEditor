@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=14 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
@@ -10,8 +10,6 @@
 [ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/VoxelLodTerrain.tscn" id="5_vn6vi"]
 [ext_resource type="PackedScene" uid="uid://14ye888u77ht" path="res://Scenes/EditIndicators.tscn" id="6_yb3xi"]
 [ext_resource type="PackedScene" uid="uid://bj0mnr5kp5p6y" path="res://Scenes/CanvasLayer.tscn" id="9_0rkcr"]
-[ext_resource type="Script" path="res://Scripts/Tester.gd" id="11_vuwnu"]
-[ext_resource type="AudioStream" uid="uid://di8jpdnoamxnu" path="res://Sounds/unit_ready.wav" id="12_ilv0u"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4jqid"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -54,9 +52,3 @@ script = ExtResource("2_q5m0p")
 [node name="CanvasLayer" parent="." instance=ExtResource("9_0rkcr")]
 
 [node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
-
-[node name="Tester" type="Node" parent="."]
-script = ExtResource("11_vuwnu")
-
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("12_ilv0u")
