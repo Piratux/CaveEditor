@@ -10,5 +10,5 @@ gnuplot -persist <<- EOF
     set xrange [8:264]
     set yrange [0:300]
     set xtics 16
-    plot "$data_file" every ::8::13 using 1:2 with linespoints lc "green" title "Approximate floodfill"
+    plot "$data_file" every ::16::21 using 1:2 with linespoints lc "green" title "Approximate floodfill"
 EOF

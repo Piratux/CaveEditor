@@ -10,8 +10,8 @@ gnuplot -persist <<- EOF
     set xrange [8:264]
     set yrange [0:5500]
     set xtics 16
-    plot "$data_file" every ::0::3 using 1:2 with linespoints lc "red" title "Accurate naive", \
-         "$data_file" every ::4::7 using 1:2 with linespoints lc "blue" title "Approximate interpolation", \
-         "$data_file" every ::8::13 using 1:2 with linespoints lc "green" title "Approximate floodfill", \
-         "$data_file" every ::14::19 using 1:2 with linespoints lc "purple" title "Accurate partitioned"
+    plot "$data_file" every ::0::4 using 1:2 with linespoints lc "red" title "Accurate naive", \
+         "$data_file" every ::5::9 using 1:2 with linespoints lc "blue" title "Approximate interpolation", \
+         "$data_file" every ::10::15 using 1:2 with linespoints lc "green" title "Approximate floodfill", \
+         "$data_file" every ::16::21 using 1:2 with linespoints lc "purple" title "Accurate partitioned"
 EOF

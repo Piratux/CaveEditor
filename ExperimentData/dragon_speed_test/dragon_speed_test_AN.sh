@@ -7,8 +7,8 @@ gnuplot -persist <<- EOF
     set title "Stanford dragon baking speed" offset 0, 1
     set xlabel "Cell count"
     set ylabel "Time in sec"
-    set xrange [14:66]
-    set yrange [0:2000]
+    set xrange [12:132]
+    set yrange [0:14000]
     set xtics 16
-    plot "$data_file" every ::0::3 using 1:2 with linespoints lc "red" title "Accurate naive"
+    plot "$data_file" every ::0::4 using 1:2 with linespoints lc "red" title "Accurate naive"
 EOF
