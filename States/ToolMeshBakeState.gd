@@ -1,6 +1,8 @@
 class_name ToolMeshBakeState
 extends Resource
 
+const SDF_MESH_STATE = preload("res://Scripts/SdfMeshStateEnum.gd").SDF_MESH_STATE
+
 signal sdf_mesh_index_updated(new_value)
 signal bake_mode_updated(new_value)
 signal boundary_sign_fix_enabled_updated(new_value)
@@ -125,3 +127,18 @@ func select_next_sdf_mesh():
 
 func select_previous_sdf_mesh():
 	set_selected_sdf_mesh_idx((_selected_sdf_mesh_idx - 1 + _sdf_meshes.size()) % _sdf_meshes.size())
+
+func get_selected_sdf_mesh_state():
+	var sdf_mesh = get_selected_sdf_mesh()
+	if sdf_mesh.is_baking():
+		return SDF_MESH_STATE.BAKING
+	elif (sdf_mesh.bake_mode != bake_mode
+		|| sdf_mesh.boundary_sign_fix_enabled != boundary_sign_fix_enabled
+		|| sdf_mesh.cell_count != cell_count
+		|| sdf_mesh.partition_subdiv != partition_subdiv
+		):
+		return SDF_MESH_STATE.BAKING_PARAMETERS_CHANGED
+	elif sdf_mesh.is_baked():
+		return SDF_MESH_STATE.READY
+	else:
+		return SDF_MESH_STATE.NOT_BAKED_ONCE

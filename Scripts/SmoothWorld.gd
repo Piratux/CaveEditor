@@ -16,6 +16,7 @@ var file_util = preload("res://Scripts/Utils/FileUtil.gd").new()
 var math_util = preload("res://Scripts/Utils/MathUtil.gd").new()
 
 var EDIT_MODE = preload("res://Scripts/EditModeEnum.gd").EDIT_MODE
+const SDF_MESH_STATE_COLOUR_DATA = preload("res://Scripts/SdfMeshStateColourData.gd").SDF_MESH_STATE_COLOUR_DATA
 
 var base_terraform_distance = 1000
 var terraform_distance = base_terraform_distance
@@ -351,19 +352,9 @@ func update_mesh_edit_indicator():
 	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 	edit_mesh.mesh = sdf_mesh.mesh
 	var mat : StandardMaterial3D = edit_mesh.material_override
+	var edit_mesh_state = tool_mesh_bake_state.get_selected_sdf_mesh_state()
 	
-	if sdf_mesh.is_baking():
-		mat.albedo_color = Color(Color.ORANGE, 0.5)
-	elif (sdf_mesh.bake_mode != tool_mesh_bake_state.bake_mode
-		|| sdf_mesh.boundary_sign_fix_enabled != tool_mesh_bake_state.boundary_sign_fix_enabled
-		|| sdf_mesh.cell_count != tool_mesh_bake_state.cell_count
-		|| sdf_mesh.partition_subdiv != tool_mesh_bake_state.partition_subdiv
-		):
-		mat.albedo_color = Color(Color.PURPLE, 0.6)
-	elif sdf_mesh.is_baked():
-		mat.albedo_color = Color(Color.WHITE, 0.5)
-	else:
-		mat.albedo_color = Color(Color.RED, 0.5)
+	mat.albedo_color = SDF_MESH_STATE_COLOUR_DATA[edit_mesh_state].colour
 	
 	update_edit_mode_mesh_transform(sdf_mesh)
 

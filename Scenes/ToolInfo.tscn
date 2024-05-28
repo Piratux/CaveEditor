@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dhu2e3cixohwh"]
+[gd_scene load_steps=12 format=3 uid="uid://dhu2e3cixohwh"]
 
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="1_3md3q"]
 [ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="2_2juoe"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/BakeObjectNameSelect.gd" id="8_p2dq4"]
 [ext_resource type="Script" path="res://Scripts/BakeButton.gd" id="9_bo71t"]
 [ext_resource type="Script" path="res://Scripts/SignFixEnabledCheckBox.gd" id="9_pxnhm"]
+[ext_resource type="Script" path="res://Scripts/ToolBakeStateLabel.gd" id="11_p5ykl"]
 
 [node name="ToolContainer" type="Control"]
 layout_mode = 3
@@ -101,13 +102,12 @@ text = "Bake"
 script = ExtResource("9_bo71t")
 tool_mesh_bake_state = ExtResource("6_od1m7")
 
-[node name="Label" type="Label" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+[node name="SdfMeshStateLabel" type="RichTextLabel" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Mesh colors:
-- White: ready to use
-- Orange: baking
-- Purple: parameters have changed
-- Red: mesh wasn't baked once yet"
+bbcode_enabled = true
+fit_content = true
+script = ExtResource("11_p5ykl")
+tool_mesh_bake_state = ExtResource("6_od1m7")
 
 [connection signal="item_selected" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
