@@ -14,6 +14,7 @@ height = 2.0
 [sub_resource type="BoxMesh" id="BoxMesh_e4d1c"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wdp06"]
+transparency = 1
 
 [node name="EditIndicators" type="Node3D"]
 script = ExtResource("1_0a18q")
