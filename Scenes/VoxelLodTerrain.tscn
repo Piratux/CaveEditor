@@ -9,7 +9,7 @@
 [node name="VoxelLodTerrain" type="VoxelLodTerrain"]
 generator = ExtResource("1_ohagh")
 mesher = SubResource("VoxelMesherTransvoxel_7ftyi")
-view_distance = 384
+view_distance = 256
 lod_count = 1
 lod_distance = 128.0
 material = ExtResource("2_kb06s")
