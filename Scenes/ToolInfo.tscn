@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://dhu2e3cixohwh"]
+[gd_scene load_steps=13 format=3 uid="uid://dhu2e3cixohwh"]
 
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="1_3md3q"]
 [ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="2_2juoe"]
 [ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_tj8sx"]
 [ext_resource type="Resource" uid="uid://bnetnq47i6ywj" path="res://States/Resources/ToolState.tres" id="3_tn378"]
+[ext_resource type="Script" path="res://Scripts/MeshEditPreviewEnabledCheckBox.gd" id="5_1s7tm"]
 [ext_resource type="Script" path="res://Scripts/ToolMeshBakeInfo.gd" id="5_5xxrh"]
 [ext_resource type="Resource" uid="uid://bkra78lbxpvns" path="res://States/Resources/ToolMeshBakeState.tres" id="6_od1m7"]
 [ext_resource type="Script" path="res://Scripts/BakeModeSelect.gd" id="7_t5yfx"]
@@ -49,8 +50,14 @@ edit_mode_state = ExtResource("2_tj8sx")
 [node name="ParameterContainer" type="VBoxContainer" parent="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
+[node name="MeshEditPreviewEnabledCheckBox" type="CheckBox" parent="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Preview enabled"
+script = ExtResource("5_1s7tm")
+tool_state = ExtResource("3_tn378")
+edit_mode_state = ExtResource("2_tj8sx")
+
 [node name="ToolMeshBakeInfo" type="PanelContainer" parent="VBoxContainer"]
-visible = false
 layout_mode = 2
 script = ExtResource("5_5xxrh")
 tool_mesh_bake_state = ExtResource("6_od1m7")
@@ -110,6 +117,7 @@ script = ExtResource("11_p5ykl")
 tool_mesh_bake_state = ExtResource("6_od1m7")
 
 [connection signal="item_selected" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
+[connection signal="toggled" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/MeshEditPreviewEnabledCheckBox" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/MeshEditPreviewEnabledCheckBox" method="_on_toggled"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" method="_on_item_selected"]
 [connection signal="toggled" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" method="_on_toggled"]

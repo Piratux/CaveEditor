@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://14ye888u77ht"]
+[gd_scene load_steps=11 format=3 uid="uid://14ye888u77ht"]
 
 [ext_resource type="Script" path="res://Scripts/EditIndicators.gd" id="1_0a18q"]
 [ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_5vy5a"]
@@ -6,6 +6,7 @@
 [ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="3_38vdf"]
 [ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="4_nwlro"]
 [ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/TrimMaterial.tres" id="5_jmq1k"]
+[ext_resource type="Resource" uid="uid://bnetnq47i6ywj" path="res://States/Resources/ToolState.tres" id="8_ty0bi"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_25lff"]
 radius = 1.0
@@ -19,6 +20,7 @@ transparency = 1
 [node name="EditIndicators" type="Node3D"]
 script = ExtResource("1_0a18q")
 edit_mode_state = ExtResource("2_5vy5a")
+tool_state = ExtResource("8_ty0bi")
 
 [node name="SphereEdit" type="MeshInstance3D" parent="."]
 visible = false
@@ -51,5 +53,4 @@ skeleton = NodePath("../Surface")
 surface_material_override/0 = ExtResource("5_jmq1k")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
-visible = false
 material_override = SubResource("StandardMaterial3D_wdp06")

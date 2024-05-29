@@ -11,6 +11,7 @@ extends Node
 @onready var edit_indicators = get_node("EditIndicators")
 @onready var debug_stat_drawer = get_node("DebugStatDrawer")
 @onready var ui_root = get_node("CanvasLayer")
+@onready var mesh_edit_indicator = get_node("VoxelTerrain/MeshEditPreviewIndicator")
 
 var file_util = preload("res://Scripts/Utils/FileUtil.gd").new()
 var math_util = preload("res://Scripts/Utils/MathUtil.gd").new()
@@ -64,6 +65,12 @@ func _ready():
 	voxel_tool.sdf_scale = _sdf_scale
 	
 	add_test_meshes()
+	
+	tool_state.mesh_preview_enabled_updated.connect(mesh_preview_enabled_updated)
+	tool_mesh_bake_state.sdf_mesh_index_updated.connect(sdf_mesh_index_updated)
+	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
+	
+	update_mesh_edit_preview_indicator()
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -151,6 +158,8 @@ func _unhandled_input(event):
 				KEY_X:
 					edit_indicator_is_visible = not edit_indicator_is_visible
 					edit_indicators.visible = edit_indicator_is_visible
+					
+					update_mesh_edit_preview_indicator()
 				KEY_Z:
 					if Input.is_action_pressed("ALT"):
 						ui_root.visible = not ui_root.visible
@@ -183,7 +192,6 @@ func get_edit_mesh_transform(mesh):
 	var pivot_offset_y = get_tool_pivot_offset_y() if get_tool_pivot_offset_y() else 0
 	var pivot_offset_z = get_tool_pivot_offset_z() if get_tool_pivot_offset_z() else 0
 	
-	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 	var mesh_aabb = mesh.get_aabb()
 	transform = transform.translated(-mesh_aabb.get_center())
 	
@@ -313,9 +321,17 @@ func get_camera_forward_vector():
 	return -camera.get_transform().basis.z.normalized()
 
 func get_pointed_voxel():
+	# When we cast the ray, we don't want voxel_modifier_mesh to be hit, as that causes
+	# it to endlessly adjust the edit indicator position.
+	# So we move it away temporarily just for the raycast.
+	mesh_edit_indicator.position.x += 100000
+	
 	var origin = camera.get_position()
 	var forward = get_camera_forward_vector()
 	var hit = voxel_tool.raycast(origin, forward, terraform_distance)
+	
+	mesh_edit_indicator.position.x -= 100000
+	
 	return hit
 
 # increases vector length, so that vector touches cube side
@@ -349,18 +365,21 @@ func update_mesh_edit_indicator():
 		return
 	
 	var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
+
 	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 	edit_mesh.mesh = sdf_mesh.mesh
 	var mat : StandardMaterial3D = edit_mesh.material_override
+
 	var edit_mesh_state = tool_mesh_bake_state.get_selected_sdf_mesh_state()
-	
 	mat.albedo_color = SDF_MESH_STATE_COLOUR_DATA[edit_mesh_state].colour
 	
 	update_edit_mode_mesh_transform(sdf_mesh)
 
 func update_edit_mode_mesh_transform(sdf_mesh):
 	edit_indicators.transform = get_edit_indicators_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
+	
 	get_edit_mesh(EDIT_MODE.MESH).transform = get_edit_mesh_transform(sdf_mesh.mesh)
+	mesh_edit_indicator.global_transform = get_edit_mesh(EDIT_MODE.MESH).global_transform
 
 func get_edit_mesh_sdf_scale(mesh):
 	var aabb = mesh.get_aabb()
@@ -438,3 +457,28 @@ func capture_mouse(value):
 	just_started_capturing_mouse = value
 	
 	ui_root.capture_mouse(value)
+
+func update_mesh_edit_preview_indicator():
+	if not edit_indicator_is_visible:
+		mesh_edit_indicator.mesh_sdf = null
+		return
+	
+	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
+		mesh_edit_indicator.mesh_sdf = null
+		return
+	
+	if not tool_state.mesh_preview_enabled:
+		mesh_edit_indicator.mesh_sdf = null
+		return
+	
+	var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
+	mesh_edit_indicator.mesh_sdf = sdf_mesh
+
+func mesh_preview_enabled_updated(new_value):
+	update_mesh_edit_preview_indicator()
+
+func sdf_mesh_index_updated(new_value):
+	update_mesh_edit_preview_indicator()
+
+func edit_mode_updated(new_edit_mode):
+	update_mesh_edit_preview_indicator()

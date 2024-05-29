@@ -27,8 +27,10 @@ const MESH_BAKE_PARAMETERS = {
 }
 
 func _ready():
-	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
 	create_parameter_sliders()
+
+	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
+	edit_mode_updated(edit_mode_state.edit_mode)
 
 func create_parameter_sliders():
 	for parameter_name in MESH_BAKE_PARAMETERS.keys():

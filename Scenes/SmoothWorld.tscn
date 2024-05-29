@@ -52,3 +52,7 @@ script = ExtResource("2_q5m0p")
 [node name="CanvasLayer" parent="." instance=ExtResource("9_0rkcr")]
 
 [node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
+
+[node name="MeshEditPreviewIndicator" type="VoxelModifierMesh" parent="VoxelTerrain"]
+transform = Transform3D(80, 0, 0, 0, 80, 0, 0, 0, 80, 5.79698, 20.2728, 0)
+isolevel = 8.435
