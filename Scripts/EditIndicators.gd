@@ -1,3 +1,8 @@
+# In the future consider having a gizmo at least for mesh indicator.
+# Potential implementations:
+# - https://github.com/nishlumi/transform_ctrl_gizmo/tree/main/addons/transform_ctrl_gizmo
+# - https://github.com/sevonj/sr2_chonker/tree/0.0.7/scenes/editor/gizmo
+
 extends Node3D
 
 @export var edit_mode_state: EditModeState
