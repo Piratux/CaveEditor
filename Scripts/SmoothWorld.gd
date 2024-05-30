@@ -19,9 +19,6 @@ var math_util = preload("res://Scripts/Utils/MathUtil.gd").new()
 var EDIT_MODE = preload("res://Scripts/EditModeEnum.gd").EDIT_MODE
 const SDF_MESH_STATE_COLOUR_DATA = preload("res://Scripts/SdfMeshStateColourData.gd").SDF_MESH_STATE_COLOUR_DATA
 
-var base_terraform_distance = 1000
-var terraform_distance = base_terraform_distance
-
 var edit_indicator_is_visible = true
 
 var left_mouse_button_held = false
@@ -159,6 +156,7 @@ func _unhandled_input(event):
 					edit_indicator_is_visible = not edit_indicator_is_visible
 					edit_indicators.visible = edit_indicator_is_visible
 					
+					update_edit_indicator()
 					update_mesh_edit_preview_indicator()
 				KEY_Z:
 					if Input.is_action_pressed("ALT"):
@@ -328,7 +326,8 @@ func get_pointed_voxel():
 	
 	var origin = camera.get_position()
 	var forward = get_camera_forward_vector()
-	var hit = voxel_tool.raycast(origin, forward, terraform_distance)
+	var max_distance = 1000
+	var hit = voxel_tool.raycast(origin, forward, max_distance)
 	
 	mesh_edit_indicator.position.x -= 100000
 	
@@ -342,8 +341,6 @@ func get_elongated_vector(vector):
 func update_edit_indicator():
 	if not edit_indicator_is_visible:
 		return
-	
-	terraform_distance = base_terraform_distance * get_tool_scale()
 	
 	var hit = get_pointed_voxel()
 	if hit:
