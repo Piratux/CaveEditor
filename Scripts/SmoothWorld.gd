@@ -474,11 +474,11 @@ func update_mesh_edit_preview_indicator():
 	var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
 	mesh_edit_indicator.mesh_sdf = sdf_mesh
 
-func mesh_preview_enabled_updated(new_value):
+func mesh_preview_enabled_updated(_new_value):
 	update_mesh_edit_preview_indicator()
 
-func sdf_mesh_index_updated(new_value):
+func sdf_mesh_index_updated(_new_value):
 	update_mesh_edit_preview_indicator()
 
-func edit_mode_updated(new_edit_mode):
+func edit_mode_updated(_new_edit_mode):
 	update_mesh_edit_preview_indicator()
