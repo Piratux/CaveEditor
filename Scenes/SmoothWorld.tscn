@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=15 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
@@ -9,18 +9,20 @@
 [ext_resource type="Resource" uid="uid://bkra78lbxpvns" path="res://States/Resources/ToolMeshBakeState.tres" id="4_ngmy3"]
 [ext_resource type="PackedScene" uid="uid://4qjlhciehwso" path="res://Scenes/VoxelLodTerrain.tscn" id="5_vn6vi"]
 [ext_resource type="PackedScene" uid="uid://14ye888u77ht" path="res://Scenes/EditIndicators.tscn" id="6_yb3xi"]
+[ext_resource type="Texture2D" uid="uid://dkltbd6x1uo84" path="res://HDRs/evening_road_01_puresky_2k.hdr" id="7_bxpl2"]
 [ext_resource type="PackedScene" uid="uid://bj0mnr5kp5p6y" path="res://Scenes/CanvasLayer.tscn" id="9_0rkcr"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_4jqid"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_djffp"]
+panorama = ExtResource("7_bxpl2")
 
 [sub_resource type="Sky" id="Sky_whtm3"]
-sky_material = SubResource("ProceduralSkyMaterial_4jqid")
+sky_material = SubResource("PanoramaSkyMaterial_djffp")
 
 [sub_resource type="Environment" id="Environment_7hnbo"]
 background_mode = 2
+background_energy_multiplier = 0.2
 sky = SubResource("Sky_whtm3")
+ambient_light_sky_contribution = 0.5
 tonemap_mode = 2
 glow_enabled = true
 
