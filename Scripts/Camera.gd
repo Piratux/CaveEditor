@@ -4,6 +4,7 @@ class_name FreeLookCamera extends Camera3D
 const SHIFT_MULTIPLIER = 2.5
 const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
 
+signal transform_updated()
 
 @export_range(0.0, 1.0) var sensitivity: float = 0.25
 
@@ -31,6 +32,9 @@ var _q = false
 var _e = false
 var _shift = false
 var _alt = false
+
+# Track when transform changes
+var previous_transform = null
 
 func _unhandled_input(event):
 	# Receives mouse motion
@@ -66,8 +70,15 @@ func _unhandled_input(event):
 
 # Updates mouselook and movement every frame
 func _process(delta):
+	previous_transform = transform
+	
 	_update_mouselook()
 	_update_movement(delta)
+	
+	# NOTE: set_notify_local_transform(true) generates an event even if newly assigned transform matches old one
+	# But we only care about transform values actually changing
+	if previous_transform != transform:
+		transform_updated.emit()
 
 # Updates camera movement
 func _update_movement(delta):

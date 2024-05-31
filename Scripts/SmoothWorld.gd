@@ -31,11 +31,14 @@ var can_edit_terrain = true;
 var mouse_captured = false
 var just_started_capturing_mouse = false
 
-var _sdf_scale = 10
-
 var last_frame_edit_data = {
 	"flatten_plane": null,
 }
+
+var _sdf_scale = 10
+
+var _last_scale_value = 0
+var _last_mesh_tool_paramaters = {}
 
 func _enter_tree():
 	# Cybermedium font:
@@ -68,6 +71,8 @@ func _ready():
 	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
 	
 	update_mesh_edit_preview_indicator()
+	
+	camera.transform_updated.connect(camera_transform_updated)
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -75,9 +80,7 @@ func _process(delta):
 	if not Input.is_action_pressed("CTRL"):
 		update_terraforming()
 	
-	# Edit indicator position and size can be affected in multiple sources,
-	# so might as well just update it every frame
-	update_edit_indicator()
+	update_signals()
 
 func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
@@ -163,6 +166,24 @@ func _unhandled_input(event):
 						ui_root.visible = not ui_root.visible
 	
 	update_last_frame_data()
+
+func update_signals():
+	# TODO: These should be proper signals, but that requires breaking some abstractions.
+	# Might think of better solution later
+	
+	var tool_scale = get_tool_scale()
+	if _last_scale_value != tool_scale:
+		_last_scale_value = tool_scale
+		tool_scale_updated()
+	
+	var values = tool_state.get_all_tool_parameter_values(EDIT_MODE.MESH)
+	for value in _last_mesh_tool_paramaters:
+		# NOTE: we don't want to fire update event for scale as it's handled above
+		if values[value] != _last_mesh_tool_paramaters[value] and value != "scale":
+			mesh_tool_parameters_updated()
+			break
+	
+	_last_mesh_tool_paramaters = values.duplicate()
 
 func get_edit_indicators_transform(mesh, transform, scale):
 	if mesh == null:
@@ -322,14 +343,18 @@ func get_pointed_voxel():
 	# When we cast the ray, we don't want voxel_modifier_mesh to be hit, as that causes
 	# it to endlessly adjust the edit indicator position.
 	# So we move it away temporarily just for the raycast.
-	mesh_edit_indicator.position.x += 100000
+	
+	# Even though mesh_sdf is null, tasks still get added, and we don't want that for performance reasons.
+	if mesh_edit_indicator.mesh_sdf != null:
+		mesh_edit_indicator.position.x += 100000
 	
 	var origin = camera.get_position()
 	var forward = get_camera_forward_vector()
 	var max_distance = 1000
 	var hit = voxel_tool.raycast(origin, forward, max_distance)
 	
-	mesh_edit_indicator.position.x -= 100000
+	if mesh_edit_indicator.mesh_sdf != null:
+		mesh_edit_indicator.position.x -= 100000
 	
 	return hit
 
@@ -376,7 +401,9 @@ func update_edit_mode_mesh_transform(sdf_mesh):
 	edit_indicators.transform = get_edit_indicators_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
 	
 	get_edit_mesh(EDIT_MODE.MESH).transform = get_edit_mesh_transform(sdf_mesh.mesh)
-	mesh_edit_indicator.global_transform = get_edit_mesh(EDIT_MODE.MESH).global_transform
+	
+	if mesh_edit_indicator.mesh_sdf != null:
+		mesh_edit_indicator.global_transform = get_edit_mesh(EDIT_MODE.MESH).global_transform
 
 func get_edit_mesh_sdf_scale(mesh):
 	var aabb = mesh.get_aabb()
@@ -473,9 +500,21 @@ func update_mesh_edit_preview_indicator():
 
 func mesh_preview_enabled_updated(_new_value):
 	update_mesh_edit_preview_indicator()
+	update_edit_indicator()
 
 func sdf_mesh_index_updated(_new_value):
 	update_mesh_edit_preview_indicator()
+	update_edit_indicator()
 
 func edit_mode_updated(_new_edit_mode):
 	update_mesh_edit_preview_indicator()
+	update_edit_indicator()
+
+func camera_transform_updated():
+	update_edit_indicator()
+
+func tool_scale_updated():
+	update_edit_indicator()
+
+func mesh_tool_parameters_updated():
+	update_edit_indicator()

@@ -134,7 +134,7 @@ const TOOL_DATA = {
 				"max": 100,
 				"step": 5,
 			},
-				"isolevel": {
+			"isolevel": {
 				"name": "Isolevel",
 				"default_value": 0,
 				"min": 0,

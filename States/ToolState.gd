@@ -20,6 +20,17 @@ func get_tool_parameter_value(edit_mode, parameter_name):
 func set_tool_parameter_value(new_value, edit_mode, parameter_name):
 	_parameter_sliders[edit_mode][parameter_name].set_value(new_value)
 
+func get_all_tool_parameter_values(edit_mode):
+	if (not _parameter_sliders.has(edit_mode)):
+		return null
+	
+	var values = {}
+	
+	for parameter_name in _parameter_sliders[edit_mode]:
+		values[parameter_name] = _parameter_sliders[edit_mode][parameter_name].get_value()
+
+	return values
+
 func set_mesh_preview_enabled(value: bool):
 	mesh_preview_enabled = value
 	mesh_preview_enabled_updated.emit(value)
