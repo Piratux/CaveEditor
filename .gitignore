@@ -17,8 +17,6 @@ mono_crash.*.json
 
 # Custom ignores
 .editor/
-Export/
 .debug_data/
-
-# Temporary
-test.txt
+Export/
+Templates/
