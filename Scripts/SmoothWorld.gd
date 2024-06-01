@@ -364,9 +364,6 @@ func get_elongated_vector(vector):
 	return vector / longest_axis
 
 func update_edit_indicator():
-	if tool_mesh_bake_state.total_sdf_meshes() == 0:
-		return
-	
 	update_mesh_edit_preview_indicator()
 	
 	if not edit_indicator_is_visible:
@@ -391,8 +388,11 @@ func update_mesh_edit_indicator():
 	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
 		return
 	
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
+		return
+	
 	var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
-
+	
 	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 	edit_mesh.mesh = sdf_mesh.mesh
 	
@@ -484,6 +484,9 @@ func capture_mouse(value):
 	ui_root.capture_mouse(value)
 
 func update_mesh_edit_preview_indicator():
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
+		return
+		
 	if not edit_indicator_is_visible:
 		mesh_edit_indicator.mesh_sdf = null
 		return
