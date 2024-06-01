@@ -81,6 +81,7 @@ func _process(delta):
 		update_terraforming()
 	
 	update_signals()
+	update_mesh_edit_color()
 
 func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
@@ -391,10 +392,6 @@ func update_mesh_edit_indicator():
 
 	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 	edit_mesh.mesh = sdf_mesh.mesh
-	var mat : StandardMaterial3D = edit_mesh.material_override
-
-	var edit_mesh_state = tool_mesh_bake_state.get_selected_sdf_mesh_state()
-	mat.albedo_color = SDF_MESH_STATE_COLOUR_DATA[edit_mesh_state].colour
 	
 	update_edit_mode_mesh_transform(sdf_mesh)
 
@@ -516,3 +513,13 @@ func tool_scale_updated():
 
 func mesh_tool_parameters_updated():
 	update_edit_indicator()
+
+func update_mesh_edit_color():
+	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
+		return
+	
+	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
+	var mat : StandardMaterial3D = edit_mesh.material_override
+	
+	var edit_mesh_state = tool_mesh_bake_state.get_selected_sdf_mesh_state()
+	mat.albedo_color = SDF_MESH_STATE_COLOUR_DATA[edit_mesh_state].colour

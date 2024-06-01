@@ -6,7 +6,6 @@ const SDF_MESH_STATE = preload("res://Scripts/SdfMeshStateEnum.gd").SDF_MESH_STA
 signal sdf_mesh_index_updated(new_value)
 signal bake_mode_updated(new_value)
 signal boundary_sign_fix_enabled_updated(new_value)
-signal bake_finished(sdf_mesh)
 
 var bake_mode := VoxelMeshSDF.BAKE_MODE_ACCURATE_PARTITIONED : set = set_bake_mode
 var boundary_sign_fix_enabled := true : set = set_boundary_sign_fix_enabled
