@@ -24,9 +24,9 @@ var edit_indicator_is_visible = true
 var left_mouse_button_held = false
 var right_mouse_button_held = false
 
-var draw_speed = (2.0 / 60.0); # how often edits can be made for terrain in seconds
-var draw_speed_accumulate_delta = 0.0;
-var can_edit_terrain = true;
+var draw_speed = 2.0 / 60.0 # how often edits can be made for terrain in seconds
+var draw_speed_accumulate_delta = 0.0
+var can_edit_terrain = true
 
 var mouse_captured = false
 var just_started_capturing_mouse = false
@@ -70,9 +70,9 @@ func _ready():
 	tool_mesh_bake_state.sdf_mesh_index_updated.connect(sdf_mesh_index_updated)
 	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
 	
-	update_mesh_edit_preview_indicator()
-	
 	camera.transform_updated.connect(camera_transform_updated)
+	
+	update_edit_indicator()
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -160,7 +160,6 @@ func _unhandled_input(event):
 					edit_indicators.visible = edit_indicator_is_visible
 					
 					update_edit_indicator()
-					update_mesh_edit_preview_indicator()
 				KEY_Z:
 					if Input.is_action_pressed("ALT"):
 						ui_root.visible = not ui_root.visible
@@ -318,9 +317,9 @@ func get_edit_mesh(_edit_mode):
 
 func update_draw_timer(delta):
 	if draw_speed_accumulate_delta > draw_speed:
-		can_edit_terrain = true;
+		can_edit_terrain = true
 	else:
-		draw_speed_accumulate_delta += delta;
+		draw_speed_accumulate_delta += delta
 
 func update_terraforming():
 	if not can_edit_terrain:
@@ -364,6 +363,8 @@ func get_elongated_vector(vector):
 	return vector / longest_axis
 
 func update_edit_indicator():
+	update_mesh_edit_preview_indicator()
+	
 	if not edit_indicator_is_visible:
 		return
 	
@@ -499,15 +500,12 @@ func update_mesh_edit_preview_indicator():
 	mesh_edit_indicator.mesh_sdf = sdf_mesh
 
 func mesh_preview_enabled_updated(_new_value):
-	update_mesh_edit_preview_indicator()
 	update_edit_indicator()
 
 func sdf_mesh_index_updated(_new_value):
-	update_mesh_edit_preview_indicator()
 	update_edit_indicator()
 
 func edit_mode_updated(_new_edit_mode):
-	update_mesh_edit_preview_indicator()
 	update_edit_indicator()
 
 func camera_transform_updated():
