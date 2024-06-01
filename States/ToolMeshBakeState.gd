@@ -77,6 +77,8 @@ func add_sdf_mesh(mesh):
 	_sdf_meshes.push_back(sdf_mesh)
 
 func get_selected_sdf_mesh():
+	assert(total_sdf_meshes() > 0)
+	
 	return get_sdf_mesh(_selected_sdf_mesh_idx)
 
 func get_sdf_mesh(index):
@@ -128,7 +130,10 @@ func select_previous_sdf_mesh():
 	set_selected_sdf_mesh_idx((_selected_sdf_mesh_idx - 1 + _sdf_meshes.size()) % _sdf_meshes.size())
 
 func get_selected_sdf_mesh_state():
+	assert(total_sdf_meshes() > 0)
+
 	var sdf_mesh = get_selected_sdf_mesh()
+	
 	if sdf_mesh.is_baking():
 		return SDF_MESH_STATE.BAKING
 	elif (sdf_mesh.bake_mode != bake_mode
@@ -141,3 +146,6 @@ func get_selected_sdf_mesh_state():
 		return SDF_MESH_STATE.READY
 	else:
 		return SDF_MESH_STATE.NOT_BAKED_ONCE
+
+func total_sdf_meshes():
+	return _sdf_meshes.size()

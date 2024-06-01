@@ -229,7 +229,7 @@ func add_test_meshes():
 	var pos = Vector3(0, 20, -100)
 	var pos_spacing = Vector3(50, 0, 0)
 	for file_name in file_util.get_obj_file_paths():
-		var mesh = load(file_name)
+		var mesh = ObjExporter.load_mesh_from_file(file_name)
 		if !mesh:
 			continue
 		
@@ -364,6 +364,9 @@ func get_elongated_vector(vector):
 	return vector / longest_axis
 
 func update_edit_indicator():
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
+		return
+	
 	update_mesh_edit_preview_indicator()
 	
 	if not edit_indicator_is_visible:
@@ -516,6 +519,9 @@ func mesh_tool_parameters_updated():
 
 func update_mesh_edit_color():
 	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
+		return
+	
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
 		return
 	
 	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)

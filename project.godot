@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 DDD="*res://Addons/zylann.debug_draw/debug_draw.gd"
 Logger="*res://Addons/logger/logger.gd"
+ObjExporter="*res://Addons/OBJImporter/addons/obj_exporter/OBJExporter.gd"
 
 [debug]
 

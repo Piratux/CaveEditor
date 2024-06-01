@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dhu2e3cixohwh"]
+[gd_scene load_steps=14 format=3 uid="uid://dhu2e3cixohwh"]
 
 [ext_resource type="Script" path="res://Scripts/ToolInfo.gd" id="1_3md3q"]
 [ext_resource type="Script" path="res://Scripts/ToolSelect.gd" id="2_2juoe"]
@@ -9,6 +9,7 @@
 [ext_resource type="Resource" uid="uid://bkra78lbxpvns" path="res://States/Resources/ToolMeshBakeState.tres" id="6_od1m7"]
 [ext_resource type="Script" path="res://Scripts/BakeModeSelect.gd" id="7_t5yfx"]
 [ext_resource type="Script" path="res://Scripts/BakeObjectNameSelect.gd" id="8_p2dq4"]
+[ext_resource type="Script" path="res://Scripts/ImportObjectButton.gd" id="9_5e4b7"]
 [ext_resource type="Script" path="res://Scripts/BakeButton.gd" id="9_bo71t"]
 [ext_resource type="Script" path="res://Scripts/SignFixEnabledCheckBox.gd" id="9_pxnhm"]
 [ext_resource type="Script" path="res://Scripts/ToolBakeStateLabel.gd" id="11_p5ykl"]
@@ -73,10 +74,19 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer"]
 layout_mode = 2
 
-[node name="BakeObjectNameSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="BakeObjectNameSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 script = ExtResource("8_p2dq4")
 tool_mesh_bake_state = ExtResource("6_od1m7")
+
+[node name="ImportObjectButton" type="Button" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "+"
+script = ExtResource("9_5e4b7")
 
 [node name="BakeModeSelect" type="OptionButton" parent="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -116,9 +126,20 @@ fit_content = true
 script = ExtResource("11_p5ykl")
 tool_mesh_bake_state = ExtResource("6_od1m7")
 
+[node name="MeshImportDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 1
+size = Vector2i(800, 500)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.obj ; OBJ Files")
+
 [connection signal="item_selected" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect" method="_on_item_selected"]
 [connection signal="toggled" from="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/MeshEditPreviewEnabledCheckBox" to="VBoxContainer/ToolInfo/MarginContainer/VBoxContainer/MeshEditPreviewEnabledCheckBox" method="_on_toggled"]
-[connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer/BakeObjectNameSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer/BakeObjectNameSelect" method="_on_item_selected"]
+[connection signal="pressed" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer/ImportObjectButton" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer/ImportObjectButton" method="_on_pressed"]
 [connection signal="item_selected" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeModeSelect" method="_on_item_selected"]
 [connection signal="toggled" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/SignFixEnabledCheckBox" method="_on_toggled"]
 [connection signal="pressed" from="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/BakeButton" method="_on_pressed"]
+[connection signal="file_selected" from="MeshImportDialog" to="VBoxContainer/ToolMeshBakeInfo/MarginContainer/VBoxContainer/HBoxContainer/BakeObjectNameSelect" method="_on_mesh_export_dialog_file_selected"]
