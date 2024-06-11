@@ -14,7 +14,6 @@ script = ExtResource("1_odo3n")
 [node name="MenuMarginContainer" parent="." instance=ExtResource("2_5x60e")]
 
 [node name="HelpWindow" parent="." instance=ExtResource("3_u75lf")]
-offset_left = -250.0
-offset_right = 250.0
+visible = false
 
 [node name="WorldManager" parent="." instance=ExtResource("4_qwirc")]
