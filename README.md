@@ -43,3 +43,9 @@ scons target=template_release
 
 ### Helper script to setup build from source
 https://github.com/Piratux/godot-voxel-setup
+
+## Creating standalone executable
+For windows, download template file from [here](https://github.com/Zylann/godot_voxel/releases/download/v1.2.0/godot.windows.template_release.x86_64.exe.zip) and put it in folder `Templates`. Then open command line in the same directory as `project.godot` exists and type following:
+```
+<path\to\godot.exe> --headless --export-release "Windows Desktop" "Export/CaveEditor_v1.2.0.exe"
+```
