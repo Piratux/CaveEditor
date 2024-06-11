@@ -18,7 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 DDD="*res://Addons/zylann.debug_draw/debug_draw.gd"
-ObjExporter="*res://Addons/OBJImporter/addons/obj_exporter/OBJExporter.gd"
+ObjExporter="*res://Addons/OBJImporter/OBJExporter.gd"
 
 [debug]
 
