@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cvydy444shypb"]
+[gd_scene load_steps=16 format=3 uid="uid://cvydy444shypb"]
 
 [ext_resource type="Script" path="res://Scripts/SmoothWorld.gd" id="1_mh7m1"]
 [ext_resource type="Script" path="res://Scripts/Saver.gd" id="2_60v2b"]
@@ -25,6 +25,8 @@ sky = SubResource("Sky_whtm3")
 ambient_light_sky_contribution = 0.5
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="VoxelMesherTransvoxel" id="VoxelMesherTransvoxel_8jyx2"]
 
 [node name="SmoothWorld" type="Node"]
 script = ExtResource("1_mh7m1")
@@ -54,6 +56,7 @@ script = ExtResource("2_q5m0p")
 [node name="CanvasLayer" parent="." instance=ExtResource("9_0rkcr")]
 
 [node name="VoxelTerrain" parent="." instance=ExtResource("5_vn6vi")]
+mesher = SubResource("VoxelMesherTransvoxel_8jyx2")
 
 [node name="MeshEditPreviewIndicator" type="VoxelModifierMesh" parent="VoxelTerrain"]
 transform = Transform3D(80, 0, 0, 0, 80, 0, 0, 0, 80, 5.79698, 20.2728, 0)

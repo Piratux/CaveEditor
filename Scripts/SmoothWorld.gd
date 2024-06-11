@@ -110,13 +110,13 @@ func _unhandled_input(event):
 						update_terraforming()
 			
 			MOUSE_BUTTON_WHEEL_UP:
-				if Input.is_action_pressed("CTRL") and event.pressed:
+				if Input.is_action_pressed("CTRL") and event.pressed and edit_mode_state.edit_mode == EDIT_MODE.MESH:
 					tool_mesh_bake_state.select_previous_sdf_mesh()
 				elif not Input.is_action_pressed("ALT") and event.pressed:
 					set_tool_scale(get_tool_scale() + 1)
 			
 			MOUSE_BUTTON_WHEEL_DOWN:
-				if Input.is_action_pressed("CTRL") and event.pressed:
+				if Input.is_action_pressed("CTRL") and event.pressed and edit_mode_state.edit_mode == EDIT_MODE.MESH:
 					tool_mesh_bake_state.select_next_sdf_mesh()
 				elif not Input.is_action_pressed("ALT") and event.pressed:
 					set_tool_scale(get_tool_scale() - 1)
