@@ -17,3 +17,4 @@ script = ExtResource("1_odo3n")
 visible = false
 
 [node name="WorldManager" parent="." instance=ExtResource("4_qwirc")]
+visible = false
