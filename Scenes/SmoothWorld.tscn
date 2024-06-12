@@ -22,6 +22,7 @@ sky_material = SubResource("PanoramaSkyMaterial_djffp")
 background_mode = 2
 background_energy_multiplier = 0.2
 sky = SubResource("Sky_whtm3")
+ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_sky_contribution = 0.5
 tonemap_mode = 2
 glow_enabled = true
