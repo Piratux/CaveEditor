@@ -64,8 +64,6 @@ func _ready():
 	# surface is edited with other tools like sphere
 	voxel_tool.sdf_scale = _sdf_scale
 	
-	add_test_meshes()
-	
 	tool_state.mesh_preview_enabled_updated.connect(mesh_preview_enabled_updated)
 	tool_mesh_bake_state.sdf_mesh_index_updated.connect(sdf_mesh_index_updated)
 	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
@@ -224,30 +222,6 @@ func get_edit_mesh_transform(mesh):
 	transform = transform.translated(pivot_offset)
 	
 	return transform
-
-func add_test_meshes():
-	var pos = Vector3(0, 20, -100)
-	var pos_spacing = Vector3(50, 0, 0)
-	for file_name in file_util.get_obj_file_paths():
-		var mesh = ObjExporter.load_mesh_from_file(file_name)
-		if !mesh:
-			continue
-		
-		var node_instance := Node3D.new()
-		node_instance.transform = get_edit_indicators_transform(mesh, node_instance.transform, 1)
-		node_instance.position = pos
-		
-		var transform_scale = 20
-		var scaled_vector = Vector3(transform_scale, transform_scale, transform_scale)
-		node_instance.transform = node_instance.transform.scaled_local(scaled_vector)
-		
-		var mesh_instance := MeshInstance3D.new()
-		mesh_instance.mesh = mesh
-		mesh_instance.transform = get_edit_mesh_transform(mesh)
-		
-		node_instance.add_child(mesh_instance)
-		get_parent().add_child.call_deferred(node_instance)
-		pos += pos_spacing
 
 func update_last_frame_data():
 	if not left_mouse_button_held and not right_mouse_button_held:
