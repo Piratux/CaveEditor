@@ -1,0 +1,50 @@
+[gd_scene load_steps=10 format=3 uid="uid://14ye888u77ht"]
+
+[ext_resource type="Script" path="res://Scripts/EditIndicators.gd" id="1_0a18q"]
+[ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_5vy5a"]
+[ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="2_6a26l"]
+[ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="3_38vdf"]
+[ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="4_nwlro"]
+[ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/FlattenMaterial.tres" id="7_j4ubo"]
+[ext_resource type="Resource" uid="uid://bnetnq47i6ywj" path="res://States/Resources/ToolState.tres" id="8_ty0bi"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_25lff"]
+radius = 1.0
+height = 2.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_e4d1c"]
+
+[node name="EditIndicators" type="Node3D"]
+script = ExtResource("1_0a18q")
+edit_mode_state = ExtResource("2_5vy5a")
+tool_state = ExtResource("8_ty0bi")
+
+[node name="SphereEdit" type="MeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("2_6a26l")
+mesh = SubResource("SphereMesh_25lff")
+
+[node name="CubeEdit" type="MeshInstance3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+visible = false
+material_override = ExtResource("2_6a26l")
+mesh = SubResource("BoxMesh_e4d1c")
+
+[node name="BlendBall" type="MeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("3_38vdf")
+mesh = SubResource("SphereMesh_25lff")
+
+[node name="Surface" type="MeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("4_nwlro")
+mesh = SubResource("SphereMesh_25lff")
+
+[node name="Flatten" type="MeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("7_j4ubo")
+mesh = SubResource("SphereMesh_25lff")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("2_6a26l")

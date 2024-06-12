@@ -1,0 +1,32 @@
+[gd_resource type="VoxelGeneratorGraph" format=3 uid="uid://6837lmj7uisn"]
+
+[resource]
+graph_data = {
+"connections": [[2, 0, 5, 0], [5, 0, 4, 0]],
+"nodes": {
+"1": {
+"gui_position": Vector2(440, 50),
+"type": "InputX"
+},
+"2": {
+"gui_position": Vector2(440, 150),
+"type": "InputY"
+},
+"3": {
+"gui_position": Vector2(440, 250),
+"type": "InputZ"
+},
+"4": {
+"auto_connect": true,
+"gui_position": Vector2(720, 150),
+"type": "OutputSDF"
+},
+"5": {
+"auto_connect": true,
+"gui_position": Vector2(560, 150),
+"height": 0.0,
+"type": "SdfPlane"
+}
+},
+"version": 2
+}

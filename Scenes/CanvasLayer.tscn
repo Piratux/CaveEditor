@@ -1,0 +1,19 @@
+[gd_scene load_steps=6 format=3 uid="uid://bj0mnr5kp5p6y"]
+
+[ext_resource type="Script" path="res://Scripts/CanvasLayer.gd" id="1_odo3n"]
+[ext_resource type="PackedScene" uid="uid://cmd3rrk45m8r3" path="res://Scenes/MenuMarginContainer.tscn" id="2_5x60e"]
+[ext_resource type="PackedScene" uid="uid://dhu2e3cixohwh" path="res://Scenes/ToolInfo.tscn" id="3_1gs0x"]
+[ext_resource type="PackedScene" uid="uid://cwi3mf6tj40ck" path="res://Scenes/HelpWindow.tscn" id="3_u75lf"]
+[ext_resource type="PackedScene" uid="uid://cvwnpkr4j3kwe" path="res://Scenes/WorldManager.tscn" id="4_qwirc"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_odo3n")
+
+[node name="ToolInfo" parent="." instance=ExtResource("3_1gs0x")]
+
+[node name="MenuMarginContainer" parent="." instance=ExtResource("2_5x60e")]
+
+[node name="HelpWindow" parent="." instance=ExtResource("3_u75lf")]
+visible = false
+
+[node name="WorldManager" parent="." instance=ExtResource("4_qwirc")]

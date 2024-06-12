@@ -1,60 +1,76 @@
 extends Node
 
+@export var edit_mode_state: EditModeState
+@export var tool_state: ToolState
+@export var tool_mesh_bake_state: ToolMeshBakeState
+
 @onready var voxel_terrain = get_node("VoxelTerrain")
 @onready var voxel_tool = get_node("VoxelTerrain").get_voxel_tool()
 @onready var camera = get_node("Camera3D")
 @onready var saver = get_node("Saver")
 @onready var edit_indicators = get_node("EditIndicators")
-
-@onready var tool_info = get_node("CanvasLayer/ToolInfo")
-@onready var tool_select = get_node("CanvasLayer/ToolInfo/MarginContainer/VBoxContainer/ToolSelect")
+@onready var debug_stat_drawer = get_node("DebugStatDrawer")
 @onready var ui_root = get_node("CanvasLayer")
+@onready var mesh_edit_indicator = get_node("VoxelTerrain/MeshEditPreviewIndicator")
+
+var file_util = preload("res://Scripts/Utils/FileUtil.gd").new()
+var math_util = preload("res://Scripts/Utils/MathUtil.gd").new()
 
 var EDIT_MODE = preload("res://Scripts/EditModeEnum.gd").EDIT_MODE
-
-var base_terraform_distance = 1000
-var terraform_distance = base_terraform_distance
+const SDF_MESH_STATE_COLOUR_DATA = preload("res://Scripts/SdfMeshStateColourData.gd").SDF_MESH_STATE_COLOUR_DATA
 
 var edit_indicator_is_visible = true
 
 var left_mouse_button_held = false
 var right_mouse_button_held = false
 
-var draw_speed = (2.0 / 60.0); # how often edits can be made for terrain in seconds
-var draw_speed_accumulate_delta = 0.0;
-var can_edit_terrain = true;
+var draw_speed = 2.0 / 60.0 # how often edits can be made for terrain in seconds
+var draw_speed_accumulate_delta = 0.0
+var can_edit_terrain = true
 
 var mouse_captured = false
 var just_started_capturing_mouse = false
-
-var edit_mode = EDIT_MODE.SPHERE
 
 var last_frame_edit_data = {
 	"flatten_plane": null,
 }
 
+var _sdf_scale = 10
 
-var debug_draw_stats_enabled = false
+var _last_scale_value = 0
+var _last_mesh_tool_paramaters = {}
 
-var _process_stats = {}
-var _displayed_process_stats = {}
-var _time_before_display_process_stats = 1.0
-
-const _process_stat_names = [
-#	"time_detect_required_blocks",
-#	"time_io_requests",
-#	"time_mesh_requests",
-#	"time_update_task"
-]
-
+func _enter_tree():
+	# Cybermedium font:
+	# https://patorjk.com/software/taag/#p=display&f=Cybermedium&t=Cave%20Editor
+	print(r"""
+/----------------------------------------------------\
+|  ____ ____ _  _ ____    ____ ___  _ ___ ____ ____  |
+|  |    |__| |  | |___    |___ |  \ |  |  |  | |__/  |
+|  |___ |  |  \/  |___    |___ |__/ |  |  |__| |  \  |
+\----------------------------------------------------/
+	""")
 
 func _ready():
-	set_edit_mode(EDIT_MODE.SPHERE)
 	saver.load_data()
+	debug_stat_drawer.voxel_terrain = voxel_terrain
+	debug_stat_drawer.voxel_tool = voxel_tool
+	debug_stat_drawer.camera = camera
+	
+	tool_mesh_bake_state._scene_root = get_tree()
+	tool_mesh_bake_state.bake_all_sdf_meshes()
 	
 	# Required for surface tool to interact nicely when
 	# surface is edited with other tools like sphere
-	voxel_tool.sdf_scale = 0.1
+	voxel_tool.sdf_scale = _sdf_scale
+	
+	tool_state.mesh_preview_enabled_updated.connect(mesh_preview_enabled_updated)
+	tool_mesh_bake_state.sdf_mesh_index_updated.connect(sdf_mesh_index_updated)
+	edit_mode_state.edit_mode_updated.connect(edit_mode_updated)
+	
+	camera.transform_updated.connect(camera_transform_updated)
+	
+	update_edit_indicator()
 
 func _process(delta):
 	update_draw_timer(delta)
@@ -62,25 +78,19 @@ func _process(delta):
 	if not Input.is_action_pressed("CTRL"):
 		update_terraforming()
 	
-	# Edit sphere position and size can be affected in multiple sources,
-	# so might as well just update it every frame
-	update_edit_sphere()
-	
-	if debug_draw_stats_enabled:
-		draw_debug_voxel_stats(delta)
-	
-#	print(voxel_tool.get_voxel_f(camera.transform.origin))
+	update_signals()
+	update_mesh_edit_color()
 
 func _unhandled_input(event):
 	if (event is InputEventMouseButton and 
 		(event.button_index == MOUSE_BUTTON_LEFT or event.button_index == MOUSE_BUTTON_RIGHT) and
 		!mouse_captured):
-	
+		
 		capture_mouse(true)
 	
 	if not mouse_captured:
 		return
-
+	
 	if event is InputEventMouseButton:
 		match event.button_index:
 			MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT:
@@ -93,16 +103,20 @@ func _unhandled_input(event):
 					
 					if event.button_index == MOUSE_BUTTON_RIGHT:
 						right_mouse_button_held = event.pressed
-			
+					
 					if Input.is_action_pressed("CTRL") and event.pressed:
 						update_terraforming()
 			
 			MOUSE_BUTTON_WHEEL_UP:
-				if not Input.is_action_pressed("ALT") and event.pressed:
+				if Input.is_action_pressed("CTRL") and event.pressed and edit_mode_state.edit_mode == EDIT_MODE.MESH:
+					tool_mesh_bake_state.select_previous_sdf_mesh()
+				elif not Input.is_action_pressed("ALT") and event.pressed:
 					set_tool_scale(get_tool_scale() + 1)
-	
+			
 			MOUSE_BUTTON_WHEEL_DOWN:
-				if not Input.is_action_pressed("ALT") and event.pressed:
+				if Input.is_action_pressed("CTRL") and event.pressed and edit_mode_state.edit_mode == EDIT_MODE.MESH:
+					tool_mesh_bake_state.select_next_sdf_mesh()
+				elif not Input.is_action_pressed("ALT") and event.pressed:
 					set_tool_scale(get_tool_scale() - 1)
 	
 	if event is InputEventKey:
@@ -110,74 +124,114 @@ func _unhandled_input(event):
 			match event.keycode:
 				KEY_ESCAPE:
 					capture_mouse(false)
+				KEY_1:
+					edit_mode_state.edit_mode = EDIT_MODE.SPHERE
+				KEY_2:
+					edit_mode_state.edit_mode = EDIT_MODE.CUBE
+				KEY_3:
+					edit_mode_state.edit_mode = EDIT_MODE.BLEND_BALL
+				KEY_4:
+					edit_mode_state.edit_mode = EDIT_MODE.SURFACE
+				KEY_5:
+					edit_mode_state.edit_mode = EDIT_MODE.FLATTEN
+				KEY_6:
+					edit_mode_state.edit_mode = EDIT_MODE.MESH
+				KEY_UP:
+					if Input.is_action_pressed("CTRL"):
+						camera.position.y += 1
+					else:
+						camera.position.x += 1
+				KEY_DOWN:
+					if Input.is_action_pressed("CTRL"):
+						camera.position.y -= 1
+					else:
+						camera.position.x -= 1
+				KEY_RIGHT:
+					camera.position.z += 1
+				KEY_LEFT:
+					camera.position.z -= 1
+				KEY_O:
+					var vp = get_viewport()
+					#vp.debug_draw = Viewport.DEBUG_DRAW_WIREFRAME - vp.debug_draw
+					vp.debug_draw = (vp.debug_draw + 1) % 7
 				KEY_X:
 					edit_indicator_is_visible = not edit_indicator_is_visible
 					edit_indicators.visible = edit_indicator_is_visible
-				KEY_1:
-					set_edit_mode(EDIT_MODE.SPHERE)
-				KEY_2:
-					set_edit_mode(EDIT_MODE.CUBE)
-				KEY_3:
-					set_edit_mode(EDIT_MODE.BLEND_BALL)
-				KEY_4:
-					set_edit_mode(EDIT_MODE.SURFACE)
-				KEY_5:
-					set_edit_mode(EDIT_MODE.FLATTEN)
-				KEY_P:
-					debug_draw_stats_enabled = !debug_draw_stats_enabled
+					
+					update_edit_indicator()
+				KEY_Z:
+					if Input.is_action_pressed("ALT"):
+						ui_root.visible = not ui_root.visible
 	
 	update_last_frame_data()
 
-
-func draw_debug_voxel_stats(delta):
-	var stats = voxel_terrain.get_statistics()
+func update_signals():
+	# TODO: These should be proper signals, but that requires breaking some abstractions.
+	# Might think of better solution later
 	
-	DDD.set_text("FPS", Engine.get_frames_per_second())
-	DDD.set_text("Static memory", _format_memory(OS.get_static_memory_usage()))
-#	DDD.set_text("Blocked lods", stats.blocked_lods)
-	DDD.set_text("Position", camera.position)
+	var tool_scale = get_tool_scale()
+	if _last_scale_value != tool_scale:
+		_last_scale_value = tool_scale
+		tool_scale_updated()
+	
+	var values = tool_state.get_all_tool_parameter_values(EDIT_MODE.MESH)
+	for value in _last_mesh_tool_paramaters:
+		# NOTE: we don't want to fire update event for scale as it's handled above
+		if values[value] != _last_mesh_tool_paramaters[value] and value != "scale":
+			mesh_tool_parameters_updated()
+			break
+	
+	_last_mesh_tool_paramaters = values.duplicate()
 
-	var global_stats = VoxelEngine.get_stats()
-	for p in global_stats:
-		var pool_stats = global_stats[p]
-		for k in pool_stats:
-			DDD.set_text(str(p, "_", k), pool_stats[k])
+func get_edit_indicators_transform(mesh, transform, scale):
+	if mesh == null:
+		return null
+	
+	var rot_x = get_tool_rot_x() if get_tool_rot_x() else 0
+	var rot_y = get_tool_rot_y() if get_tool_rot_y() else 0
+	var rot_z = get_tool_rot_z() if get_tool_rot_z() else 0
+	
+	# YXZ rotation order is Godot's default.
+	transform = transform.rotated_local(Vector3.UP, deg_to_rad(rot_y))
+	transform = transform.rotated_local(Vector3.RIGHT, deg_to_rad(rot_x))
+	transform = transform.rotated_local(Vector3.BACK, deg_to_rad(rot_z))
+	
+	transform = math_util.get_unit_scaled_transform_from_mesh(mesh, transform)
+	
+	# Looks better when object is a bit above the ground
+	var offset = Vector3(0, scale + 10, 0)
+	return transform.translated(offset)
 
-	for k in _process_stat_names:
-		var v = stats[k]
-		if k in _process_stats:
-			_process_stats[k] = max(_process_stats[k], v)
-		else:
-			_process_stats[k] = v
-
-	_time_before_display_process_stats -= delta
-	if _time_before_display_process_stats < 0:
-		_time_before_display_process_stats = 1.0
-		_displayed_process_stats = _process_stats
-		_process_stats = {}
-
-	for k in _displayed_process_stats:
-		DDD.set_text(k, _displayed_process_stats[k])
-
-#	_terrain.debug_set_draw_enabled(true)
-#	_terrain.debug_set_draw_flag(VoxelLodTerrain.DEBUG_DRAW_MESH_UPDATES, true)
-
-
-static func _format_memory(m):
-	var mb = m / 1000000
-	var mbr = m % 1000000
-	return str(mb, ".", mbr, " Mb")
-
+func get_edit_mesh_transform(mesh):
+	var transform = Transform3D()
+	
+	var pivot_offset_x = get_tool_pivot_offset_x() if get_tool_pivot_offset_x() else 0
+	var pivot_offset_y = get_tool_pivot_offset_y() if get_tool_pivot_offset_y() else 0
+	var pivot_offset_z = get_tool_pivot_offset_z() if get_tool_pivot_offset_z() else 0
+	
+	var mesh_aabb = mesh.get_aabb()
+	transform = transform.translated(-mesh_aabb.get_center())
+	
+	var mesh_aabb_half_size = mesh_aabb.size / 2
+	var pivot_offset = Vector3(
+		mesh_aabb_half_size.x * (pivot_offset_x / 100),
+		mesh_aabb_half_size.y * (pivot_offset_y / 100),
+		mesh_aabb_half_size.z * (pivot_offset_z / 100)
+	)
+	
+	transform = transform.translated(pivot_offset)
+	
+	return transform
 
 func update_last_frame_data():
 	if not left_mouse_button_held and not right_mouse_button_held:
 		last_frame_edit_data.flatten_plane = null
 
 func get_tool_parameter_value(parameter_name):
-	return tool_info.get_tool_parameter_value(edit_mode, parameter_name)
+	return tool_state.get_tool_parameter_value(edit_mode_state.edit_mode, parameter_name)
 
 func set_tool_parameter_value(parameter_name, new_value):
-	tool_info.set_tool_parameter_value(edit_mode, parameter_name, new_value)
+	tool_state.set_tool_parameter_value(new_value, edit_mode_state.edit_mode, parameter_name)
 
 func get_tool_scale():
 	return get_tool_parameter_value("scale")
@@ -191,23 +245,56 @@ func get_tool_strength():
 func set_tool_strength(new_value):
 	set_tool_parameter_value("strength", new_value)
 
-func set_edit_mode(new_edit_mode):
-	var edit_mesh = edit_indicators.get_child(new_edit_mode)
-	if edit_mesh:
-		edit_mode = new_edit_mode
-		for c in edit_indicators.get_children():
-			c.visible = false
-		edit_mesh.visible = true
-		
-		tool_select.selected = new_edit_mode
-		
-		tool_info.set_edit_mode(new_edit_mode)
+func get_tool_isolevel():
+	return get_tool_parameter_value("isolevel")
+
+func set_tool_isolevel(new_value):
+	set_tool_parameter_value("isolevel", new_value)
+
+func get_tool_rot_x():
+	return get_tool_parameter_value("rot_x")
+
+func set_tool_rot_x(new_value):
+	set_tool_parameter_value("rot_x", new_value)
+
+func get_tool_rot_y():
+	return get_tool_parameter_value("rot_y")
+
+func set_tool_rot_y(new_value):
+	set_tool_parameter_value("rot_y", new_value)
+
+func get_tool_rot_z():
+	return get_tool_parameter_value("rot_z")
+
+func set_tool_rot_z(new_value):
+	set_tool_parameter_value("rot_z", new_value)
+
+func get_tool_pivot_offset_x():
+	return get_tool_parameter_value("pivot_offset_x")
+
+func set_tool_pivot_offset_x(new_value):
+	set_tool_parameter_value("pivot_offset_x", new_value)
+
+func get_tool_pivot_offset_y():
+	return get_tool_parameter_value("pivot_offset_y")
+
+func set_tool_pivot_offset_y(new_value):
+	set_tool_parameter_value("pivot_offset_y", new_value)
+
+func get_tool_pivot_offset_z():
+	return get_tool_parameter_value("pivot_offset_z")
+
+func set_tool_pivot_offset_z(new_value):
+	set_tool_parameter_value("pivot_offset_z", new_value)
+
+func get_edit_mesh(_edit_mode):
+	return edit_indicators.get_child(_edit_mode)
 
 func update_draw_timer(delta):
 	if draw_speed_accumulate_delta > draw_speed:
-		can_edit_terrain = true;
+		can_edit_terrain = true
 	else:
-		draw_speed_accumulate_delta += delta;
+		draw_speed_accumulate_delta += delta
 
 func update_terraforming():
 	if not can_edit_terrain:
@@ -223,28 +310,83 @@ func update_terraforming():
 	if right_mouse_button_held:
 		try_edit_terrain(VoxelTool.MODE_REMOVE)
 
+func get_camera_forward_vector():
+	return -camera.get_transform().basis.z.normalized()
+
 func get_pointed_voxel():
+	# When we cast the ray, we don't want voxel_modifier_mesh to be hit, as that causes
+	# it to endlessly adjust the edit indicator position.
+	# So we move it away temporarily just for the raycast.
+	
+	# Even though mesh_sdf is null, tasks still get added, and we don't want that for performance reasons.
+	if mesh_edit_indicator.mesh_sdf != null:
+		mesh_edit_indicator.position.x += 100000
+	
 	var origin = camera.get_position()
-	var forward = -camera.get_transform().basis.z.normalized()
-	var hit = voxel_tool.raycast(origin, forward, terraform_distance)
+	var forward = get_camera_forward_vector()
+	var max_distance = 1000
+	var hit = voxel_tool.raycast(origin, forward, max_distance)
+	
+	if mesh_edit_indicator.mesh_sdf != null:
+		mesh_edit_indicator.position.x -= 100000
+	
 	return hit
 
-func update_edit_sphere():
+# increases vector length, so that vector touches cube side
+func get_elongated_vector(vector):
+	var longest_axis = max(abs(vector.x), abs(vector.y), abs(vector.z))
+	return vector / longest_axis
+
+func update_edit_indicator():
+	update_mesh_edit_preview_indicator()
+	
 	if not edit_indicator_is_visible:
 		return
-	
-	terraform_distance = base_terraform_distance * get_tool_scale()
 	
 	var hit = get_pointed_voxel()
 	if hit:
 		var pos = Vector3(hit.position)
 		edit_indicators.visible = true
-		edit_indicators.global_position = pos
+		edit_indicators.position = pos
 		
 		var tool_scale = get_tool_scale()
 		edit_indicators.scale = Vector3(tool_scale, tool_scale, tool_scale)
+		
+		edit_indicators.rotation = Vector3(0,0,0)
 	else:
 		edit_indicators.visible = false
+	
+	update_mesh_edit_indicator()
+
+func update_mesh_edit_indicator():
+	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
+		return
+	
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
+		return
+	
+	var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
+	
+	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
+	edit_mesh.mesh = sdf_mesh.mesh
+	
+	update_edit_mode_mesh_transform(sdf_mesh)
+
+func update_edit_mode_mesh_transform(sdf_mesh):
+	edit_indicators.transform = get_edit_indicators_transform(sdf_mesh.mesh, edit_indicators.transform, get_tool_scale())
+	
+	get_edit_mesh(EDIT_MODE.MESH).transform = get_edit_mesh_transform(sdf_mesh.mesh)
+	
+	if mesh_edit_indicator.mesh_sdf != null:
+		mesh_edit_indicator.global_transform = get_edit_mesh(EDIT_MODE.MESH).global_transform
+
+func get_edit_mesh_sdf_scale(mesh):
+	var aabb = mesh.get_aabb()
+	var aabb_half_size = aabb.size / 2.0
+	var max_aabb_half_size_axis = max(aabb_half_size.x, aabb_half_size.y, aabb_half_size.z)
+	
+	# (25 * sdf_scale) magic number gives close enough results that make stamped cube mesh and do_box SDF look similarly
+	return (25 * _sdf_scale) / max_aabb_half_size_axis
 
 func try_edit_terrain(voxel_tool_mode):
 	var hit = get_pointed_voxel()
@@ -263,207 +405,104 @@ func try_edit_terrain(voxel_tool_mode):
 		offset_sign = -1
 		voxel_tool.value = 0
 	
-	var forward = -camera.get_transform().basis.z.normalized()
+	var forward = get_camera_forward_vector()
 	var edit_scale = get_tool_scale()
 	var edit_strength = get_tool_strength()
-	
-	if edit_mode == EDIT_MODE.SPHERE:
-		offset_pos += offset_sign * forward * (edit_scale - 2)
-	elif edit_mode == EDIT_MODE.CUBE:
-		# Multiply forward vector to touch cube sides.
-		# This way you get smooth offset from any angle and size.
-		var longest_axis = max(abs(forward.x), abs(forward.y), abs(forward.z))
-		forward.x /= longest_axis
-		forward.y /= longest_axis
-		forward.z /= longest_axis
-		offset_pos += offset_sign * forward * (edit_scale - 2)
+	var edit_isolevel = get_tool_isolevel()
+	if edit_isolevel:
+		edit_isolevel *= _sdf_scale
 	
 	voxel_tool.mode = voxel_tool_mode
 	
-	if edit_mode == EDIT_MODE.SPHERE:
+	if edit_mode_state.edit_mode == EDIT_MODE.SPHERE:
+		offset_pos += offset_sign * forward * (edit_scale - 2)
 		voxel_tool.do_sphere(offset_pos, edit_scale)
 	
-	elif edit_mode == EDIT_MODE.CUBE:
+	elif edit_mode_state.edit_mode == EDIT_MODE.CUBE:
+		forward = get_elongated_vector(forward)
+		offset_pos += offset_sign * forward * (edit_scale - 2)
 		var offset = Vector3(edit_scale, edit_scale, edit_scale)
 		voxel_tool.do_box(offset_pos - offset, offset_pos + offset)
 	
-	elif edit_mode == EDIT_MODE.BLEND_BALL:
+	elif edit_mode_state.edit_mode == EDIT_MODE.BLEND_BALL:
 		# TODO: consider adding falloff parameter which increases smoothness towards edges
 		voxel_tool.smooth_sphere(hit_pos, edit_scale, edit_strength)
 	
-	elif edit_mode == EDIT_MODE.SURFACE:
-#		do_surface(hit_pos, voxel_tool_mode)
+	elif edit_mode_state.edit_mode == EDIT_MODE.SURFACE:
 		voxel_tool.grow_sphere(hit_pos, edit_scale, edit_strength)
 		
-	elif edit_mode == EDIT_MODE.FLATTEN:
+	elif edit_mode_state.edit_mode == EDIT_MODE.FLATTEN:
 		# TODO: consider adding falloff parameter which increases smoothness towards edges
-		
 		if last_frame_edit_data.flatten_plane == null:
 			last_frame_edit_data.flatten_plane = Plane(forward, hit_pos)
-
 		
-#		var center_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
 		var center_pos = last_frame_edit_data.flatten_plane.intersects_ray(camera.get_position(), forward)
 		if center_pos != null:
 			voxel_tool.do_hemisphere(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
-#			voxel_tool.do_flatten(center_pos, edit_scale, offset_sign * last_frame_edit_data.flatten_plane.normal, edit_strength)
-#		do_flatten(hit_pos, -forward, offset_sign, edit_strength, voxel_tool_mode)
-
-func apply_falloff(t, falloff):
-	if falloff > 0:
-		return minf(1, (1 - t) / falloff)
-	else:
-		return 1
-
-#func do_surface(hit_pos, voxel_tool_mode):
-#	var edit_scale = get_tool_scale()
-#	# TODO: make function for copying values into buffer
-#	var radius2_1 = edit_scale * 2 + 1
-#	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
-#	var buffer_start_pos = Vector3i(hit_pos) - Vector3i(edit_scale, edit_scale, edit_scale)
-#
-#	var buffer = VoxelBuffer.new()
-#	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
-#
-#	var sdf_channel = 1 << VoxelBuffer.CHANNEL_SDF
-#	voxel_tool.copy(buffer_start_pos, buffer, sdf_channel)
-#
-#	for x in radius2_1:
-#		var dx = x - edit_scale
-#		for y in radius2_1:
-#			var dy = y - edit_scale
-#			for z in radius2_1:
-#				var dz = z - edit_scale
-#				var dist = sqrt(dx * dx + dy * dy + dz * dz)
-#				if dist > edit_scale:
-#					continue
-#
-#				var curr_value = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
-#				var new_value = 0
-#				var falloff_value = apply_falloff(dist / edit_scale, 1.0)
-#				if voxel_tool_mode == VoxelTool.MODE_ADD:
-#					new_value = lerpf(curr_value, curr_value - get_tool_strength(), falloff_value)
-#				else:
-#					new_value = lerpf(curr_value, curr_value + get_tool_strength(), falloff_value)
-#
-#				buffer.set_voxel_f(new_value, x, y, z, VoxelBuffer.CHANNEL_SDF)
-#
-#	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
-
-
-#func do_flatten(hit_pos, forward, offset_sign, edit_strength, voxel_tool_mode):
-#	if last_frame_edit_data.flatten_plane == null:
-#		last_frame_edit_data.flatten_plane = Plane(forward, hit_pos)
-#
-#	hit_pos = last_frame_edit_data.flatten_plane.project(hit_pos)
-#	var plane = offset_sign * last_frame_edit_data.flatten_plane
-#
-#	var edit_scale = get_tool_scale()
-#	# TODO: make function for copying values into buffer
-#	var radius2_1 = edit_scale * 2 + 1
-#	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
-#	var buffer_start_pos = Vector3i(hit_pos) - Vector3i(edit_scale, edit_scale, edit_scale)
-#
-#	var buffer = VoxelBuffer.new()
-#	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
-#
-#	var sdf_channel = 1 << VoxelBuffer.CHANNEL_SDF
-#	voxel_tool.copy(buffer_start_pos, buffer, sdf_channel)
-#
-#	for x in radius2_1:
-#		var dx = x - edit_scale
-#		for y in radius2_1:
-#			var dy = y - edit_scale
-#			for z in radius2_1:
-#				var dz = z - edit_scale
-#
-#				var point = Vector3(hit_pos + Vector3(dx, dy, dz))
-#				var curr_distance = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
-#				var other_distance = plane.distance_to(point) * voxel_tool.sdf_scale
-#
-#				var dist = sqrt(dx * dx + dy * dy + dz * dz)
-#
-#				var final_value = 0.0
-#
-#				if voxel_tool_mode == VoxelTool.MODE_ADD:
-#					final_value = min(other_distance, curr_distance)
-#				else:
-#					final_value = max(-other_distance, curr_distance)
-#
-#				var weight = max(0.0, (edit_scale - dist) / edit_scale)
-#				weight = clampf(weight * 2.0, 0.0, 1.0)
-#
-#				final_value = lerpf(curr_distance, final_value, weight)
-#				buffer.set_voxel_f(final_value, x, y, z, VoxelBuffer.CHANNEL_SDF)
-#
-#	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
-
-# assumes x, y, z, is center of sphere
-func sphere_add(x, y, z, radius):
-	var dist = sqrt(x * x + y * y + z * z)
-	return (dist - radius) / radius
-
-# creates cylinder it's aligned with y axis
-# assumes x, y, z, is center of cyilnder
-func cylinder_add(x, _y, z, radius):
-	var dist = sqrt(x * x + z * z)
-	return (dist - radius) / radius
-
-func edit_terrain(hit_pos):
-	var shape_size = get_tool_scale()
-	var iteration_size = shape_size + 4
-	var radius2_1 = iteration_size * 2 + 1
-	var buffer_size = Vector3i(radius2_1, radius2_1, radius2_1)
-	var buffer_start_pos = Vector3i(hit_pos) - Vector3i(iteration_size, iteration_size, iteration_size)
 	
-	var buffer = VoxelBuffer.new()
-	buffer.create(buffer_size.x, buffer_size.y, buffer_size.z)
-	
-	var sdf_channel = 1 << VoxelBuffer.CHANNEL_SDF
-	voxel_tool.copy(buffer_start_pos, buffer, sdf_channel)
-	
-	for x in radius2_1:
-		var dx = x - iteration_size
-		for y in radius2_1:
-			var dy = y - iteration_size
-			for z in radius2_1:
-				var dz = z - iteration_size
-				
-				var curr_value = buffer.get_voxel_f(x, y, z, VoxelBuffer.CHANNEL_SDF)
-				var new_value = sphere_add(dx, dy, dz, shape_size)
-				new_value = min(curr_value, new_value)
-				buffer.set_voxel_f(new_value, x, y, z, VoxelBuffer.CHANNEL_SDF)
-	
-	voxel_tool.paste(buffer_start_pos, buffer, sdf_channel)
+	elif edit_mode_state.edit_mode == EDIT_MODE.MESH:
+		var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
+		if sdf_mesh.is_baked():
+			print("Mesh sdf voxel buffer size:")
+			print(sdf_mesh.get_voxel_buffer().get_size())
+			var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
+			var place_transform = edit_mesh.global_transform
+			var sdf_scale = get_edit_mesh_sdf_scale(edit_mesh.mesh)
+			voxel_tool.stamp_sdf(sdf_mesh, place_transform, edit_isolevel, sdf_scale)
+			print(place_transform)
 
 func capture_mouse(value):
 	mouse_captured = value
 	just_started_capturing_mouse = value
 	
-	# 'process_mode' disables pressing on UI elements, but still keeps mouse hover effect.
-	# 'set_ui_element_mouse_filter' disables mouse hover effect.
-	if value:
-		# We need it to be "MOUSE_MODE_CAPTURED" instead of "MOUSE_MODE_CONFINED_HIDDEN",
-		# otherwise relative mouse movement won't work properly
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-		ui_root.process_mode = Node.PROCESS_MODE_DISABLED
-		set_ui_element_mouse_filter(ui_root, false)
-	else:
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		ui_root.process_mode = Node.PROCESS_MODE_INHERIT
-		set_ui_element_mouse_filter(ui_root, true)
+	ui_root.capture_mouse(value)
 
-# Since Godot doesn't provide a way to disable all GUI elements when mouse is hidden
-# I have to manually crawl through UI elements and disable hover effect.
-func set_ui_element_mouse_filter(element, enabled):
-	for child in element.get_children():
-		set_ui_element_mouse_filter(child, enabled)
+func update_mesh_edit_preview_indicator():
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
+		return
+		
+	if not edit_indicator_is_visible:
+		mesh_edit_indicator.mesh_sdf = null
+		return
 	
-	# Some UI elements have either stop or pass, so I have to manually
-	# check the element type to know what mouse filter to revert it back to
-	if enabled:
-		if element is BaseButton or element is Range:
-			element.mouse_filter = Control.MOUSE_FILTER_STOP
-	else:
-		if element is BaseButton or element is Range:
-			element.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
+		mesh_edit_indicator.mesh_sdf = null
+		return
+	
+	if not tool_state.mesh_preview_enabled:
+		mesh_edit_indicator.mesh_sdf = null
+		return
+	
+	var sdf_mesh = tool_mesh_bake_state.get_selected_sdf_mesh()
+	mesh_edit_indicator.mesh_sdf = sdf_mesh
+
+func mesh_preview_enabled_updated(_new_value):
+	update_edit_indicator()
+
+func sdf_mesh_index_updated(_new_value):
+	update_edit_indicator()
+
+func edit_mode_updated(_new_edit_mode):
+	update_edit_indicator()
+
+func camera_transform_updated():
+	update_edit_indicator()
+
+func tool_scale_updated():
+	update_edit_indicator()
+
+func mesh_tool_parameters_updated():
+	update_edit_indicator()
+
+func update_mesh_edit_color():
+	if edit_mode_state.edit_mode != EDIT_MODE.MESH:
+		return
+	
+	if tool_mesh_bake_state.total_sdf_meshes() == 0:
+		return
+	
+	var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
+	var mat : StandardMaterial3D = edit_mesh.material_override
+	
+	var edit_mesh_state = tool_mesh_bake_state.get_selected_sdf_mesh_state()
+	mat.albedo_color = SDF_MESH_STATE_COLOUR_DATA[edit_mesh_state].colour

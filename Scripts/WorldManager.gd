@@ -105,8 +105,8 @@ func _on_delete_pressed():
 	update_buttons()
 
 
-func _on_close_pressed():
-	visible = false
+func toggle_visibility():
+	visible = not visible
 
 
 func _on_load_pressed():

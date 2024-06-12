@@ -1,5 +1,6 @@
 # Godot 4+ specific ignores
 .godot/
+*.import
 
 # Godot-specific ignores
 .import/
@@ -16,4 +17,6 @@ mono_crash.*.json
 
 # Custom ignores
 .editor/
+.debug_data/
 Export/
+Templates/

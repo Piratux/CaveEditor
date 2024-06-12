@@ -11,9 +11,6 @@ func _ready():
 
 func _on_tree_exited():
 	save_modified_blocks()
-	stream = VoxelStreamSQLite.new()
-	var file_path = ".editor/" + "file_nametest"
-	stream.database_path = file_path
 
 # TODO: fix database transaction error (happens when this function is spammed, though happens rarely)
 func set_world_stream(file_name, save_edited_blocks):

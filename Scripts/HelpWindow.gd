@@ -1,6 +1,5 @@
 extends Control
 
-
 func _unhandled_input(event):
 	if event is InputEventKey:
 		if event.pressed:
@@ -8,5 +7,5 @@ func _unhandled_input(event):
 				KEY_H:
 					visible = not visible
 
-func _on_button_pressed():
+func toggle_visibility():
 	visible = not visible
