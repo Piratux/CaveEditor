@@ -106,22 +106,22 @@ func baking_finished(index):
 	print("Building mesh SDF " + str(index) + " done")
 	
 	# Debug
-	var mesh_sdf = get_sdf_mesh(index)
-	var images = mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices(1.0)
-	for i in len(images):
-		var im = images[i]
-		
-		var path = ".debug_data"
-		DirAccess.make_dir_absolute(path)
-		
-		# TODO: delete folder first, to clear it from previous baking
-		var subpath = str(path, "/sdf_slice_", index)
-		DirAccess.make_dir_absolute(subpath)
-		
-		var fpath = str(subpath, "/", i, ".png")
-		var err = im.save_png(fpath)
-		if err != OK:
-			push_error(str("Could not save image ", fpath, ", error ", err))
+	#var mesh_sdf = get_sdf_mesh(index)
+	#var images = mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices(1.0)
+	#for i in len(images):
+		#var im = images[i]
+		#
+		#var path = ".debug_data"
+		#DirAccess.make_dir_absolute(path)
+		#
+		## TODO: delete folder first, to clear it from previous baking
+		#var subpath = str(path, "/sdf_slice_", index)
+		#DirAccess.make_dir_absolute(subpath)
+		#
+		#var fpath = str(subpath, "/", i, ".png")
+		#var err = im.save_png(fpath)
+		#if err != OK:
+			#push_error(str("Could not save image ", fpath, ", error ", err))
 
 func select_next_sdf_mesh():
 	set_selected_sdf_mesh_idx((_selected_sdf_mesh_idx + 1) % _sdf_meshes.size())
