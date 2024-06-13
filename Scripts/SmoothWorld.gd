@@ -400,10 +400,8 @@ func try_edit_terrain(voxel_tool_mode):
 	
 	if voxel_tool_mode == VoxelTool.MODE_ADD:
 		offset_sign = 1
-		voxel_tool.value = 1
 	else:
 		offset_sign = -1
-		voxel_tool.value = 0
 	
 	var forward = get_camera_forward_vector()
 	var edit_scale = get_tool_scale()
