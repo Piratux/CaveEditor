@@ -20,8 +20,15 @@
 Windows:
 - https://github.com/Piratux/CaveEditor/releases/latest
 
+## Running project
+This contains information on how to run project if you want to make changes to Cave Editor source code:
+- Download Godot editor from [here](https://github.com/Zylann/godot_voxel/releases/download/v1.2.0/godot.windows.editor.x86_64.exe.zip).
+- Download source code of this repository.
+- Run downloaded Godot editor
+- Open up directory that contains `project.godot` from source code.
+
 ## Building from source
-Guide how to build from source:
+This contains information on how to build C++ code if you want to make changes to Godot or voxel module source code:
 - Get following repositories:
   - Godot 4.2.2 stable: https://github.com/godotengine/godot/releases/tag/4.2.2-stable
   - Godot voxel module 1.2.0: https://github.com/Zylann/godot_voxel/releases/tag/v1.2.0
