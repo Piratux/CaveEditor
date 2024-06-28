@@ -5,17 +5,25 @@ var file_util = preload("res://Scripts/Utils/FileUtil.gd").new()
 @export var tool_mesh_bake_state: ToolMeshBakeState
 
 func _ready():
-	for file_path in file_util.get_obj_file_paths():
-		add_obj_file(file_path)
+	for file_path in file_util.get_external_obj_file_paths():
+		add_external_obj_file(file_path)
+	
+	for file_path in file_util.get_internal_obj_file_paths():
+		add_internal_obj_file(file_path)
 	
 	if tool_mesh_bake_state.total_sdf_meshes() > 0:
 		_on_item_selected(0) # for some reason select() doesn't triger item_selected signal...
 	
 	tool_mesh_bake_state.sdf_mesh_index_updated.connect(sdf_mesh_index_updated)
 
-func add_obj_file(file_path):
+func add_external_obj_file(file_path):
 	add_item(file_path.get_file())
 	var mesh = ObjExporter.load_mesh_from_file(file_path)
+	tool_mesh_bake_state.add_sdf_mesh(mesh)
+
+func add_internal_obj_file(file_path):
+	add_item(file_path.get_file())
+	var mesh = load(file_path)
 	tool_mesh_bake_state.add_sdf_mesh(mesh)
 
 func sdf_mesh_index_updated(index):
@@ -36,4 +44,4 @@ func _on_mesh_export_dialog_file_selected(path):
 	var path_to = DirAccess.open(".").get_current_dir() + "/.editor/Objects/" + path.get_file()
 	DirAccess.copy_absolute(path, path_to)
 	
-	add_obj_file(path_to)
+	add_external_obj_file(path_to)

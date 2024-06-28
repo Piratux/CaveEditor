@@ -43,26 +43,52 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="Label" type="Label" parent="ScrollContainer/PanelContainer/MarginContainer"]
+[node name="ControlsLabel" type="Label" parent="ScrollContainer/PanelContainer/MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
 theme_override_constants/line_spacing = 1
-text = "Controls
+text = "Controls"
 
-H - Toggle controls window
-WASD - Move around
-E/Q - Move up/down
-Left mouse button - Pull terrain
-Right mouse button - Push terrain
-Mouse scroll - Change edit scale
-1/2/3/4/5/6 - Select edit mode
-Hold CTRL + Mouse click - Edit terrain once
-Hold ALT + Mouse scroll - Change camera speed
-Hold CTRL + Mouse scroll - Switch mesh in mesh mode
-Hold SHIFT - Move 2.5x times faster
-X - Show/Hide edit indicator
-ESC - Take control of mouse
-P - Toggle debug stat drawing
-ALT + Z - Toggle overlay visibility"
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="ScrollContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Toggle controls window
+Move around
+Move up/down
+Pull terrain
+Push terrain
+Change edit scale
+Select edit mode
+Edit terrain once
+Change camera speed
+Switch mesh in mesh mode
+Move 2.5x times faster
+Show/Hide edit indicator
+Take control of mouse
+Toggle debug stat drawing
+Toggle overlay visibility"
+horizontal_alignment = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "- H
+- WASD
+- E/Q
+- Left mouse button
+- Right mouse button
+- Mouse scroll
+- 1/2/3/4/5/6
+- Hold CTRL + Mouse click
+- Hold ALT + Mouse scroll
+- Hold CTRL + Mouse scroll
+- Hold SHIFT
+- X
+- ESC
+- P
+- U"
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1

@@ -159,9 +159,8 @@ func _unhandled_input(event):
 					edit_indicators.visible = edit_indicator_is_visible
 					
 					update_edit_indicator()
-				KEY_Z:
-					if Input.is_action_pressed("ALT"):
-						ui_root.visible = not ui_root.visible
+				KEY_U:
+					ui_root.visible = not ui_root.visible
 	
 	update_last_frame_data()
 
@@ -385,8 +384,8 @@ func get_edit_mesh_sdf_scale(mesh):
 	var aabb_half_size = aabb.size / 2.0
 	var max_aabb_half_size_axis = max(aabb_half_size.x, aabb_half_size.y, aabb_half_size.z)
 	
-	# (25 * sdf_scale) magic number gives close enough results that make stamped cube mesh and do_box SDF look similarly
-	return (25 * _sdf_scale) / max_aabb_half_size_axis
+	var edit_scale = get_tool_scale()
+	return (_sdf_scale / max_aabb_half_size_axis) * edit_scale
 
 func try_edit_terrain(voxel_tool_mode):
 	var hit = get_pointed_voxel()
@@ -446,7 +445,11 @@ func try_edit_terrain(voxel_tool_mode):
 			var edit_mesh = get_edit_mesh(EDIT_MODE.MESH)
 			var place_transform = edit_mesh.global_transform
 			var sdf_scale = get_edit_mesh_sdf_scale(edit_mesh.mesh)
+			
+			mesh_edit_indicator.position.x += 100000
 			voxel_tool.stamp_sdf(sdf_mesh, place_transform, edit_isolevel, sdf_scale)
+			mesh_edit_indicator.position.x -= 100000
+			
 			print(place_transform)
 
 func capture_mouse(value):

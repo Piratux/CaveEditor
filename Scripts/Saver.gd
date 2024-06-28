@@ -26,7 +26,7 @@ var editor_data = {
 }
 
 var default_camera_data = {
-	pos = Vector3(0,0,0),
+	pos = Vector3(0,10,0),
 	rot = Vector3(0,0,0),
 }
 
@@ -146,12 +146,19 @@ func load_world_data(world_id):
 	
 	if world.has("camera_pos") and world.camera_pos != null:
 		camera.set_position(world.camera_pos)
-		
+	else:
+		camera.set_position(default_camera_data.pos)
+	
 	if world.has("camera_rot") and world.camera_rot != null:
 		camera.set_rotation(world.camera_rot)
 		
-		# this is hacky, but anyway
+		# TODO: this is hacky.
 		camera._total_pitch = -rad_to_deg(world.camera_rot.x)
+	else:
+		camera.set_rotation(default_camera_data.rot)
+		
+		# TODO: this is hacky.
+		camera._total_pitch = -rad_to_deg(default_camera_data.rot.x)
 
 func load_worlds_to_world_manager():
 	var worlds_to_add = editor_data.worlds.duplicate()

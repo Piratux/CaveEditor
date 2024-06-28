@@ -169,12 +169,10 @@ static func _create_obj(obj: String, mats: Dictionary) -> Mesh:
 				var n_v: Vector3 = Vector3(parts[1].to_float(), parts[2].to_float(), parts[3].to_float())
 				vertices.append(n_v)
 			"vn":
-				#pass
 				# Normal
 				var n_vn: Vector3 = Vector3(parts[1].to_float(), parts[2].to_float(), parts[3].to_float())
 				normals.append(n_vn)
 			"vt":
-				#pass
 				# UV
 				var n_uv: Vector2 = Vector2(parts[1].to_float(), 1 - parts[2].to_float())
 				uvs.append(n_uv)
@@ -202,9 +200,10 @@ static func _create_obj(obj: String, mats: Dictionary) -> Mesh:
 						var vertices_index: PackedStringArray = map.split("/")
 						if (vertices_index[0] != "f"):
 							face["v"].append(vertices_index[0].to_int() - 1)
-							face["vt"].append(vertices_index[1].to_int() - 1)
-							if (vertices_index.size() > 2):
-								face["vn"].append(vertices_index[2].to_int() - 1)
+							if (vertices_index.size() > 1):
+								face["vt"].append(vertices_index[1].to_int() - 1)
+								if (vertices_index.size() > 2):
+									face["vn"].append(vertices_index[2].to_int() - 1)
 					if (faces.has(mat_name)):
 						faces[mat_name].append(face)
 				elif (parts.size() > 4):

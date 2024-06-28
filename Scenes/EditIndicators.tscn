@@ -1,12 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://14ye888u77ht"]
+[gd_scene load_steps=12 format=3 uid="uid://14ye888u77ht"]
 
 [ext_resource type="Script" path="res://Scripts/EditIndicators.gd" id="1_0a18q"]
 [ext_resource type="Resource" uid="uid://dmqbwauxkcho8" path="res://States/Resources/EditModeState.tres" id="2_5vy5a"]
-[ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditMaterial.tres" id="2_6a26l"]
-[ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/BlendBallMaterial.tres" id="3_38vdf"]
-[ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/SurfaceMaterial.tres" id="4_nwlro"]
-[ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/FlattenMaterial.tres" id="7_j4ubo"]
+[ext_resource type="Material" uid="uid://cuha5pwq4pade" path="res://Materials/EditIndicators/SphereMaterial.tres" id="4_sswy5"]
+[ext_resource type="Material" uid="uid://ixiqc03020vq" path="res://Materials/EditIndicators/CubeMaterial.tres" id="5_5a2yc"]
+[ext_resource type="Material" uid="uid://ci8tiv227dfah" path="res://Materials/EditIndicators/BlendBallMaterial.tres" id="6_q51c7"]
+[ext_resource type="Material" uid="uid://bwn5sinki2od4" path="res://Materials/EditIndicators/SurfaceMaterial.tres" id="7_8oojm"]
 [ext_resource type="Resource" uid="uid://bnetnq47i6ywj" path="res://States/Resources/ToolState.tres" id="8_ty0bi"]
+[ext_resource type="Material" uid="uid://bdtei12ocfxcf" path="res://Materials/EditIndicators/FlattenMaterial.tres" id="8_y7rgd"]
+[ext_resource type="Material" uid="uid://cutdhqgrcfkn0" path="res://Materials/EditIndicators/MeshMaterial.tres" id="9_6xewe"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_25lff"]
 radius = 1.0
@@ -19,32 +21,32 @@ script = ExtResource("1_0a18q")
 edit_mode_state = ExtResource("2_5vy5a")
 tool_state = ExtResource("8_ty0bi")
 
-[node name="SphereEdit" type="MeshInstance3D" parent="."]
+[node name="Sphere" type="MeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("2_6a26l")
+material_override = ExtResource("4_sswy5")
 mesh = SubResource("SphereMesh_25lff")
 
-[node name="CubeEdit" type="MeshInstance3D" parent="."]
+[node name="Cube" type="MeshInstance3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 visible = false
-material_override = ExtResource("2_6a26l")
+material_override = ExtResource("5_5a2yc")
 mesh = SubResource("BoxMesh_e4d1c")
 
 [node name="BlendBall" type="MeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("3_38vdf")
+material_override = ExtResource("6_q51c7")
 mesh = SubResource("SphereMesh_25lff")
 
 [node name="Surface" type="MeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("4_nwlro")
+material_override = ExtResource("7_8oojm")
 mesh = SubResource("SphereMesh_25lff")
 
 [node name="Flatten" type="MeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("7_j4ubo")
+material_override = ExtResource("8_y7rgd")
 mesh = SubResource("SphereMesh_25lff")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("2_6a26l")
+material_override = ExtResource("9_6xewe")

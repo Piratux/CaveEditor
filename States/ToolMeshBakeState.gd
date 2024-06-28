@@ -107,9 +107,9 @@ func baking_finished(index):
 	
 	# Debug
 	#var mesh_sdf = get_sdf_mesh(index)
-	#var images = mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices(1.0)
+	#var images = mesh_sdf.get_voxel_buffer().debug_print_sdf_y_slices()
 	#for i in len(images):
-		#var im = images[i]
+		#var image = images[i]
 		#
 		#var path = ".debug_data"
 		#DirAccess.make_dir_absolute(path)
@@ -119,7 +119,7 @@ func baking_finished(index):
 		#DirAccess.make_dir_absolute(subpath)
 		#
 		#var fpath = str(subpath, "/", i, ".png")
-		#var err = im.save_png(fpath)
+		#var err = image.save_png(fpath)
 		#if err != OK:
 			#push_error(str("Could not save image ", fpath, ", error ", err))
 
@@ -131,21 +131,21 @@ func select_previous_sdf_mesh():
 
 func get_selected_sdf_mesh_state():
 	assert(total_sdf_meshes() > 0)
-
+	
 	var sdf_mesh = get_selected_sdf_mesh()
 	
-	if sdf_mesh.is_baking():
+	if not sdf_mesh.is_baking() and not sdf_mesh.is_baked():
+		return SDF_MESH_STATE.NOT_BAKED_ONCE
+	elif sdf_mesh.is_baking():
 		return SDF_MESH_STATE.BAKING
 	elif (sdf_mesh.bake_mode != bake_mode
-		|| sdf_mesh.boundary_sign_fix_enabled != boundary_sign_fix_enabled
-		|| sdf_mesh.cell_count != cell_count
-		|| sdf_mesh.partition_subdiv != partition_subdiv
+		or sdf_mesh.boundary_sign_fix_enabled != boundary_sign_fix_enabled
+		or sdf_mesh.cell_count != cell_count
+		or sdf_mesh.partition_subdiv != partition_subdiv
 		):
 		return SDF_MESH_STATE.BAKING_PARAMETERS_CHANGED
-	elif sdf_mesh.is_baked():
-		return SDF_MESH_STATE.READY
 	else:
-		return SDF_MESH_STATE.NOT_BAKED_ONCE
+		return SDF_MESH_STATE.READY
 
 func total_sdf_meshes():
 	return _sdf_meshes.size()
