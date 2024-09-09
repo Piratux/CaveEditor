@@ -1,5 +1,5 @@
 # CaveEditor
-3D Cave editor using [Godot v4.2.2](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
+3D Cave editor using [Godot v4.2.2](https://godotengine.org/) and [godot_voxel module v1.2.0](https://github.com/Zylann/godot_voxel).
 
 ![screenshot1](ReadmeFiles/screenshot1.png)
 ![screenshot2](ReadmeFiles/screenshot2.png)
@@ -22,8 +22,8 @@ Windows:
 - https://github.com/Piratux/CaveEditor/releases/latest
 
 ## Running project
-This contains information on how to run project if you want to make changes to Cave Editor source code:
-- Download Godot editor from [here](https://github.com/Zylann/godot_voxel/releases/download/v1.2.0/godot.windows.editor.x86_64.exe.zip).
+This contains information on how to run project if you want to make changes to Cave Editor source code or run project on non-Windows platforms:
+- Download Godot editor from [here](https://github.com/Zylann/godot_voxel/releases/tag/v1.2.0).
 - Download source code of this repository.
 - Run downloaded Godot editor
 - Open up directory that contains `project.godot` from source code.
