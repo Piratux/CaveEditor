@@ -5,7 +5,7 @@
 ![screenshot2](ReadmeFiles/screenshot2.png)
 ![video](ReadmeFiles/tool-demo.mp4)
 
-![video](ReadmeFiles/tool-demo-video-thumbnail.png)(https://youtu.be/Ss2c8Ry2Hfo)
+[![video](ReadmeFiles/tool-demo-video-thumbnail.png)](https://youtu.be/Ss2c8Ry2Hfo)
 
 ## Features
 - Edit terrain tools:
