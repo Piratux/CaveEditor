@@ -3,7 +3,7 @@
 
 ![screenshot1](ReadmeFiles/screenshot1.png)
 ![screenshot2](ReadmeFiles/screenshot2.png)
-![video](ReadmeFiles/tool-demo.png)
+![video](ReadmeFiles/tool-demo.mp4)
 
 ## Features
 - Edit terrain tools:
