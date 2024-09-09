@@ -2,7 +2,6 @@
 3D Cave editor using [Godot v4.2.2](https://godotengine.org/) and [godot_voxel module v1.2.0](https://github.com/Zylann/godot_voxel).
 
 ![screenshot1](ReadmeFiles/screenshot1.png)
-![screenshot2](ReadmeFiles/screenshot2.png)
 [![video](ReadmeFiles/tool-demo-video-thumbnail.png)](https://youtu.be/Ss2c8Ry2Hfo)
 
 ## Features
