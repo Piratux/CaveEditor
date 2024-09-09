@@ -1,8 +1,9 @@
 # CaveEditor
 3D Cave editor using [Godot v4.2.2](https://godotengine.org/) and [godot_voxel module](https://github.com/Zylann/godot_voxel).
 
-![screenshot1](PreviewImages/screenshot1.png)
-![screenshot2](PreviewImages/screenshot2.png)
+![screenshot1](ReadmeFiles/screenshot1.png)
+![screenshot2](ReadmeFiles/screenshot2.png)
+![video](ReadmeFiles/tool-demo.png)
 
 ## Features
 - Edit terrain tools:
